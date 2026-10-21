@@ -420,10 +420,140 @@
       ]
     },
     {
+      "date": "2025-11-25",
+      "pool": 1000000,
+      "source": "u/DraftKings on r/DKAssist: DraftKings King Of The Court – What Could’ve Been (Top PRAs) 11/26/2025 (pasted; text in data/posts/2025-11-25.txt)",
+      "partial": true,
+      "list": "topPra",
+      "payouts": [
+        {
+          "pid": "3945274",
+          "name": "Luka Dončić",
+          "payout": 24,
+          "pra": 65
+        },
+        {
+          "pid": "2490149",
+          "name": "CJ McCollum",
+          "payout": 2155,
+          "pra": 55
+        },
+        {
+          "pid": "4066457",
+          "name": "Austin Reaves",
+          "payout": 379,
+          "pra": 43
+        },
+        {
+          "pid": "3992",
+          "name": "James Harden",
+          "payout": 104,
+          "pra": 43
+        },
+        {
+          "pid": "5160992",
+          "name": "Alex Sarr",
+          "payout": 752,
+          "pra": 38
+        },
+        {
+          "pid": "1966",
+          "name": "LeBron James",
+          "payout": 369,
+          "pra": 37
+        },
+        {
+          "pid": "4712849",
+          "name": "Anthony Black",
+          "payout": 38462,
+          "pra": 35
+        },
+        {
+          "pid": "3102531",
+          "name": "Kristaps Porzingis",
+          "payout": 2058,
+          "pra": 31
+        },
+        {
+          "pid": "4566434",
+          "name": "Franz Wagner",
+          "payout": 287,
+          "pra": 29
+        },
+        {
+          "pid": "6609",
+          "name": "Khris Middleton",
+          "payout": 43478,
+          "pra": 29
+        },
+        {
+          "pid": "4869342",
+          "name": "Dyson Daniels",
+          "payout": 6329,
+          "pra": 27
+        },
+        {
+          "pid": "6450",
+          "name": "Kawhi Leonard",
+          "payout": 873,
+          "pra": 27
+        },
+        {
+          "pid": "4431678",
+          "name": "Tyrese Maxey",
+          "payout": 59,
+          "pra": 25
+        },
+        {
+          "pid": "4017837",
+          "name": "Ivica Zubac",
+          "payout": 571,
+          "pra": 24
+        },
+        {
+          "pid": "3908845",
+          "name": "John Collins",
+          "payout": 41667,
+          "pra": 24
+        },
+        {
+          "pid": "4280151",
+          "name": "Corey Kispert",
+          "payout": 38462,
+          "pra": 23
+        },
+        {
+          "pid": "4066320",
+          "name": "Desmond Bane",
+          "payout": 1664,
+          "pra": 23
+        },
+        {
+          "pid": "4431680",
+          "name": "Onyeka Okongwu",
+          "payout": 6024,
+          "pra": 23
+        },
+        {
+          "pid": "2991139",
+          "name": "Kris Dunn",
+          "payout": 23810,
+          "pra": 22
+        },
+        {
+          "pid": "5211175",
+          "name": "Zaccharie Risacher",
+          "payout": 29412,
+          "pra": 22
+        }
+      ]
+    },
+    {
       "date": "2025-12-02",
       "pool": 1000000,
-      "source": "u/DraftKings on r/DKAssist: What Could've Been (Top PRAs) 12/3/2025 (pasted)",
+      "source": "u/DraftKings on r/DKAssist: DraftKings King Of The Court – What Could’ve Been (Top PRAs) 12/3/2025 (pasted; text in data/posts/2025-12-02.txt)",
       "partial": true,
+      "list": "topPra",
       "payouts": [
         {
           "pid": "4397688",
@@ -554,10 +684,1026 @@
       ]
     },
     {
+      "date": "2025-12-30",
+      "pool": 1000000,
+      "source": "u/DraftKings on r/DKAssist: DraftKings King Of The Court – What Could’ve Been (Top PRAs) 12/31/2025 (pasted; text in data/posts/2025-12-30.txt)",
+      "partial": true,
+      "list": "mostBet",
+      "payouts": [
+        {
+          "pid": "3945274",
+          "name": "Luka Doncic",
+          "payout": 29
+        },
+        {
+          "pid": "4432166",
+          "name": "Cade Cunningham",
+          "payout": 59
+        },
+        {
+          "pid": "3917376",
+          "name": "Jaylen Brown",
+          "payout": 70
+        },
+        {
+          "pid": "6450",
+          "name": "Kawhi Leonard",
+          "payout": 149
+        },
+        {
+          "pid": "1966",
+          "name": "LeBron James",
+          "payout": 154
+        },
+        {
+          "pid": "4431678",
+          "name": "Tyrese Maxey",
+          "payout": 166
+        },
+        {
+          "pid": "4066336",
+          "name": "Lauri Markkanen",
+          "payout": 223
+        },
+        {
+          "pid": "3992",
+          "name": "James Harden",
+          "payout": 232
+        },
+        {
+          "pid": "4433627",
+          "name": "Keyonte George",
+          "payout": 403
+        },
+        {
+          "pid": "3468",
+          "name": "Russell Westbrook",
+          "payout": 671
+        },
+        {
+          "pid": "3059318",
+          "name": "Joel Embiid",
+          "payout": 817
+        },
+        {
+          "pid": "4066354",
+          "name": "Payton Pritchard",
+          "payout": 830
+        },
+        {
+          "pid": "3078576",
+          "name": "Derrick White",
+          "payout": 936
+        },
+        {
+          "pid": "4433621",
+          "name": "Jalen Duren",
+          "payout": 1059
+        },
+        {
+          "pid": "4279888",
+          "name": "Ja Morant",
+          "payout": 1289
+        },
+        {
+          "pid": "4277961",
+          "name": "Jaren Jackson Jr.",
+          "payout": 1707
+        },
+        {
+          "pid": "3978",
+          "name": "DeMar DeRozan",
+          "payout": 1954
+        },
+        {
+          "pid": "4593125",
+          "name": "Santi Aldama",
+          "payout": 3650
+        },
+        {
+          "pid": "5124612",
+          "name": "VJ Edgecombe",
+          "payout": 5953
+        },
+        {
+          "pid": "3102530",
+          "name": "Jusuf Nurkic",
+          "payout": 6712
+        }
+      ]
+    },
+    {
+      "date": "2026-01-06",
+      "pool": 1000000,
+      "source": "u/DraftKings on r/DKAssist: DraftKings King Of The Court – What Could’ve Been - 1/7/2026 (pasted; text in data/posts/2026-01-06.txt)",
+      "partial": true,
+      "list": "mostBet",
+      "payouts": [
+        {
+          "pid": "3945274",
+          "name": "Luka Dončić",
+          "payout": 28
+        },
+        {
+          "pid": "6583",
+          "name": "Anthony Davis",
+          "payout": 93
+        },
+        {
+          "pid": "4594268",
+          "name": "Anthony Edwards",
+          "payout": 101
+        },
+        {
+          "pid": "4432573",
+          "name": "Paolo Banchero",
+          "payout": 108
+        },
+        {
+          "pid": "5041939",
+          "name": "Cooper Flagg",
+          "payout": 160
+        },
+        {
+          "pid": "5104157",
+          "name": "Victor Wembanyama",
+          "payout": 194
+        },
+        {
+          "pid": "3149673",
+          "name": "Pascal Siakam",
+          "payout": 440
+        },
+        {
+          "pid": "4395628",
+          "name": "Zion Williamson",
+          "payout": 502
+        },
+        {
+          "pid": "4396907",
+          "name": "Darius Garland",
+          "payout": 764
+        },
+        {
+          "pid": "3468",
+          "name": "Russell Westbrook",
+          "payout": 821
+        },
+        {
+          "pid": "4066259",
+          "name": "De'Aaron Fox",
+          "payout": 884
+        },
+        {
+          "pid": "4432158",
+          "name": "Evan Mobley",
+          "payout": 923
+        },
+        {
+          "pid": "3064514",
+          "name": "Julius Randle",
+          "payout": 950
+        },
+        {
+          "pid": "1966",
+          "name": "LeBron James",
+          "payout": 1178
+        },
+        {
+          "pid": "3064440",
+          "name": "Zach LaVine",
+          "payout": 1238
+        },
+        {
+          "pid": "4712849",
+          "name": "Anthony Black",
+          "payout": 1306
+        },
+        {
+          "pid": "4397688",
+          "name": "Trey Murphy III",
+          "payout": 1355
+        },
+        {
+          "pid": "4845367",
+          "name": "Stephon Castle",
+          "payout": 2013
+        },
+        {
+          "pid": "2595516",
+          "name": "Norman Powell",
+          "payout": 2507
+        },
+        {
+          "pid": "4066320",
+          "name": "Desmond Bane",
+          "payout": 2539
+        }
+      ]
+    },
+    {
+      "date": "2026-01-13",
+      "pool": 1000000,
+      "source": "u/DraftKings on r/DKAssist: DraftKings King Of The Court – What Could’ve Been (Top PRAs) 1/14/2025 (pasted; text in data/posts/2026-01-13.txt)",
+      "partial": true,
+      "list": "topPra",
+      "payouts": [
+        {
+          "pid": "3936299",
+          "name": "Jamal Murray",
+          "payout": 130
+        },
+        {
+          "pid": "3945274",
+          "name": "Luka Doncic",
+          "payout": 43
+        },
+        {
+          "pid": "4278073",
+          "name": "Shai Gilgeous-Alexander",
+          "payout": 146
+        },
+        {
+          "pid": "3064514",
+          "name": "Julius Randle",
+          "payout": 535
+        },
+        {
+          "pid": "4576087",
+          "name": "Peyton Watson",
+          "payout": 1120
+        },
+        {
+          "pid": "4395626",
+          "name": "Tre Jones",
+          "payout": 58824
+        },
+        {
+          "pid": "4066261",
+          "name": "Bam Adebayo",
+          "payout": 6897
+        },
+        {
+          "pid": "3136193",
+          "name": "Devin Booker",
+          "payout": 485
+        },
+        {
+          "pid": "3202",
+          "name": "Kevin Durant",
+          "payout": 879
+        },
+        {
+          "pid": "4871144",
+          "name": "Alperen Sengun",
+          "payout": 276
+        },
+        {
+          "pid": "3032977",
+          "name": "Giannis Antetokounmpo",
+          "payout": 67
+        },
+        {
+          "pid": "4397688",
+          "name": "Trey Murphy III",
+          "payout": 658
+        },
+        {
+          "pid": "4278129",
+          "name": "Deandre Ayton",
+          "payout": 22728
+        },
+        {
+          "pid": "2595516",
+          "name": "Norman Powell",
+          "payout": 5848
+        },
+        {
+          "pid": "4845367",
+          "name": "Stephon Castle",
+          "payout": 4588
+        },
+        {
+          "pid": "4701232",
+          "name": "Mark Williams",
+          "payout": 31250
+        },
+        {
+          "pid": "4278039",
+          "name": "Nickeil Alexander-Walker",
+          "payout": 5264
+        },
+        {
+          "pid": "4684740",
+          "name": "Amen Thompson",
+          "payout": 897
+        },
+        {
+          "pid": "4592492",
+          "name": "Bones Hyland",
+          "payout": 111112
+        },
+        {
+          "pid": "3135045",
+          "name": "Grayson Allen",
+          "payout": 35715
+        },
+        {
+          "pid": "1966",
+          "name": "LeBron James",
+          "payout": 2174,
+          "winner": true
+        }
+      ]
+    },
+    {
+      "date": "2026-02-10",
+      "pool": 1000000,
+      "source": "u/DraftKings on r/DKAssist: DraftKings King Of The Court – What Could’ve Been (Top PRAs) 2/11/2026 (pasted; text in data/posts/2026-02-10.txt)",
+      "partial": true,
+      "list": "topPra",
+      "payouts": [
+        {
+          "pid": "3934672",
+          "name": "Jalen Brunson",
+          "payout": 150
+        },
+        {
+          "pid": "3149673",
+          "name": "Pascal Siakam",
+          "payout": 517
+        },
+        {
+          "pid": "3136195",
+          "name": "Karl-Anthony Towns",
+          "payout": 155
+        },
+        {
+          "pid": "4395712",
+          "name": "Andrew Nembhard",
+          "payout": 1136
+        },
+        {
+          "pid": "3062679",
+          "name": "Josh Hart",
+          "payout": 2146
+        },
+        {
+          "pid": "4278594",
+          "name": "Naji Marshall",
+          "payout": 1573
+        },
+        {
+          "pid": "3202",
+          "name": "Kevin Durant",
+          "payout": 658
+        },
+        {
+          "pid": "6450",
+          "name": "Kawhi Leonard",
+          "payout": 67
+        },
+        {
+          "pid": "4871144",
+          "name": "Alperen Sengun",
+          "payout": 112
+        },
+        {
+          "pid": "5041939",
+          "name": "Cooper Flagg",
+          "payout": 69
+        },
+        {
+          "pid": "3147657",
+          "name": "Mikal Bridges",
+          "payout": 5918
+        },
+        {
+          "pid": "3136193",
+          "name": "Devin Booker",
+          "payout": 125
+        },
+        {
+          "pid": "3155526",
+          "name": "Dillon Brooks",
+          "payout": 860
+        },
+        {
+          "pid": "3908845",
+          "name": "John Collins",
+          "payout": 15152
+        },
+        {
+          "pid": "4432639",
+          "name": "Jabari Smith Jr.",
+          "payout": 8404
+        },
+        {
+          "pid": "4711272",
+          "name": "Reed Sheppard",
+          "payout": 19608
+        },
+        {
+          "pid": "5104157",
+          "name": "Victor Wembanyama",
+          "payout": 64,
+          "winner": true
+        }
+      ]
+    },
+    {
+      "date": "2026-02-24",
+      "pool": 2000000,
+      "source": "u/DraftKings on r/DKAssist: DraftKings King Of The Court – What Could’ve Been (Top PRAs) 2/25/26 (pasted; text in data/posts/2026-02-24.txt)",
+      "partial": true,
+      "list": "topPra",
+      "payouts": [
+        {
+          "pid": "4431678",
+          "name": "Tyrese Maxey",
+          "payout": 692
+        },
+        {
+          "pid": "4397140",
+          "name": "Kevin Porter Jr.",
+          "payout": 2332
+        },
+        {
+          "pid": "3945274",
+          "name": "Luka Doncic",
+          "payout": 64
+        },
+        {
+          "pid": "4594268",
+          "name": "Anthony Edwards",
+          "payout": 192
+        },
+        {
+          "pid": "4683692",
+          "name": "Cason Wallace",
+          "payout": 55556
+        },
+        {
+          "pid": "4711294",
+          "name": "Matas Buzelis",
+          "payout": 74075
+        },
+        {
+          "pid": "3078576",
+          "name": "Derrick White",
+          "payout": 3140
+        },
+        {
+          "pid": "3059318",
+          "name": "Joel Embiid",
+          "payout": 546
+        },
+        {
+          "pid": "4433247",
+          "name": "Jonathan Kuminga",
+          "payout": 48781
+        },
+        {
+          "pid": "4431671",
+          "name": "Jaden McDaniels",
+          "payout": 181819
+        },
+        {
+          "pid": "4066436",
+          "name": "De'Anthony Melton",
+          "payout": 250000
+        },
+        {
+          "pid": "4709138",
+          "name": "Brandin Podziemski",
+          "payout": 18868
+        },
+        {
+          "pid": "4278129",
+          "name": "Deandre Ayton",
+          "payout": 86957
+        },
+        {
+          "pid": "5124612",
+          "name": "VJ Edgecombe",
+          "payout": 27028
+        },
+        {
+          "pid": "4278594",
+          "name": "Naji Marshall",
+          "payout": 11977
+        },
+        {
+          "pid": "4395625",
+          "name": "RJ Barrett",
+          "payout": 133334
+        },
+        {
+          "pid": "3032976",
+          "name": "Rudy Gobert",
+          "payout": 68966
+        },
+        {
+          "pid": "4277847",
+          "name": "Wendell Carter Jr.",
+          "payout": 666667
+        },
+        {
+          "pid": "4432573",
+          "name": "Paolo Banchero",
+          "payout": 811,
+          "winner": true
+        }
+      ]
+    },
+    {
+      "date": "2026-03-03",
+      "pool": 1000000,
+      "source": "u/DraftKings on r/DKAssist: DraftKings King Of The Court – What Could’ve Been (Top PRAs) 3/4/26 (pasted; text in data/posts/2026-03-03.txt)",
+      "partial": true,
+      "list": "topPra",
+      "payouts": [
+        {
+          "pid": "4433621",
+          "name": "Jalen Duren",
+          "payout": 817
+        },
+        {
+          "pid": "4432823",
+          "name": "Jaylin Williams",
+          "payout": 5953
+        },
+        {
+          "pid": "3136195",
+          "name": "Karl-Anthony Towns",
+          "payout": 745
+        },
+        {
+          "pid": "3934672",
+          "name": "Jalen Brunson",
+          "payout": 370
+        },
+        {
+          "pid": "3064514",
+          "name": "Julius Randle",
+          "payout": 1548
+        },
+        {
+          "pid": "3913176",
+          "name": "Brandon Ingram",
+          "payout": 3013
+        },
+        {
+          "pid": "4066261",
+          "name": "Bam Adebayo",
+          "payout": 1877
+        },
+        {
+          "pid": "4898371",
+          "name": "Maxime Raynaud",
+          "payout": 12346
+        },
+        {
+          "pid": "1966",
+          "name": "LeBron James",
+          "payout": 724
+        },
+        {
+          "pid": "4397688",
+          "name": "Trey Murphy III",
+          "payout": 303
+        },
+        {
+          "pid": "4017844",
+          "name": "Guerschon Yabusele",
+          "payout": 52632
+        },
+        {
+          "pid": "4871145",
+          "name": "Josh Giddey",
+          "payout": 280
+        },
+        {
+          "pid": "4278585",
+          "name": "Collin Gillespie",
+          "payout": 15385
+        },
+        {
+          "pid": "3907497",
+          "name": "Dejounte Murray",
+          "payout": 4099
+        },
+        {
+          "pid": "4066320",
+          "name": "Desmond Bane",
+          "payout": 2858
+        },
+        {
+          "pid": "4601023",
+          "name": "Oso Ighodaro",
+          "payout": 1000000
+        },
+        {
+          "pid": "4431678",
+          "name": "Tyrese Maxey",
+          "payout": 76
+        },
+        {
+          "pid": "4432166",
+          "name": "Cade Cunningham",
+          "payout": 75
+        },
+        {
+          "pid": "3992",
+          "name": "James Harden",
+          "payout": 300
+        },
+        {
+          "pid": "4397183",
+          "name": "Aaron Wiggins",
+          "payout": 71429
+        },
+        {
+          "pid": "4594268",
+          "name": "Anthony Edwards",
+          "payout": 185,
+          "winner": true
+        },
+        {
+          "pid": "4432573",
+          "name": "Paolo Banchero",
+          "payout": 231,
+          "winner": true
+        },
+        {
+          "pid": "3945274",
+          "name": "Luka Doncic",
+          "payout": 35,
+          "winner": true
+        }
+      ]
+    },
+    {
+      "date": "2026-03-17",
+      "pool": 2000000,
+      "source": "u/DraftKings on r/DKAssist: DraftKings King Of The Court – What Could’ve Been (Top PRAs) 3/18/26 (pasted; text in data/posts/2026-03-17.txt)",
+      "partial": true,
+      "list": "topPra",
+      "payouts": [
+        {
+          "pid": "4432816",
+          "name": "LaMelo Ball",
+          "payout": 1000
+        },
+        {
+          "pid": "4432573",
+          "name": "Paolo Banchero",
+          "payout": 1067
+        },
+        {
+          "pid": "4278073",
+          "name": "Shai Gilgeous-Alexander",
+          "payout": 388
+        },
+        {
+          "pid": "3062679",
+          "name": "Josh Hart",
+          "payout": 4033
+        },
+        {
+          "pid": "4432158",
+          "name": "Evan Mobley",
+          "payout": 9091
+        },
+        {
+          "pid": "4898371",
+          "name": "Maxime Raynaud",
+          "payout": 125000
+        },
+        {
+          "pid": "3136193",
+          "name": "Devin Booker",
+          "payout": 280
+        },
+        {
+          "pid": "3064514",
+          "name": "Julius Randle",
+          "payout": 418
+        },
+        {
+          "pid": "3992",
+          "name": "James Harden",
+          "payout": 2213
+        },
+        {
+          "pid": "4397140",
+          "name": "Kevin Porter Jr.",
+          "payout": 9757
+        },
+        {
+          "pid": "3934719",
+          "name": "OG Anunoby",
+          "payout": 11174
+        },
+        {
+          "pid": "3136195",
+          "name": "Karl-Anthony Towns",
+          "payout": 316
+        },
+        {
+          "pid": "4433255",
+          "name": "Chet Holmgren",
+          "payout": 11696
+        },
+        {
+          "pid": "4395725",
+          "name": "Tyler Herro",
+          "payout": 1154
+        },
+        {
+          "pid": "3064482",
+          "name": "Bobby Portis",
+          "payout": 142858
+        },
+        {
+          "pid": "4431767",
+          "name": "Christian Braun",
+          "payout": 80000
+        },
+        {
+          "pid": "4395651",
+          "name": "Coby White",
+          "payout": 181819
+        },
+        {
+          "pid": "3908809",
+          "name": "Donovan Mitchell",
+          "payout": 804
+        },
+        {
+          "pid": "4702384",
+          "name": "Nique Clifford",
+          "payout": 285715
+        },
+        {
+          "pid": "4601023",
+          "name": "Oso Ighodaro",
+          "payout": 285715
+        },
+        {
+          "pid": "4433621",
+          "name": "Jalen Duren",
+          "payout": 1056,
+          "winner": true
+        }
+      ]
+    },
+    {
+      "date": "2026-03-24",
+      "pool": 2000000,
+      "source": "u/DraftKings on r/DKAssist: DraftKings King Of The Court – What Could’ve Been (Top PRAs) 3/25/26 (pasted; text in data/posts/2026-03-24.txt)",
+      "partial": true,
+      "list": "topPra",
+      "payouts": [
+        {
+          "pid": "3908809",
+          "name": "Donovan Mitchell",
+          "payout": 374
+        },
+        {
+          "pid": "4432573",
+          "name": "Paolo Banchero",
+          "payout": 238
+        },
+        {
+          "pid": "3934672",
+          "name": "Jalen Brunson",
+          "payout": 325
+        },
+        {
+          "pid": "3992",
+          "name": "James Harden",
+          "payout": 617
+        },
+        {
+          "pid": "3136195",
+          "name": "Karl-Anthony Towns",
+          "payout": 429
+        },
+        {
+          "pid": "4432158",
+          "name": "Evan Mobley",
+          "payout": 1707
+        },
+        {
+          "pid": "4432816",
+          "name": "LaMelo Ball",
+          "payout": 364
+        },
+        {
+          "pid": "4395651",
+          "name": "Coby White",
+          "payout": 14706
+        },
+        {
+          "pid": "3136193",
+          "name": "Devin Booker",
+          "payout": 254
+        },
+        {
+          "pid": "4437244",
+          "name": "Jalen Green",
+          "payout": 1245
+        },
+        {
+          "pid": "4433249",
+          "name": "Moussa Diabate",
+          "payout": 43479
+        },
+        {
+          "pid": "3135045",
+          "name": "Grayson Allen",
+          "payout": 16130
+        },
+        {
+          "pid": "3934719",
+          "name": "OG Anunoby",
+          "payout": 25317
+        },
+        {
+          "pid": "3936299",
+          "name": "Jamal Murray",
+          "payout": 633
+        },
+        {
+          "pid": "4395628",
+          "name": "Zion Williamson",
+          "payout": 2519
+        },
+        {
+          "pid": "4066320",
+          "name": "Desmond Bane",
+          "payout": 3026
+        },
+        {
+          "pid": "4702382",
+          "name": "Tristan da Silva",
+          "payout": 133334
+        },
+        {
+          "pid": "4278572",
+          "name": "Jamal Cain",
+          "payout": 166667
+        },
+        {
+          "pid": "3064290",
+          "name": "Aaron Gordon",
+          "payout": 2770
+        },
+        {
+          "pid": "4279318",
+          "name": "Daeqwon Plowden",
+          "payout": 2000000
+        },
+        {
+          "pid": "5144091",
+          "name": "Jeremiah Fears",
+          "payout": 142858
+        },
+        {
+          "pid": "2583632",
+          "name": "Royce O'Neale",
+          "payout": 111112
+        },
+        {
+          "pid": "3112335",
+          "name": "Nikola Jokic",
+          "payout": 44,
+          "winner": true
+        }
+      ]
+    },
+    {
+      "date": "2026-03-31",
+      "pool": 1000000,
+      "source": "u/DraftKings on r/DKAssist: DraftKings King Of The Court – What Could’ve Been (Top PRAs) 4/1/26 (pasted; text in data/posts/2026-03-31.txt)",
+      "partial": true,
+      "list": "topPra",
+      "payouts": [
+        {
+          "pid": "4683021",
+          "name": "Deni Avdija",
+          "payout": 257
+        },
+        {
+          "pid": "3136193",
+          "name": "Devin Booker",
+          "payout": 657
+        },
+        {
+          "pid": "4433621",
+          "name": "Jalen Duren",
+          "payout": 492
+        },
+        {
+          "pid": "3202",
+          "name": "Kevin Durant",
+          "payout": 767
+        },
+        {
+          "pid": "4591725",
+          "name": "Ryan Rollins",
+          "payout": 563
+        },
+        {
+          "pid": "3995",
+          "name": "Jrue Holiday",
+          "payout": 14493
+        },
+        {
+          "pid": "4432573",
+          "name": "Paolo Banchero",
+          "payout": 152
+        },
+        {
+          "pid": "4432165",
+          "name": "Jalen Suggs",
+          "payout": 38462
+        },
+        {
+          "pid": "6450",
+          "name": "Kawhi Leonard",
+          "payout": 173
+        },
+        {
+          "pid": "3136195",
+          "name": "Karl-Anthony Towns",
+          "payout": 605
+        },
+        {
+          "pid": "5041939",
+          "name": "Cooper Flagg",
+          "payout": 128
+        },
+        {
+          "pid": "4066320",
+          "name": "Desmond Bane",
+          "payout": 5587
+        },
+        {
+          "pid": "4395625",
+          "name": "RJ Barrett",
+          "payout": 23810
+        },
+        {
+          "pid": "5107199",
+          "name": "Daniss Jenkins",
+          "payout": 6712
+        },
+        {
+          "pid": "4432816",
+          "name": "LaMelo Ball",
+          "payout": 532
+        },
+        {
+          "pid": "4684740",
+          "name": "Amen Thompson",
+          "payout": 6579
+        },
+        {
+          "pid": "4066457",
+          "name": "Austin Reaves",
+          "payout": 2000
+        },
+        {
+          "pid": "4433287",
+          "name": "Brandon Miller",
+          "payout": 3677
+        },
+        {
+          "pid": "3134907",
+          "name": "Kyle Kuzma",
+          "payout": 13699
+        },
+        {
+          "pid": "4871144",
+          "name": "Alperen Sengun",
+          "payout": 359
+        },
+        {
+          "pid": "3945274",
+          "name": "Luka Doncic",
+          "payout": 21,
+          "winner": true
+        }
+      ]
+    },
+    {
       "date": "2026-04-07",
       "pool": 1000000,
-      "source": "u/DraftKings on r/DKAssist: What Could've Been (Top PRAs) 4/8/26 (pasted)",
+      "source": "u/DraftKings on r/DKAssist: DraftKings King Of The Court – What Could’ve Been (Top PRAs) 4/8/26 (pasted; text in data/posts/2026-04-07.txt)",
       "partial": true,
+      "list": "topPra",
       "payouts": [
         {
           "pid": "3917376",
@@ -632,7 +1778,7 @@
         {
           "pid": "5144091",
           "name": "Jeremiah Fears",
-          "payout": 697,
+          "payout": 698,
           "winner": true
         }
       ]
