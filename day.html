@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="style.css?v=7ec3d288">
+  <link rel="stylesheet" href="style.css?v=71287600">
 </head>
 <body>
   <header class="topbar">
@@ -47,8 +47,8 @@
     <footer>Data from ESPN. Not affiliated with DraftKings.</footer>
   </main>
 
-  <script src="model.js?v=eef7c528"></script>
-  <script src="common.js?v=88507ad4"></script>
+  <script src="model.js?v=589d5de9"></script>
+  <script src="common.js?v=5b32a8b4"></script>
   <script>
     const $ = (id) => document.getElementById(id);
 
@@ -111,7 +111,7 @@
         $("model-sub").textContent = live ? `${new Date() >= new Date(live.firstTip) ? "Locked" : "Updated"} ${stampText(live.takenAt)}` : `Backtest replay (model v${bt.model.version})`;
         renderTable($("model"), list.slice(0, 25).map((p) => ({ ...p, _cls: kings.has(p.pid) ? "king" : "" })), [
           { key: "rank", label: "#", cls: "rank", fmt: (r, i) => i + 1 },
-          { key: "name", label: "Player", cls: "l", fmt: (r) => whoCell(names, r.pid, `${esc(r.tm)} ${r.opp ? vsText(r.home, r.opp) : ""}${injuryTag(r.inj)}`) },
+          { key: "name", label: "Player", cls: "l", fmt: (r) => whoCell(names, r.pid, `${esc(r.tm)} ${r.opp ? vsText(r.home, r.opp) : ""}${injuryTag(r.inj)}${bumpTag(r, names)}`) },
           { key: "mean", label: "Proj PRA", fmt: (r) => fmt.d1(r.mean) },
           { key: "win", label: "Win", cls: "key", fmt: (r) => fmt.pct(r.win) },
           { key: "top3", label: "Top 3", fmt: (r) => fmt.pct(r.top3) },

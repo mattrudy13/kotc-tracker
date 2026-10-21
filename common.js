@@ -76,6 +76,16 @@ function injuryTag(status) {
   return ` <span class="inj${short === "O" || short === "D" ? "" : " q"}" aria-label="${esc(status)}">${short}</span>`;
 }
 const crown = `<span class="crown" aria-hidden="true">♛</span>`;
+// Teammates-out note for a prediction row (model v2), as visible text: the rise from teammates
+// already ruled out, else the extra if the biggest questionable teammate sits. Hidden under 3%.
+function bumpTag(p, names) {
+  if (p.outPct >= 0.03) return ` · <span class="bump">+${Math.round(p.outPct * 100)}% teammates out</span>`;
+  if (p.bumpIf?.pct >= 0.03) {
+    const n = names?.[p.bumpIf.pid]?.n?.split(" ").slice(-1)[0] ?? "a teammate";
+    return ` · <span class="bump">+${Math.round(p.bumpIf.pct * 100)}% if ${esc(n)} sits</span>`;
+  }
+  return "";
+}
 // Value ratio (win chance ÷ estimated pick share): green from 1.2, red below 0.8, plain otherwise.
 function valueCell(v) {
   if (v == null || !Number.isFinite(v)) return `<span class="muted">–</span>`;

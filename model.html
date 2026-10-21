@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="style.css?v=7ec3d288">
+  <link rel="stylesheet" href="style.css?v=71287600">
 </head>
 <body>
   <header class="topbar">
@@ -49,6 +49,12 @@
       <p class="note" id="bt-note"></p>
     </section>
 
+    <section class="card" id="abl-card" hidden>
+      <div class="card-head"><h2>What each factor adds</h2><span class="updated">Model v2</span></div>
+      <div class="table-wrap"><div id="abl"></div></div>
+      <p class="note" id="abl-note"></p>
+    </section>
+
     <section class="card" id="value-card" hidden>
       <div class="card-head"><h2>Value picks</h2><span class="updated">Bonus bets won per token</span></div>
       <div class="table-wrap"><div id="value"></div></div>
@@ -74,6 +80,13 @@
           for players with little history, toward a league-wide 0.78.</p>
         <p><b>Game.</b> Projected PRA = minutes × PRA per minute, scaled up or down with the betting total (a high total means more
           possessions). A blowout adjustment for big spreads was tested and made the projections worse, so it's off.</p>
+        <p><b>Teammates out</b> (v2). A team's regulars are the players from its last 5 games projected for 10+ minutes. When some of
+          them sit, the rest get more shots and minutes: projected PRA rises 0.4% for every 1% of the team's usual production that's
+          missing, compared with what was missing in the player's own recent games (so a star who has been out for weeks isn't counted
+          twice). A questionable teammate only counts in the simulations where they sit.</p>
+        <p><b>Opponent defense</b> (v2). How much PRA each team has allowed this season compared with what the players it faced were
+          projected for, pulled heavily toward average. It's small: every team was within ±2% in early December 2025 and ±5% by April. A version split by position (guards,
+          forwards, centers) was tested and did slightly worse.</p>
         <p><b>Simulation.</b> Each night is played out 10,000 times. Every player's PRA varies around the projection (the spread was measured
           from how far 2025-26 projections actually missed), and a shared game factor moves everyone in a fast or overtime game together.
           Win = the share of simulations a player finished first; ties count as a split.</p>
@@ -81,16 +94,16 @@
           February–April. The replay only ever sees games before each night, with one shortcut: it knows who actually played
           (standing in for the final injury report), so it never has to guess about late scratches. Live predictions do have to guess, so
           expect them to do a bit worse.</p>
-        <p><b>What it ignores</b> (for now): teammates being out (more shots for everyone else), the opponent's defense, back-to-backs, and
-          how many people pick each player, which sets the payout. See the notes on the <a href="history.html">History</a> page.</p>
+        <p><b>What it ignores</b> (for now): back-to-backs (tested on 2025-26: no measurable effect on PRA) and betting odds.
+          How many people pick each player is estimated separately for the value columns on the <a href="./">Tonight</a> page.</p>
       </div>
     </section>
 
     <footer>Data from ESPN. Not affiliated with DraftKings.</footer>
   </main>
 
-  <script src="model.js?v=eef7c528"></script>
-  <script src="common.js?v=88507ad4"></script>
+  <script src="model.js?v=589d5de9"></script>
+  <script src="common.js?v=5b32a8b4"></script>
   <script>
     const $ = (id) => document.getElementById(id);
     const tile = (k, v, s) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`;
@@ -105,6 +118,7 @@
       ]);
       renderLive(current, pred, L, promos);
       if (bt) renderBacktest(bt);
+      if (bt?.ablation) renderAblation(bt);
       renderValue(current, bt, pred);
     }
 
@@ -171,6 +185,23 @@
         .join("");
     }
 
+    // Each v2 factor alone and together, on the same nights and simulation seeds as v1.
+    function renderAblation(bt) {
+      const v = bt.ablation.variants;
+      $("abl-card").hidden = false;
+      const names = { v1: "Neither (v1)", teammates: "Teammates out", defense: "Opponent defense", defensePos: "Defense by position", both: "Both (v2)" };
+      const cell = (x) => `${x.ll.toFixed(3)}<small class="ln">top pick ${x.hits}/${x.n}</small>`;
+      renderTable($("abl"), Object.keys(names).filter((k) => v[k]).map((k) => ({ k, _cls: k === "both" ? "promo" : "" })), [
+        { key: "k", label: "Model", cls: "l", fmt: (r) => `<b>${names[r.k]}</b>` },
+        { key: "f", label: `Oct–Jan <small class="ln">fitting</small>`, cls: "hide-sm", fmt: (r) => cell(v[r.k].fit) },
+        { key: "h", label: `Feb–Apr <small class="ln">holdout</small>`, cls: "key", fmt: (r) => cell(v[r.k].holdout) },
+      ], { nosort: true }, () => {});
+      $("abl-note").innerHTML = `Log loss of the chance given to the actual King (lower is better). A factor stays in the model only if it lowers the
+        Feb–Apr holdout number; both did, and together they do best. Top-pick wins barely move: the gains come from giving more chance to
+        players who fill in for a missing star, which matters most on late-season nights when teams rest their stars.
+        On phones the Oct–Jan column is left off to make room.`;
+    }
+
     // One token a night on each strategy's pick, paid at DK's actual payout when that player won.
     function renderValue(season, bt, pred) {
       const live = Object.values(pred?.days ?? {}).map((x) => x.result?.value).filter(Boolean);
@@ -196,7 +227,7 @@
         Each strategy puts one token on one player each promo night and wins DK's actual payout when that player is King. A night only counts
         once DK's payouts are known, and Three Kings nights are left out${bt ? ` (${n} of last season's nights count)` : ""}.
         The public favorite is almost always the model's favorite too, so those rows usually match.
-        ${adebayo ? `Last season's value total rests mostly on one night: Bam Adebayo's 83-point game on 3/10/26 paid ${fmt.money(adebayo)}. One hit like that swings a season, so read this as a sanity check, not proof.` : ""}
+        ${adebayo ? `Last season's value total rests on a few long-shot nights; Bam Adebayo's 83-point game on 3/10/26 alone paid ${fmt.money(adebayo)}. One hit like that swings a season, so read this as a sanity check, not proof.` : ""}
         The pick-share estimate was fitted on 11/18/25, so that night is in-sample. Live nights are added the morning after their payouts are entered.`;
     }
 
