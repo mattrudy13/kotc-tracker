@@ -110,6 +110,17 @@ locked Oct 21 prediction stays v1. v0.1 built in one session. 2026-27's first pr
   once `promos-2026.json` has payouts. Three Kings nights and nights with unknown payouts are left out.
   2025-26 (model v2, share v2): favorite $237 (8/19), value $2,023 (3/19: Adebayo $1,100 on 3/10, Embiid $815
   on 12/30, Edwards $108), public = favorite.
+- **Picks and chalk (v0.4, 2026-10-21)**: Tonight leads with "Tonight's picks" (`topPicks`: top 3 by value,
+  2%+ chance, chalk left out), then the hero/model table, Best value (chalk tagged) and "Most picked" (top 5 by
+  share). Chalk (`isChalk`) = est. share ≥ `data/chalk.json` `shareCutoff` (0.10) or on its hand-kept list
+  (Luka, Giannis, Wemby, LeBron; Rudy's choice: both). "Filling in" (`isFillIn`) = `outPct` or `bumpIf.pct`
+  ≥ `MODEL.fillInMin` (0.05). `predict.mjs` saves `picks` (pids) and `chalk` per player; grade/backtest
+  record `noChalk` and `fillIn` (null pick = sits the night out). 2025-26: noChalk = value ($2,023, 3/19; the
+  value pick was never chalk), fillIn $1,915 (2/18: Embiid 12/30, Adebayo 3/10).
+  - Said plainly to Rudy and on the page: crowded ≠ overpriced. With share v2 every 2%+ player is ~1.00–1.10×
+    (Luka ≈1.00×), so leaving chalk out buys bigger payouts, not better odds, and the top picks are near-ties.
+    Rudy wanted more weight on teammates out; we flag/track it instead of inflating the fitted bump (would
+    break the win %). The 11/18/25 fit suggests the public already prices injuries.
 - **After each Wednesday**: check DK Network's tracking post for a full "what could've been" list and run
   `node scripts/parse-dk-post.mjs <url> --date YYYY-MM-DD --pool 5000000 [--write]`. Review the unmatched
   names, then rerun `fit-share.mjs`. If the coefficients move, update `MODEL.share`, bump its version and

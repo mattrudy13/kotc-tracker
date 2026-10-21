@@ -6,7 +6,9 @@ Done in v0.3 (model v2): teammates out and opponent defense. Back-to-backs were 
 2025-26 PRA (slope −0.03 fit, 0.00 holdout); defense split by position (G/F/C) did slightly worse than overall.
 
 1. **Better pick-share data.** The share model rests on one full night (11/18/25). Each new full "what could've
-   been" list improves it. Name value (rookie hype like Flagg's, LeBron) is the biggest miss.
+   been" list improves it. Name value (rookie hype like Flagg's, LeBron) is the biggest miss, and it's what a
+   real "overpicked" list needs: today the Most picked card almost never shows anyone under 0.80×. Once there
+   are a few full lists, also test whether the public is slow on late injury news (would make fill-ins real value).
 2. **Odds.** PRA prop lines from The Odds API (see te-tracker's `fetch-odds.mjs`), as a model input, to compare
    the model with the market, and as the likely best predictor of pick share.
 3. **Three Kings grading.** Grade Three Kings nights on the top 3 (the model already outputs `top3`).
