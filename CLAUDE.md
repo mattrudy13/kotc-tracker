@@ -92,24 +92,29 @@ v0.3 (model v2: teammates out + opponent defense) and v0.4 (value-first picks, c
 ## Value (v0.2, 2026-10-21)
 
 - The pool is split among everyone on the King, so a pick's value = chance ÷ estimated pick share.
-  `MODEL.share` (model.js, v2 with model v2): share ∝ win^0.915 × exp(0.021·season PRA avg − 0.003·last season's avg)
-  (v1 with model v1 was win^0.726, 0.032, 0.010: v2's win chances track the public even more closely),
-  a softmax over the **whole field** (`pickShares`, `addValue`). Fitted by `scripts/fit-share.mjs` on
-  `data/pickshare-<season>.json` (nights where DK listed every player's would-be payout; only 11/18/25 so far).
-  Finding: the public picks almost in proportion to win chance (prop lines carry the same info). Averages alone
-  fit worse (−3.78 vs −2.52 log-lik/pick), so value edges are small.
+  `MODEL.share` v3 (2026-10-21, model v2): share ∝ win^0.67 × exp(0.061·season PRA avg − 0.002·last season's
+  avg + 1.221·rookie), a softmax over the **whole field** (`pickShares`, `shareX`, `SHARE_KEYS`, `addValue`).
+  Fitted by `scripts/fit-share.mjs` (Newton, leave-one-night-out comparison) on `data/pickshare-2025.json`:
+  11/18/25 full (DK Network) + 9 partial top-PRA lists from u/DraftKings' r/DKAssist posts (text in
+  `data/posts/<night>.txt`; Rudy pastes them, Reddit blocks scripts). Partial lists are fitted on the listed
+  players' shares of one another (conditional likelihood), fair because DK chose them by PRA. Left out: the
+  two "most-bet" lists (12/30, 1/6: chosen by picks; `--with-mostbet` to include) and 3/3 (Three Kings).
+  Held out per pick: live v2 −2.087, refit base −2.093, +rookie −2.065 (kept), +form −2.099 (dropped).
+  Rookies draw ~3.4× the picks of a comparable veteran (Flagg, Queen, Fears); Durant is underpicked ~3.5×.
+  v2 had called Flagg a value pick 3 nights; v3 drops him. Value spread among 2%+ players widened from
+  0.90–4.43× to 0.41–5.34×, so Most picked can now show red overpicks. 2025-26 record unchanged by v3.
 - Rudy's choices: win + averages share model; a "Best value" card plus Pick % / Value columns (`.hide-sm` on
   phones); the value ratio is the main number, ≈$ secondary; the list needs a 2%+ chance (`MODEL.valueMinWin`);
   the record is on the Model page; the parser is run by hand.
 - Entrants (for the ≈$ figures): pool ÷ (payout × est. share of the winners), only when that share is ≥ 5%
-  (`impliedEntrants`). The 2025-26 median is 111k over 13 nights (with share v2). `predict.mjs` uses this
+  (`impliedEntrants`). The 2025-26 median is ~119k over 12 nights (with share v3). `predict.mjs` uses this
   season's own nights once there are 3 (graded into `result.entrants`), else last season's backtest median.
   The $5M Wednesday pool may draw more entrants, so the ≈$ figures may run high until then.
 - Record: `valuePicks()` (model favorite / best value / public favorite) and `pickReturn()` (DK's actual payout
   or 0). The backtest is in `backtest-2025.json` `valueRecord`; live nights are in `predictions` `result.value`
   once `promos-2026.json` has payouts. Three Kings nights and nights with unknown payouts are left out.
-  2025-26 (model v2, share v2): favorite $237 (8/19), value $2,023 (3/19: Adebayo $1,100 on 3/10, Embiid $815
-  on 12/30, Edwards $108), public = favorite.
+  2025-26 (model v2, share v3, DK's exact payouts from the Reddit posts): favorite $238 (8/20), value $2,025
+  (3/20: Adebayo $1,100 on 3/10, Embiid $817 on 12/30, Edwards $108), public = favorite.
 - **Picks and chalk (v0.4, 2026-10-21)**: Tonight leads with "Tonight's picks" (`topPicks`: top 3 by value,
   2%+ chance, chalk left out), then the hero/model table, Best value (chalk tagged) and "Most picked" (top 5 by
   share). Chalk (`isChalk`) = est. share ≥ `data/chalk.json` `shareCutoff` (0.10) or on its hand-kept list
@@ -117,8 +122,9 @@ v0.3 (model v2: teammates out + opponent defense) and v0.4 (value-first picks, c
   ≥ `MODEL.fillInMin` (0.05). `predict.mjs` saves `picks` (pids) and `chalk` per player; grade/backtest
   record `noChalk` and `fillIn` (null pick = sits the night out). 2025-26: noChalk = value ($2,023, 3/19; the
   value pick was never chalk), fillIn $1,915 (2/18: Embiid 12/30, Adebayo 3/10).
-  - Said plainly to Rudy and on the page: crowded ≠ overpriced. With share v2 every 2%+ player is ~1.00–1.10×
-    (Luka ≈1.00×), so leaving chalk out buys bigger payouts, not better odds, and the top picks are near-ties.
+  - Said plainly to Rudy and on the page: crowded ≠ overpriced. Established stars are picked roughly in line with
+    their chances (share v3, 10/21/26 slate: 2%+ players 1.03–1.20×, Luka 1.08×), so leaving chalk out mostly buys
+    bigger payouts; rookies are the real overpicks (~3.4×) and show red on Most picked.
     Rudy wanted more weight on teammates out; we flag/track it instead of inflating the fitted bump (would
     break the win %). The 11/18/25 fit suggests the public already prices injuries.
 - **After each Wednesday**: check DK Network's tracking post for a full "what could've been" list and run
