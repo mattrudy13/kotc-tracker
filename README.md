@@ -48,12 +48,15 @@ payout per winning bet.
 ## The model
 
 Projected PRA = recent minutes × PRA per minute (both weighted toward recent games and pulled toward
-last season), scaled by the game's betting total. Each night is then simulated 10,000 times. The constants
-were fit on October–January 2025-26 and tested on February–April. Rerun the fit and the backtest with:
+last season), scaled by the game's betting total, then adjusted for teammates who are out (relative to the
+player's recent games) and the opponent's PRA allowed (model v2). Each night is then simulated 10,000 times;
+a questionable teammate's bump only applies in the simulations where they sit. The constants were fit on
+October–January 2025-26 and tested on February–April. Rerun the fit and the backtest with:
 
 ```sh
-node scripts/backtest.mjs --fit   # grid search, prints the best constants
-node scripts/backtest.mjs         # writes data/backtest-2025.json
+node scripts/backtest.mjs --fit        # v2 context constants (teammates, defense), prints the best
+node scripts/backtest.mjs --fit-base   # v1 projection constants
+node scripts/backtest.mjs              # writes data/backtest-2025.json, incl. the ablation
 ```
 
 ## Run locally

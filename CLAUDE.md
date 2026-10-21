@@ -7,7 +7,8 @@ Condensed + Inter, dark top bar. Accent is royal purple, crowns are gold. README
 
 ## Status (2026-10-21)
 
-v0.1 built in one session. 2026-27's first promo night is Wed Oct 21 (11 games, $5M). The first prediction
+v0.3 (model v2: teammates out + opponent defense) on 2026-10-21, pushed after that night's first tip so the
+locked Oct 21 prediction stays v1. v0.1 built in one session. 2026-27's first promo night is Wed Oct 21 (11 games, $5M). The first prediction
 (Doncic 29%) was made at 12:49 PM ET. Oct 28 is the first promo night with the full automated cycle.
 
 ## Rudy's decisions (don't relitigate)
@@ -65,31 +66,50 @@ v0.1 built in one session. 2026-27's first promo night is Wed Oct 21 (11 games, 
   (total/230)^0.6. Blowout adjustment tested and left at 0 (worse at 0.006 and 0.012).
 - Noise: sd = 5.6 + 0.12 × mean, fitted on projection residuals for 2025-26 Oct–Jan, plus a shared game
   factor (sd 12%). Day-to-day players play 70% of the time (a guess; no historical injury data to fit it).
-- Backtest (`scripts/backtest.mjs`, fit Oct–Jan, holdout Feb–Apr 2025-26): the holdout top pick won 19/64
-  vs 16/64 for highest PRA average and 18/64 for highest projection. The King's average chance was 16%.
-  Calibration is close (the 35%+ bucket runs a bit hot: 43% predicted, 37% actual). Its lookahead: the
+- **v2 (2026-10-21): team context** (`newContext`/`addDay`/`contextAdjust`; the backtest feeds it day by day,
+  predict.mjs and fit-share build it with `contextBefore`). Regulars = players whose last game was for the
+  team, within its last 5 games, projected 10+ min. Missing share = their projected PRA that isn't playing.
+  - Teammates out: mean × (1 + 0.4 × (tonight's share − the player's weighted share in their own history
+    games, with a 15% baseline worth 1 game)). Relative, so long absences aren't double-counted. Healthy teams
+    get a small cut (≈0.94 early on): 2025-26 players on fully healthy teams scored ~5% under projection.
+  - Questionable regulars: `simulateSlate` draws sit/play once per sim; teammates get `k × share` only when
+    they sit. Saved per player: `bump` (multiplier), `outPct` (rise vs. everyone available, for the page tag),
+    `bumpIf` ({pid, pct} for the biggest questionable teammate). Tag shows at ≥3%.
+  - Defense: opponent's PRA allowed ÷ the plain projections of players who faced it, shrunk by 12,000
+    projected PRA (≈±2% in Dec, ±5% by Apr). By position (G/F/C) did slightly worse; `defByPos` is false.
+  - Fit (`backtest.mjs --fit`, v1 projection constants held fixed, RMSE on 28+ projections Oct–Jan): teamK 0.4,
+    defShrink 6000–12000 tied. Keep rule (Rudy): **a factor stays only if it lowers holdout log loss**.
+    Ablation, holdout log loss (top-pick wins): v1 2.703 (19/64), teammates 2.649 (17), defense 2.667 (19),
+    defense by position 2.672 (19), both 2.617 (18). Fit window 2.400 → 2.387. Both kept.
+  - Back-to-backs: no effect (slope −0.03 fit, 0.00 holdout), not built.
+  - Gap: the backtest's "missing" is who didn't play; live it's the injury report (late scratches unknown).
+- Backtest (`scripts/backtest.mjs`, fit Oct–Jan, holdout Feb–Apr 2025-26), v2: the holdout top pick won 18/64
+  vs 16/64 for highest PRA average and 18/64 for highest projection; fit window 35/101. The King's average
+  chance was 16.5%. Calibration is close (35%+ bucket: 43.6% predicted, 43.2% actual). Its lookahead: the
   candidates are the players who actually played.
 - Any model change changes predictions. Bump `MODEL.version`, rerun `backtest.mjs`, and say so on the Model page.
 
 ## Value (v0.2, 2026-10-21)
 
 - The pool is split among everyone on the King, so a pick's value = chance ÷ estimated pick share.
-  `MODEL.share` (model.js): share ∝ win^0.726 × exp(0.032·season PRA avg + 0.010·last season's avg),
+  `MODEL.share` (model.js, v2 with model v2): share ∝ win^0.915 × exp(0.021·season PRA avg − 0.003·last season's avg)
+  (v1 with model v1 was win^0.726, 0.032, 0.010: v2's win chances track the public even more closely),
   a softmax over the **whole field** (`pickShares`, `addValue`). Fitted by `scripts/fit-share.mjs` on
   `data/pickshare-<season>.json` (nights where DK listed every player's would-be payout; only 11/18/25 so far).
   Finding: the public picks almost in proportion to win chance (prop lines carry the same info). Averages alone
-  fit worse (−3.96 vs −2.57 log-lik/pick), so value edges are small (tonight's top ≈1.15×).
+  fit worse (−3.78 vs −2.52 log-lik/pick), so value edges are small.
 - Rudy's choices: win + averages share model; a "Best value" card plus Pick % / Value columns (`.hide-sm` on
   phones); the value ratio is the main number, ≈$ secondary; the list needs a 2%+ chance (`MODEL.valueMinWin`);
   the record is on the Model page; the parser is run by hand.
 - Entrants (for the ≈$ figures): pool ÷ (payout × est. share of the winners), only when that share is ≥ 5%
-  (`impliedEntrants`). The 2025-26 median is 113k over 11 nights (101k–135k on most). `predict.mjs` uses this
+  (`impliedEntrants`). The 2025-26 median is 111k over 13 nights (with share v2). `predict.mjs` uses this
   season's own nights once there are 3 (graded into `result.entrants`), else last season's backtest median.
   The $5M Wednesday pool may draw more entrants, so the ≈$ figures may run high until then.
 - Record: `valuePicks()` (model favorite / best value / public favorite) and `pickReturn()` (DK's actual payout
   or 0). The backtest is in `backtest-2025.json` `valueRecord`; live nights are in `predictions` `result.value`
   once `promos-2026.json` has payouts. Three Kings nights and nights with unknown payouts are left out.
-  2025-26: favorite $300 (9/19), value $1,182 (3/19, of which $1,100 is Adebayo's 83-point night), public = favorite.
+  2025-26 (model v2, share v2): favorite $237 (8/19), value $2,023 (3/19: Adebayo $1,100 on 3/10, Embiid $815
+  on 12/30, Edwards $108), public = favorite.
 - **After each Wednesday**: check DK Network's tracking post for a full "what could've been" list and run
   `node scripts/parse-dk-post.mjs <url> --date YYYY-MM-DD --pool 5000000 [--write]`. Review the unmatched
   names, then rerun `fit-share.mjs`. If the coefficients move, update `MODEL.share`, bump its version and
