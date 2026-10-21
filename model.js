@@ -122,6 +122,10 @@ const MODEL = {
   gameSd: 0.12, // shared game factor (pace/overtime), as a share of PRA
   dtdPlay: 0.7, // chance a day-to-day (questionable) player suits up
   sims: 10000,
+  // Public pick share: softmax of bWin·log(win) + bSeason·season PRA avg + bPrior·last season's avg.
+  // Fitted by scripts/fit-share.mjs on nights where DK published every player's payout.
+  share: { version: 1, bWin: 0.726, bSeason: 0.032, bPrior: 0.01, fallbackAvg: 15, minShareForEntrants: 0.05 },
+  valueMinWin: 0.02, // the best-value list skips long shots below this win chance
 };
 
 // Last season's per-player totals, used as the prior.
@@ -279,6 +283,89 @@ function predictDay(date, games, candidates, hist, prior, m = MODEL, sims = m.si
   return players.sort((a, b) => b.win - a.win || b.mean - a.mean);
 }
 
+// ---- Pick share and value ----
+//
+// The prize is split among everyone on the King, so a pick's value depends on how many people
+// pick the same player. The public's picks track the model's win chance closely (prop lines carry
+// the same information), with a lean toward big names, so the share estimate uses both.
+
+// Season PRA average so far and last season's, as the public sees them.
+function shareFeatures(games, prior, m = MODEL) {
+  const season = games?.length ? games.reduce((s, g) => s + g.pra, 0) / games.length : null;
+  const last = prior?.gp ? prior.pra / prior.gp : null;
+  return { season: season ?? last ?? m.share.fallbackAvg, last: last ?? season ?? m.share.fallbackAvg };
+}
+
+// Estimated share of entrants on each player. `players` need { win, season, last }; every
+// candidate that night must be included, since shares are relative to the whole field.
+function pickShares(players, m = MODEL) {
+  const s = m.share;
+  const z = players.map((p) => Math.exp(s.bWin * Math.log(Math.max(p.win, 1e-4)) + s.bSeason * p.season + s.bPrior * p.last));
+  const total = z.reduce((a, b) => a + b, 0);
+  return z.map((x) => x / total);
+}
+
+// Value fields for one player. On Three Kings nights each place has its own pool (pool ÷ 3), so the
+// chance that matters is finishing top 3.
+function valueFields(p, promo, entrants) {
+  const three = promo?.format === "three";
+  const chance = three ? p.top3 : p.win;
+  const poolPerPlace = promo ? promo.pool / (three ? 3 : 1) : null;
+  const estPayout = poolPerPlace && entrants && p.share ? poolPerPlace / (entrants * p.share) : null;
+  return {
+    value: p.share ? chance / p.share : null, // 1.0 = picked exactly in line with its chance
+    estPayout,
+    ev: estPayout != null ? chance * estPayout : null,
+  };
+}
+
+// Entrants implied by a winner's payout: everyone on the winners split the pool, so
+// bettors on them = pool ÷ payout, and entrants = that ÷ their combined estimated share.
+// Only trusted when the winners' share is big enough to be estimated well.
+function impliedEntrants(promo, shareOf, m = MODEL) {
+  if (promo?.format !== "king") return null;
+  const paid = (promo.winners ?? []).filter((w) => w.payout);
+  if (!paid.length || paid.length !== promo.winners.length) return null;
+  const share = paid.reduce((s, w) => s + (shareOf(w.pid) ?? 0), 0);
+  if (share < m.share.minShareForEntrants) return null;
+  return promo.pool / paid[0].payout / share;
+}
+
+// Adds share, value, estPayout and ev to every player of a night. `players` must be the whole field
+// (shares are relative to it) and need { pid, win, top3 }; `featsOf(pid)` gives shareFeatures().
+function addValue(players, featsOf, promo, entrants, m = MODEL) {
+  const withFeats = players.map((p) => ({ ...p, ...featsOf(p.pid) }));
+  const shares = pickShares(withFeats, m);
+  players.forEach((p, i) => {
+    p.share = shares[i];
+    Object.assign(p, valueFields(p, promo, entrants));
+  });
+  return players;
+}
+
+// The three ways of picking the Model page tracks: the model's favorite, the best value among
+// players with a real chance, and the public's favorite (highest estimated share).
+function valuePicks(players, m = MODEL) {
+  const top = (list, key) => list.reduce((a, b) => (b[key] > (a?.[key] ?? -Infinity) ? b : a), null)?.pid ?? null;
+  return {
+    favorite: top(players, "win"),
+    value: top(players.filter((p) => p.win >= m.valueMinWin && p.value != null), "value"),
+    public: top(players, "share"),
+  };
+}
+
+// Bonus bets one token on `pid` won: DK's payout if they were paid, else 0. Null when the night's
+// payouts aren't known (or it was a Three Kings night, which the record leaves out).
+function pickReturn(pid, promo) {
+  if (promo?.format !== "king" || !promo.winners?.length || promo.winners.some((w) => w.payout == null)) return null;
+  return promo.winners.find((w) => w.pid === pid)?.payout ?? 0;
+}
+
+const median = (xs) => {
+  const s = [...xs].sort((a, b) => a - b);
+  return s.length ? (s.length % 2 ? s[(s.length - 1) / 2] : (s[s.length / 2 - 1] + s[s.length / 2]) / 2) : null;
+};
+
 // ---- Promo days and crowns ----
 
 // The promo for date `d`, or null. Listed entries win; otherwise a season `default` (e.g. every
@@ -319,5 +406,6 @@ if (typeof module !== "undefined") {
     rowObjects, nameMap, finishedDays, dailyLeaders, seasonAverages,
     MODEL, priorTotals, historyBefore, projectPlayer, gameMean, playerSd, simulateSlate, predictDay,
     promoInfo, promoCrowns, playChance,
+    shareFeatures, pickShares, valueFields, addValue, valuePicks, pickReturn, impliedEntrants, median,
   };
 }

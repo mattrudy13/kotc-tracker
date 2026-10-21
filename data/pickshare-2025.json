@@ -1,0 +1,418 @@
+{
+  "season": 2025,
+  "notes": "Every player's would-be payout on nights DK published the full list. Bettors on a player = pool ÷ payout.",
+  "nights": [
+    {
+      "date": "2025-11-18",
+      "pool": 1000000,
+      "source": "https://dknetwork.draftkings.com/2025/11/18/tracking-the-leader-for-draftkings-king-of-the-court-tuesday-11-18-25/",
+      "payouts": [
+        {
+          "pid": "3945274",
+          "name": "Luka Doncic",
+          "payout": 30
+        },
+        {
+          "pid": "4432166",
+          "name": "Cade Cunningham",
+          "payout": 73
+        },
+        {
+          "pid": "3136193",
+          "name": "Devin Booker",
+          "payout": 119
+        },
+        {
+          "pid": "4701230",
+          "name": "Jalen Johnson",
+          "payout": 125
+        },
+        {
+          "pid": "4683021",
+          "name": "Deni Avdija",
+          "payout": 134
+        },
+        {
+          "pid": "4066259",
+          "name": "De'Aaron Fox",
+          "payout": 147
+        },
+        {
+          "pid": "4066336",
+          "name": "Lauri Markkanen",
+          "payout": 161
+        },
+        {
+          "pid": "1966",
+          "name": "LeBron James",
+          "payout": 198
+        },
+        {
+          "pid": "3975",
+          "name": "Stephen Curry",
+          "payout": 201
+        },
+        {
+          "pid": "3917376",
+          "name": "Jaylen Brown",
+          "payout": 336
+        },
+        {
+          "pid": "4566434",
+          "name": "Franz Wagner",
+          "payout": 680
+        },
+        {
+          "pid": "4433621",
+          "name": "Jalen Duren",
+          "payout": 868
+        },
+        {
+          "pid": "4278104",
+          "name": "Michael Porter Jr.",
+          "payout": 879
+        },
+        {
+          "pid": "4066457",
+          "name": "Austin Reaves",
+          "payout": 905
+        },
+        {
+          "pid": "4914336",
+          "name": "Shaedon Sharpe",
+          "payout": 1044
+        },
+        {
+          "pid": "4277961",
+          "name": "Jaren Jackson Jr.",
+          "payout": 2284
+        },
+        {
+          "pid": "4066354",
+          "name": "Payton Pritchard",
+          "payout": 2619
+        },
+        {
+          "pid": "3078576",
+          "name": "Derrick White",
+          "payout": 3126
+        },
+        {
+          "pid": "3155526",
+          "name": "Dillon Brooks",
+          "payout": 3745
+        },
+        {
+          "pid": "4433627",
+          "name": "Keyonte George",
+          "payout": 4292
+        },
+        {
+          "pid": "4066320",
+          "name": "Desmond Bane",
+          "payout": 4386
+        },
+        {
+          "pid": "6430",
+          "name": "Jimmy Butler III",
+          "payout": 4587
+        },
+        {
+          "pid": "4395630",
+          "name": "Devin Vassell",
+          "payout": 4739
+        },
+        {
+          "pid": "4869342",
+          "name": "Dyson Daniels",
+          "payout": 4808
+        },
+        {
+          "pid": "4395723",
+          "name": "Keldon Johnson",
+          "payout": 5182
+        },
+        {
+          "pid": "4600663",
+          "name": "Zach Edey",
+          "payout": 5556
+        },
+        {
+          "pid": "4432165",
+          "name": "Jalen Suggs",
+          "payout": 13159
+        },
+        {
+          "pid": "6589",
+          "name": "Draymond Green",
+          "payout": 14286
+        },
+        {
+          "pid": "4683766",
+          "name": "Isaiah Collier",
+          "payout": 14286
+        },
+        {
+          "pid": "4278067",
+          "name": "Nic Claxton",
+          "payout": 15625
+        },
+        {
+          "pid": "4903027",
+          "name": "Cedric Coward",
+          "payout": 15873
+        },
+        {
+          "pid": "4873138",
+          "name": "Ace Bailey",
+          "payout": 15873
+        },
+        {
+          "pid": "4432171",
+          "name": "Moses Moody",
+          "payout": 16667
+        },
+        {
+          "pid": "4593125",
+          "name": "Santi Aldama",
+          "payout": 18868
+        },
+        {
+          "pid": "4066648",
+          "name": "Rui Hachimura",
+          "payout": 19232
+        },
+        {
+          "pid": "4351851",
+          "name": "Anfernee Simons",
+          "payout": 19608
+        },
+        {
+          "pid": "4278129",
+          "name": "Deandre Ayton",
+          "payout": 19608
+        },
+        {
+          "pid": "3064560",
+          "name": "Luke Kornet",
+          "payout": 22223
+        },
+        {
+          "pid": "4683689",
+          "name": "Jordan Walsh",
+          "payout": 23257
+        },
+        {
+          "pid": "4277847",
+          "name": "Wendell Carter Jr.",
+          "payout": 24392
+        },
+        {
+          "pid": "4431680",
+          "name": "Onyeka Okongwu",
+          "payout": 27778
+        },
+        {
+          "pid": "4278039",
+          "name": "Nickeil Alexander-Walker",
+          "payout": 27778
+        },
+        {
+          "pid": "4278585",
+          "name": "Collin Gillespie",
+          "payout": 30304
+        },
+        {
+          "pid": "4701232",
+          "name": "Mark Williams",
+          "payout": 31250
+        },
+        {
+          "pid": "4397227",
+          "name": "Vince Williams Jr.",
+          "payout": 38462
+        },
+        {
+          "pid": "4684742",
+          "name": "Ausar Thompson",
+          "payout": 41667
+        },
+        {
+          "pid": "2583632",
+          "name": "Royce O'Neale",
+          "payout": 43480
+        },
+        {
+          "pid": "3133602",
+          "name": "Svi Mykhailiuk",
+          "payout": 45456
+        },
+        {
+          "pid": "4592479",
+          "name": "Julian Champagnie",
+          "payout": 47620
+        },
+        {
+          "pid": "4397424",
+          "name": "Neemias Queta",
+          "payout": 50000
+        },
+        {
+          "pid": "4610139",
+          "name": "Jeremy Sochan",
+          "payout": 50000
+        },
+        {
+          "pid": "4897262",
+          "name": "Will Richard",
+          "payout": 55556
+        },
+        {
+          "pid": "4431736",
+          "name": "Toumani Camara",
+          "payout": 58824
+        },
+        {
+          "pid": "5105565",
+          "name": "Donovan Clingan",
+          "payout": 62500
+        },
+        {
+          "pid": "4278076",
+          "name": "Nick Richards",
+          "payout": 66667
+        },
+        {
+          "pid": "4712849",
+          "name": "Anthony Black",
+          "payout": 71429
+        },
+        {
+          "pid": "3907823",
+          "name": "Terance Mann",
+          "payout": 71429
+        },
+        {
+          "pid": "4709138",
+          "name": "Brandin Podziemski",
+          "payout": 76923
+        },
+        {
+          "pid": "6578",
+          "name": "Harrison Barnes",
+          "payout": 83334
+        },
+        {
+          "pid": "4277951",
+          "name": "Luka Garza",
+          "payout": 83334
+        },
+        {
+          "pid": "4578893",
+          "name": "Vit Krejci",
+          "payout": 90910
+        },
+        {
+          "pid": "3157465",
+          "name": "Duncan Robinson",
+          "payout": 100000
+        },
+        {
+          "pid": "2489663",
+          "name": "Kelly Olynyk",
+          "payout": 111112
+        },
+        {
+          "pid": "4888725",
+          "name": "Ryan Dunn",
+          "payout": 125000
+        },
+        {
+          "pid": "4594326",
+          "name": "Kris Murray",
+          "payout": 125000
+        },
+        {
+          "pid": "2990992",
+          "name": "Marcus Smart",
+          "payout": 125000
+        },
+        {
+          "pid": "5175643",
+          "name": "Egor Demin",
+          "payout": 142858
+        },
+        {
+          "pid": "5112087",
+          "name": "Jaylen Wells",
+          "payout": 142858
+        },
+        {
+          "pid": "3449",
+          "name": "Kevin Love",
+          "payout": 166667
+        },
+        {
+          "pid": "3213",
+          "name": "Al Horford",
+          "payout": 166667
+        },
+        {
+          "pid": "4433083",
+          "name": "Cam Spencer",
+          "payout": 166667
+        },
+        {
+          "pid": "3134903",
+          "name": "Gary Payton II",
+          "payout": 166667
+        },
+        {
+          "pid": "4592691",
+          "name": "Jake LaRavia",
+          "payout": 166667
+        },
+        {
+          "pid": "4066211",
+          "name": "Robert Williams III",
+          "payout": 166667
+        },
+        {
+          "pid": "4348700",
+          "name": "Goga Bitadze",
+          "payout": 200000
+        },
+        {
+          "pid": "2990984",
+          "name": "Buddy Hield",
+          "payout": 200000
+        },
+        {
+          "pid": "4278402",
+          "name": "Jordan Goodwin",
+          "payout": 200000
+        },
+        {
+          "pid": "4397179",
+          "name": "Tyrese Martin",
+          "payout": 250000
+        },
+        {
+          "pid": "3146557",
+          "name": "Jock Landale",
+          "payout": 250000
+        },
+        {
+          "pid": "5105839",
+          "name": "Brice Sensabaugh",
+          "payout": 250000
+        },
+        {
+          "pid": "4065654",
+          "name": "Jonathan Isaac",
+          "payout": 333334
+        }
+      ]
+    }
+  ]
+}
