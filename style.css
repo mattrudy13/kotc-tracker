@@ -234,8 +234,11 @@ a.day { color: inherit; font-weight: 600; }
 }
 @media (max-width: 480px) {
   .grid .hs, .grid .hs-x { display: none; }
+  /* Columns repeated elsewhere on the page (e.g. value, shown in its own card) drop out on phones. */
+  .grid .hide-sm { display: none; }
+  .grid th, .grid td { padding-left: .25rem; padding-right: .25rem; }
   /* Let names and other text cells wrap so the key tables fit a phone without sideways scrolling. */
-  .grid td.l { white-space: normal; min-width: 7rem; }
+  .grid td.l { white-space: normal; min-width: 5rem; }
   .grid th { white-space: normal; }
   .grid td.wrap { min-width: 12rem; }
   .calib .row { grid-template-columns: 5rem minmax(0, 1fr) 6rem; }

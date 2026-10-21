@@ -76,6 +76,12 @@ function injuryTag(status) {
   return ` <span class="inj${short === "O" || short === "D" ? "" : " q"}" aria-label="${esc(status)}">${short}</span>`;
 }
 const crown = `<span class="crown" aria-hidden="true">♛</span>`;
+// Value ratio (win chance ÷ estimated pick share): green from 1.2, red below 0.8, plain otherwise.
+function valueCell(v) {
+  if (v == null || !Number.isFinite(v)) return `<span class="muted">–</span>`;
+  return `<span class="${v >= 1.2 ? "pos" : v < 0.8 ? "neg" : ""}">${v.toFixed(2)}×</span>`;
+}
+const approxMoney = (n) => (n == null ? "–" : `≈${fmt.money(n)}`);
 
 // Sortable table: columns are { key, label, fmt, cls, sort, asc, nosort }. Sort state lives on `state`.
 function renderTable(el, rows, cols, state, onSort, empty = "Nothing to show yet.") {

@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="style.css?v=63da8fbb">
+  <link rel="stylesheet" href="style.css?v=7ec3d288">
 </head>
 <body>
   <header class="topbar">
@@ -47,8 +47,8 @@
     <footer>Data from ESPN. Not affiliated with DraftKings.</footer>
   </main>
 
-  <script src="model.js?v=50a4b540"></script>
-  <script src="common.js?v=dda2d96a"></script>
+  <script src="model.js?v=eef7c528"></script>
+  <script src="common.js?v=88507ad4"></script>
   <script>
     const $ = (id) => document.getElementById(id);
 
@@ -116,12 +116,20 @@
           { key: "win", label: "Win", cls: "key", fmt: (r) => fmt.pct(r.win) },
           { key: "top3", label: "Top 3", fmt: (r) => fmt.pct(r.top3) },
           { key: "pra", label: "Actual", fmt: (r) => r.pra ?? actual[r.pid] ?? `<span class="muted">${day?.final ? "–" : ""}</span>` },
+          // Promo nights: estimated pick share and value (see the Tonight page for what they mean).
+          ...(list.some((x) => x.share != null)
+            ? [
+                { key: "share", label: "Pick %", cls: "hide-sm", fmt: (r) => fmt.pct(r.share) },
+                { key: "value", label: "Value", cls: "hide-sm", fmt: (r) => valueCell(r.value) },
+              ]
+            : []),
         ], { nosort: true }, () => {});
         const res = live?.result ?? b;
         $("model-note").innerHTML = [
           res?.pKing != null ? `The model gave the King <b>${fmt.pct(res.pKing)}</b>${res.rank ? ` and ranked them <b>#${res.rank}</b>` : ", outside its top 25"}.` : "",
           live ? "" : `This is a replay using only games before this date; the players who actually played stand in for the final injury report.`,
           live && day ? `<b>Actual</b> is shown only for players in that night's top 10.` : "",
+          list.some((x) => x.share != null) ? `<b>Pick %</b> is the estimated share of entrants picking the player; <b>Value</b> is win chance ÷ that share (1.00× = picked in line with the chance).` : "",
         ].filter(Boolean).join(" ");
       }
       if (!day && !list) $("sub").innerHTML += ` No games or predictions for this date.`;

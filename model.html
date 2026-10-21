@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="style.css?v=63da8fbb">
+  <link rel="stylesheet" href="style.css?v=7ec3d288">
 </head>
 <body>
   <header class="topbar">
@@ -49,6 +49,12 @@
       <p class="note" id="bt-note"></p>
     </section>
 
+    <section class="card" id="value-card" hidden>
+      <div class="card-head"><h2>Value picks</h2><span class="updated">Bonus bets won per token</span></div>
+      <div class="table-wrap"><div id="value"></div></div>
+      <p class="note" id="value-note"></p>
+    </section>
+
     <section class="card">
       <div class="card-head"><h2>Are the percentages honest?</h2></div>
       <div class="calib" id="calib"></div>
@@ -83,8 +89,8 @@
     <footer>Data from ESPN. Not affiliated with DraftKings.</footer>
   </main>
 
-  <script src="model.js?v=50a4b540"></script>
-  <script src="common.js?v=dda2d96a"></script>
+  <script src="model.js?v=eef7c528"></script>
+  <script src="common.js?v=88507ad4"></script>
   <script>
     const $ = (id) => document.getElementById(id);
     const tile = (k, v, s) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`;
@@ -99,6 +105,7 @@
       ]);
       renderLive(current, pred, L, promos);
       if (bt) renderBacktest(bt);
+      renderValue(current, bt, pred);
     }
 
     function renderLive(season, pred, L, promos) {
@@ -162,6 +169,35 @@
           return `<div class="row"><span>${fmt.pct0(c.lo)}–${fmt.pct0(c.hi)}</span><div class="track"><i style="width:${w}%"></i><b style="left:calc(${a}% - 1px)"></b></div><span>${fmt.pct(c.pred)} → <b>${fmt.pct(c.actual)}</b> <span class="muted">n=${c.n.toLocaleString()}</span></span></div>`;
         })
         .join("");
+    }
+
+    // One token a night on each strategy's pick, paid at DK's actual payout when that player won.
+    function renderValue(season, bt, pred) {
+      const live = Object.values(pred?.days ?? {}).map((x) => x.result?.value).filter(Boolean);
+      const rec = (list) => {
+        const out = {};
+        for (const k of ["favorite", "value", "public"]) out[k] = { nights: list.length, wins: list.filter((v) => v.returns[k] > 0).length, total: list.reduce((s, v) => s + v.returns[k], 0) };
+        return out;
+      };
+      const liveRec = rec(live);
+      const btRec = bt?.valueRecord;
+      if (!btRec && !live.length) return;
+      $("value-card").hidden = false;
+      const names = { favorite: "Model's favorite", value: "Best value (2%+ chance)", public: "Public favorite (most picked)" };
+      const cell = (r) => (r?.nights ? `${fmt.money(r.total)}<small class="ln">${r.wins} of ${r.nights} won · ${fmt.money(r.total / r.nights)} a night</small>` : `<span class="muted">–</span>`);
+      renderTable($("value"), Object.keys(names).map((k) => ({ k })), [
+        { key: "k", label: "Always pick", cls: "l", fmt: (r) => `<b>${names[r.k]}</b>` },
+        { key: "bt", label: `${bt?.label ?? "Last season"} <small class="ln">backtest</small>`, fmt: (r) => cell(btRec?.[r.k]) },
+        { key: "live", label: `${seasonLabel(season)} <small class="ln">live</small>`, cls: "key", fmt: (r) => cell(liveRec[r.k]) },
+      ], { nosort: true }, () => {});
+      const n = btRec?.favorite.nights ?? 0;
+      const adebayo = (bt?.days ?? []).find((x) => x.d === "2026-03-10")?.value?.returns?.value;
+      $("value-note").innerHTML = `
+        Each strategy puts one token on one player each promo night and wins DK's actual payout when that player is King. A night only counts
+        once DK's payouts are known, and Three Kings nights are left out${bt ? ` (${n} of last season's nights count)` : ""}.
+        The public favorite is almost always the model's favorite too, so those rows usually match.
+        ${adebayo ? `Last season's value total rests mostly on one night: Bam Adebayo's 83-point game on 3/10/26 paid ${fmt.money(adebayo)}. One hit like that swings a season, so read this as a sanity check, not proof.` : ""}
+        The pick-share estimate was fitted on 11/18/25, so that night is in-sample. Live nights are added the morning after their payouts are entered.`;
     }
 
     main().catch(showError);
