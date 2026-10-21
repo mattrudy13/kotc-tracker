@@ -7,6 +7,7 @@
 //   node scripts/parse-dk-post.mjs <url> --date 2026-10-28 --pool 5000000 --write  # add to data/pickshare-<season>.json
 //   node scripts/parse-dk-post.mjs --file post.txt --date 2026-03-10 --source <reddit url> [--write]
 //   pbpaste | node scripts/parse-dk-post.mjs --file - --date 2026-03-10            # text from stdin
+//   (--list topPra|mostBet overrides the guess at how DK chose the players)
 //
 // --pool defaults to the night's pool in data/promos-<season>.json. Lists that don't cover everyone who
 // played are partial: they can't be used for fitting, since shares need the whole field. Pass --partial
@@ -39,7 +40,8 @@ try {
   promos = await readData(`promos-${season}.json`);
 } catch {}
 const promo = promos?.promos?.find((p) => p.date === date);
-let pool = Number(opt("pool")) || promo?.pool || (promos?.default && date >= promos.default.from ? promos.default.pool : 0);
+// Three Kings nights pay each place from its own pool, so a list's payouts are against pool ÷ 3.
+let pool = Number(opt("pool")) || (promo ? promo.pool / (promo.format === "three" ? 3 : 1) : 0) || (promos?.default && date >= promos.default.from ? promos.default.pool : 0);
 if (!pool) {
   console.error(`no pool for ${date} in promos-${season}.json; pass --pool <dollars>`);
   process.exit(1);
@@ -53,6 +55,9 @@ else {
   raw = await res.text();
 }
 const source = opt("source") ?? url ?? `pasted text (${file === "-" ? "stdin" : path.basename(file)})`;
+// How DK chose the players matters for fitting: "top PRA" lists are picked by the game's result,
+// "most-bet" lists by the picks themselves. --list overrides the guess from the post's wording.
+const listType = opt("list") ?? (/most[- ]bet/i.test(raw) ? "mostBet" : "topPra");
 const decode = (s) =>
   s.replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(+n)).replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)))
     .replace(/&amp;/g, "&").replace(/&nbsp;/g, " ").replace(/&[lr]squo;/g, "'").replace(/&[a-z]+;/g, " ");
@@ -69,7 +74,8 @@ const lines = decode(
 // "Luka Doncic — $30" / "Trey Murphy III – $3,031 in Bonus Bets" / "Luka Doncic: $30" / "| Luka Doncic | $30 |"
 // / "Trey Murphy III - 52 PRA - $3,031 in Bonus Bets" (Reddit's top-PRA lists also give the PRA)
 const sep = "(?:[—–:|-] ?)+";
-const re = new RegExp(`(\\p{Lu}[\\p{L}.'’-]+(?: \\p{Lu}[\\p{L}.'’-]+){1,3}) ?${sep}(?:(\\d+) PRA ?${sep})?\\$([\\d,]+(?:\\.\\d+)?)`, "gu");
+// Names: capitalized words, plus lowercase particles inside a name ("Tristan da Silva").
+const re = new RegExp(`(\\p{Lu}[\\p{L}.'’-]+(?: (?:(?:da|de|del|der|di|du|la|le|van|von) )?\\p{Lu}[\\p{L}.'’-]+){1,3}) ?${sep}(?:(\\d+) PRA ?${sep})?\\$([\\d,]+(?:\\.\\d+)?)`, "gu");
 const pairs = lines.flatMap((l) => [...l.matchAll(re)]).map((m) => ({
   name: m[1].replace(/’/g, "'"),
   pra: m[2] != null ? Number(m[2]) : undefined,
@@ -130,7 +136,7 @@ for (const w of promo?.winners ?? []) {
   }
 }
 const bettors = payouts.reduce((s, p) => s + pool / p.payout, 0);
-console.log(`${date}: ${unique.length} players found, ${payouts.length} matched, ≈${Math.round(bettors).toLocaleString()} entrants on them ($${pool.toLocaleString()} pool)`);
+console.log(`${date} (${listType} list): ${unique.length} players found, ${payouts.length} matched, ≈${Math.round(bettors).toLocaleString()} entrants on them ($${pool.toLocaleString()} pool)`);
 for (const p of [...payouts].sort((a, b) => a.payout - b.payout).slice(0, 10)) console.log(`  ${p.name.padEnd(26)} $${p.payout.toLocaleString()}  ≈${Math.round(pool / p.payout).toLocaleString()} bettors`);
 if (unmatched.length) console.log(`unmatched (add by hand with the ESPN id): ${unmatched.join(", ")}`);
 if (absent.length) console.log(`listed but didn't play on ${date} (check the date): ${absent.join(", ")}`);
@@ -157,7 +163,7 @@ if (args.includes("--write")) {
     store = { season, notes: "Every player's would-be payout on nights DK published the full list. Bettors on a player = pool ÷ payout.", nights: [] };
   }
   store.nights = store.nights.filter((n) => n.date !== date);
-  store.nights.push({ date, pool, source, partial: args.includes("--partial") || undefined, payouts });
+  store.nights.push({ date, pool, source, partial: args.includes("--partial") || undefined, list: args.includes("--partial") ? listType : undefined, payouts });
   store.nights.sort((a, b) => (a.date < b.date ? -1 : 1));
   await writeFile(file, JSON.stringify(store, null, 2) + "\n");
   console.log(`wrote ${path.relative(process.cwd(), file)}`);
