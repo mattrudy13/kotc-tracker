@@ -148,6 +148,8 @@ Run `node scripts/stamp-assets.mjs`. `check-assets.yml` fails the push otherwise
   in light and dark mode at 1280 and 375 px, with no console errors and no page-level sideways scroll. Wide
   stat tables scroll inside `.table-wrap` on phones. The home model table fits at 375.
 - Test predict/grade on a scratch copy of the repo with `NOW=<iso>`; the scripts write to `data/` next to themselves.
+- Playwright's Chromium here can't reach ESPN from the page ("Failed to fetch", reported as CORS; curl with the
+  same headers works). Check the live leaderboard in real Chrome instead (it worked on 10/21/26).
 - Theme: follows the system, with a top-bar toggle (`data-theme` on `<html>`, saved in localStorage).
 - **Tooltips only for definitions**, by Rudy's request. None are used: everything is visible text or a page note.
 - Copy is pronoun-neutral ("the player").
