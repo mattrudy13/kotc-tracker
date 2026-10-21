@@ -19,6 +19,18 @@ Site: https://mattrudy13.github.io/kotc-tracker/
   baselines, a calibration chart, and how the model works.
 - **Night** (`day.html?d=YYYY-MM-DD`): one night's top 10 and the model's list.
 
+## Best value
+
+The prize is split among everyone who picked the King, so a popular favorite pays little. The Tonight page
+estimates each player's share of picks and shows **value = win chance ÷ pick share** (1.00× = fair),
+plus a rough dollar value per token. The share model is fitted on nights where DK published every player's
+would-be payout (`data/pickshare-<season>.json`):
+
+```sh
+node scripts/parse-dk-post.mjs <dk-network-url> --date YYYY-MM-DD --pool 5000000 --write
+node scripts/fit-share.mjs        # prints coefficients for MODEL.share in model.js
+```
+
 ## Data and automation
 
 All data comes from ESPN's public site API (no key). `.github/workflows/update-data.yml` runs every

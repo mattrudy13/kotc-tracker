@@ -19,7 +19,7 @@ v0.1 built in one session. 2026-27's first promo night is Wed Oct 21 (11 games, 
   Refresh about every 2 h; the graded prediction is the last one before the first tip-off.
 - Three Kings nights: **only #1 gets a crown**. All three are still listed on History and the night's page.
 - Regular season + NBA Cup only. No playoffs, play-in or All-Star.
-- No betting odds yet (maybe later). Pick-share/value angle: declined for v0.1.
+- No betting odds yet (maybe later). Value angle added in v0.2 (see Value).
 - Home page = next promo night.
 
 ## Data
@@ -70,6 +70,30 @@ v0.1 built in one session. 2026-27's first promo night is Wed Oct 21 (11 games, 
   Calibration is close (the 35%+ bucket runs a bit hot: 43% predicted, 37% actual). Its lookahead: the
   candidates are the players who actually played.
 - Any model change changes predictions. Bump `MODEL.version`, rerun `backtest.mjs`, and say so on the Model page.
+
+## Value (v0.2, 2026-10-21)
+
+- The pool is split among everyone on the King, so a pick's value = chance ÷ estimated pick share.
+  `MODEL.share` (model.js): share ∝ win^0.726 × exp(0.032·season PRA avg + 0.010·last season's avg),
+  a softmax over the **whole field** (`pickShares`, `addValue`). Fitted by `scripts/fit-share.mjs` on
+  `data/pickshare-<season>.json` (nights where DK listed every player's would-be payout; only 11/18/25 so far).
+  Finding: the public picks almost in proportion to win chance (prop lines carry the same info). Averages alone
+  fit worse (−3.96 vs −2.57 log-lik/pick), so value edges are small (tonight's top ≈1.15×).
+- Rudy's choices: win + averages share model; a "Best value" card plus Pick % / Value columns (`.hide-sm` on
+  phones); the value ratio is the main number, ≈$ secondary; the list needs a 2%+ chance (`MODEL.valueMinWin`);
+  the record is on the Model page; the parser is run by hand.
+- Entrants (for the ≈$ figures): pool ÷ (payout × est. share of the winners), only when that share is ≥ 5%
+  (`impliedEntrants`). The 2025-26 median is 113k over 11 nights (101k–135k on most). `predict.mjs` uses this
+  season's own nights once there are 3 (graded into `result.entrants`), else last season's backtest median.
+  The $5M Wednesday pool may draw more entrants, so the ≈$ figures may run high until then.
+- Record: `valuePicks()` (model favorite / best value / public favorite) and `pickReturn()` (DK's actual payout
+  or 0). The backtest is in `backtest-2025.json` `valueRecord`; live nights are in `predictions` `result.value`
+  once `promos-2026.json` has payouts. Three Kings nights and nights with unknown payouts are left out.
+  2025-26: favorite $300 (9/19), value $1,182 (3/19, of which $1,100 is Adebayo's 83-point night), public = favorite.
+- **After each Wednesday**: check DK Network's tracking post for a full "what could've been" list and run
+  `node scripts/parse-dk-post.mjs <url> --date YYYY-MM-DD --pool 5000000 [--write]`. Review the unmatched
+  names, then rerun `fit-share.mjs`. If the coefficients move, update `MODEL.share`, bump its version and
+  rerun `backtest.mjs`. Tweet lists cut off with "…" are partial (`--partial`) and aren't fitted.
 
 ## Before every commit that touches model.js, common.js or style.css
 
