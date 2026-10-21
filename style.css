@@ -170,6 +170,10 @@ table.grid { border-collapse: collapse; width: 100%; font-variant-numeric: tabul
 .inj { display: inline-block; font-size: .66rem; font-weight: 800; letter-spacing: .03em; line-height: 1; padding: .15rem .3rem; border-radius: 4px; vertical-align: 1px; color: #fff; background: var(--neg); }
 .inj.q { background: #d18b00; }
 .bump { color: var(--pos); font-weight: 600; white-space: nowrap; }
+.picks { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: .6rem; }
+.pick .who { margin: .45rem 0 .5rem; }
+.pick-kv { display: flex; flex-wrap: wrap; gap: .25rem .9rem; font-size: .85rem; color: var(--muted); }
+.pick-kv b { color: var(--fg); font-variant-numeric: tabular-nums; }
 
 .hs { border-radius: 50%; background: var(--surface-2); object-fit: cover; flex: none; border: 1px solid var(--border); }
 .hs-x { display: inline-block; width: 36px; height: 36px; }

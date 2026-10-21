@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="style.css?v=71287600">
+  <link rel="stylesheet" href="style.css?v=cdba4991">
 </head>
 <body>
   <header class="topbar">
@@ -102,7 +102,7 @@
     <footer>Data from ESPN. Not affiliated with DraftKings.</footer>
   </main>
 
-  <script src="model.js?v=589d5de9"></script>
+  <script src="model.js?v=aebaedbd"></script>
   <script src="common.js?v=5b32a8b4"></script>
   <script>
     const $ = (id) => document.getElementById(id);
@@ -207,14 +207,24 @@
       const live = Object.values(pred?.days ?? {}).map((x) => x.result?.value).filter(Boolean);
       const rec = (list) => {
         const out = {};
-        for (const k of ["favorite", "value", "public"]) out[k] = { nights: list.length, wins: list.filter((v) => v.returns[k] > 0).length, total: list.reduce((s, v) => s + v.returns[k], 0) };
+        // A strategy with no pick on a night (no one filling in) sits that night out.
+        for (const k of ["favorite", "value", "noChalk", "fillIn", "public"]) {
+          const mine = list.filter((v) => v.returns[k] != null);
+          out[k] = { nights: mine.length, wins: mine.filter((v) => v.returns[k] > 0).length, total: mine.reduce((s, v) => s + v.returns[k], 0) };
+        }
         return out;
       };
       const liveRec = rec(live);
       const btRec = bt?.valueRecord;
       if (!btRec && !live.length) return;
       $("value-card").hidden = false;
-      const names = { favorite: "Model's favorite", value: "Best value (2%+ chance)", public: "Public favorite (most picked)" };
+      const names = {
+        favorite: "Model's favorite",
+        value: "Best value (2%+ chance)",
+        noChalk: "Best value, chalk left out",
+        fillIn: "Best value, filling in",
+        public: "Public favorite (most picked)",
+      };
       const cell = (r) => (r?.nights ? `${fmt.money(r.total)}<small class="ln">${r.wins} of ${r.nights} won · ${fmt.money(r.total / r.nights)} a night</small>` : `<span class="muted">–</span>`);
       renderTable($("value"), Object.keys(names).map((k) => ({ k })), [
         { key: "k", label: "Always pick", cls: "l", fmt: (r) => `<b>${names[r.k]}</b>` },
@@ -227,6 +237,9 @@
         Each strategy puts one token on one player each promo night and wins DK's actual payout when that player is King. A night only counts
         once DK's payouts are known, and Three Kings nights are left out${bt ? ` (${n} of last season's nights count)` : ""}.
         The public favorite is almost always the model's favorite too, so those rows usually match.
+        <b>Chalk left out</b> is the #1 pick on the Tonight page: chalk is anyone expected to draw 10%+ of the picks plus a hand-kept list
+        (Luka Doncic, Giannis Antetokounmpo, Victor Wembanyama, LeBron James), applied to last season too.
+        <b>Filling in</b> only picks among players whose projection is up 5%+ because teammates are out, and sits out nights with none.
         ${adebayo ? `Last season's value total rests on a few long-shot nights; Bam Adebayo's 83-point game on 3/10/26 alone paid ${fmt.money(adebayo)}. One hit like that swings a season, so read this as a sanity check, not proof.` : ""}
         The pick-share estimate was fitted on 11/18/25, so that night is in-sample. Live nights are added the morning after their payouts are entered.`;
     }

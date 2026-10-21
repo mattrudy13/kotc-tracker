@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="style.css?v=71287600">
+  <link rel="stylesheet" href="style.css?v=cdba4991">
 </head>
 <body>
   <header class="topbar">
@@ -31,6 +31,12 @@
       <p class="sub" id="sub">The player with the most points + rebounds + assists (PRA) on the night wins. <span class="updated" id="updated"></span></p>
     </div>
     <div id="status" hidden></div>
+
+    <section class="card" id="picks-card" hidden>
+      <div class="card-head"><h2 id="picks-title">Tonight's picks</h2><span class="updated" id="picks-sub"></span></div>
+      <div class="picks" id="picks"></div>
+      <p class="note" id="picks-note"></p>
+    </section>
 
     <section class="card" id="hero" hidden>
       <div class="hero">
@@ -69,6 +75,12 @@
       <p class="note" id="value-note"></p>
     </section>
 
+    <section class="card" id="most-card" hidden>
+      <div class="card-head"><h2>Most picked</h2><span class="updated">Crowded, not always overpriced</span></div>
+      <div class="table-wrap"><div id="most"></div></div>
+      <p class="note" id="most-note"></p>
+    </section>
+
     <section class="card">
       <div class="card-head"><h2>This season's Kings</h2><a href="season.html">Full season →</a></div>
       <div class="table-wrap"><div id="recent"></div></div>
@@ -77,21 +89,23 @@
     <footer>Data from ESPN, refreshed automatically during the season. Not affiliated with DraftKings. Promo details from DK Network posts.</footer>
   </main>
 
-  <script src="model.js?v=589d5de9"></script>
+  <script src="model.js?v=aebaedbd"></script>
   <script src="common.js?v=5b32a8b4"></script>
   <script>
     const $ = (id) => document.getElementById(id);
-    let pred, promos, leaders, names, teams, target, liveTimer;
+    let pred, promos, leaders, chalk, names, teams, target, liveTimer;
     // Sort state for the two tables (click a column header to sort).
     const modelSort = { sort: "win", dir: "desc" };
     const valueSort = { sort: "value", dir: "desc" };
+    const mostSort = { sort: "share", dir: "desc" };
 
     async function main() {
       const { current } = await getSeasons();
-      [pred, promos, leaders] = await Promise.all([
+      [pred, promos, leaders, chalk] = await Promise.all([
         getData(`predictions-${current}.json`, { optional: true }),
         getData(`promos-${current}.json`, { optional: true }),
         getData(`leaders-${current}.json`, { optional: true }),
+        getData("chalk.json"),
       ]);
       names = { ...(leaders?.names ?? {}), ...(pred?.names ?? {}) };
       teams = { ...(leaders?.teams ?? {}), ...(pred?.teams ?? {}) };
@@ -188,7 +202,9 @@
           draw
         );
       draw();
+      renderPicks(p);
       renderValue(p);
+      renderMost(p);
       const out = (p.out ?? []).map((o) => `${playerName(names, o.pid)} (${esc(o.tm)})`);
       $("out-note").innerHTML = out.length ? `<b>Ruled out:</b> ${out.join(", ")}.` : "";
     }
@@ -213,7 +229,7 @@
           rows,
           [
             { key: "vrank", label: "#", cls: "rank hide-sm", nosort: true, fmt: (r) => r.vrank },
-            { key: "name", label: "Player", cls: "l", asc: true, fmt: (r) => whoCell(names, r.pid, `${esc(r.tm)} ${vsText(r.home, r.opp)}${injuryTag(r.inj)}${bumpTag(r, names)}`) },
+            { key: "name", label: "Player", cls: "l", asc: true, fmt: (r) => whoCell(names, r.pid, `${esc(r.tm)} ${vsText(r.home, r.opp)}${injuryTag(r.inj)}${chalkTag(r)}${bumpTag(r, names)}`) },
             { key: "chance", label: three ? "Top 3" : "Win", cls: "hide-sm", fmt: (r) => fmt.pct(r.chance) },
             { key: "share", label: "Pick %", fmt: (r) => fmt.pct(r.share) },
             { key: "value", label: "Value", cls: "key", fmt: (r) => valueCell(r.value) },
@@ -235,6 +251,78 @@
         Click a column header to sort.
         Players under a 2% chance are left out${p.longShots ? ` (${p.longShots} more with value above 1.00×)` : ""}: their value is
         mostly noise. These are rough estimates; the edges are usually small. See how value picks have done on the <a href="model.html">Model</a> page.`;
+    }
+
+    const chalkOf = (r) => r.chalk ?? isChalk(r, chalk);
+    const chalkTag = (r) => (chalkOf(r) ? ` <span class="tag">Chalk</span>` : "");
+
+    // Tonight's picks: the best value among players with a real chance, chalk left out. The locked
+    // prediction saves its picks; older predictions are worked out here the same way.
+    function renderPicks(p) {
+      if (!hasValue(p)) return;
+      const promo = promoFor(target);
+      const three = p.format === "three";
+      const byPid = Object.fromEntries(p.players.map((x) => [x.pid, x]));
+      const list = (p.picks ? p.picks.map((pid) => byPid[pid]).filter(Boolean) : topPicks(p.players, promo, chalk)).map((x) => ({ ...x, chalk: chalkOf(x) }));
+      $("picks-card").hidden = false;
+      $("picks-title").textContent = `${dayLabel(target) === "Tonight" ? "Tonight's" : `${dateText(target)}`} picks`;
+      $("picks-sub").textContent = "Best value, chalk left out";
+      $("picks").innerHTML = list.length
+        ? list
+            .map((r, i) => {
+              const fill = isFillIn(r) ? ` <span class="tag gold">Filling in</span>` : "";
+              return `<div class="tile pick"><div class="k">#${i + 1} pick${fill}</div>${whoCell(names, r.pid, `${esc(r.tm)} ${vsText(r.home, r.opp)}${injuryTag(r.inj)}${bumpTag(r, names)}`)}
+                <div class="pick-kv"><span><b>${valueCell(r.value)}</b> value</span><span><b>${fmt.pct(three ? r.top3 : r.win)}</b> ${three ? "top 3" : "to win"}</span><span><b>${fmt.pct(r.share)}</b> of picks</span><span><b>${approxMoney(r.estPayout)}</b> if ${three ? "top 3" : "King"}</span></div></div>`;
+            })
+            .join("")
+        : `<p class="muted">No non-chalk player has a 2%+ chance tonight.</p>`;
+      // Name the chalk that a pick would otherwise have come from, with the reason.
+      const onList = new Set((chalk?.players ?? []).map((c) => c.pid));
+      const left = p.players
+        .filter((x) => (three ? x.top3 : x.win) >= MODEL.valueMinWin && chalkOf(x))
+        .sort((a, b) => b.share - a.share)
+        .map((x) => `${playerName(names, x.pid)} (${fmt.pct(x.share)} of picks${onList.has(x.pid) && x.share < chalk.shareCutoff ? ", on the list" : ""})`);
+      $("picks-note").innerHTML = `
+        The three players whose ${three ? "top-3" : "win"} chance is highest compared with how many people are expected to pick them,
+        among players with a 2%+ chance. ${left.length ? `<b>Left out as chalk:</b> ${left.join(", ")}.` : ""}
+        Chalk is anyone expected to draw ${fmt.pct0(chalk?.shareCutoff ?? 0.1)}+ of the picks, plus a hand-kept list
+        (${(chalk?.players ?? []).map((c) => esc(c.name)).join(", ")}). Leaving chalk out is a choice for bigger payouts, not better
+        odds: the public picks close to each player's real chance. <b>Filling in</b> marks a player whose projection is up 5%+
+        because teammates are out (or would be, if a questionable teammate sits). These are estimates with small edges, so
+        expect most nights to miss; see how the picks have done on the <a href="model.html">Model</a> page.`;
+    }
+
+    // Most picked: who the crowd is on, with what they'd pay. Red value = picked well beyond the chance.
+    function renderMost(p) {
+      if (!hasValue(p)) return;
+      const three = p.format === "three";
+      const rows = [...p.players]
+        .sort((a, b) => b.share - a.share)
+        .slice(0, 5)
+        .map((r) => ({ ...r, name: names[r.pid]?.n ?? r.pid, chance: three ? r.top3 : r.win }));
+      $("most-card").hidden = false;
+      const draw = () =>
+        renderTable(
+          $("most"),
+          rows,
+          [
+            { key: "name", label: "Player", cls: "l", asc: true, fmt: (r) => whoCell(names, r.pid, `${esc(r.tm)} ${vsText(r.home, r.opp)}${injuryTag(r.inj)}${chalkTag(r)}`) },
+            { key: "share", label: "Pick %", cls: "key", fmt: (r) => fmt.pct(r.share) },
+            { key: "chance", label: three ? "Top 3" : "Win", cls: "hide-sm", fmt: (r) => fmt.pct(r.chance) },
+            { key: "value", label: "Value", fmt: (r) => valueCell(r.value) },
+            { key: "estPayout", label: `Payout if ${three ? "top 3" : "King"}`, fmt: (r) => approxMoney(r.estPayout) },
+          ],
+          mostSort,
+          draw
+        );
+      draw();
+      const over = rows.filter((r) => r.value < 0.8);
+      $("most-note").innerHTML = `
+        The five players expected to draw the most picks. Crowded isn't the same as overpriced: the public picks close to each
+        player's real chance, so these usually show a value near 1.00×, and a win pays little because so many share it.
+        ${over.length ? `<b>Overpicked tonight</b> (red, under 0.80×): ${over.map((r) => playerName(names, r.pid)).join(", ")}.` : "No one here is clearly overpicked tonight (none under 0.80×)."}
+        The estimate can't see hype that isn't in the stats (a buzzy rookie, a big name on a down night), so real crowds on those players can be bigger.
+        On phones the ${three ? "Top 3" : "Win"} column is left off to make room.`;
     }
 
     // ---- Live leaderboard: polls ESPN from the browser on the night itself ----

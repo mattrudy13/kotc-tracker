@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="style.css?v=71287600">
+  <link rel="stylesheet" href="style.css?v=cdba4991">
 </head>
 <body>
   <header class="topbar">
@@ -40,6 +40,7 @@
 
     <section class="card" id="model-card" hidden>
       <div class="card-head"><h2>Model</h2><span class="updated" id="model-sub"></span></div>
+      <p class="note" id="picks-note" style="margin-top:0"></p>
       <div class="table-wrap"><div id="model"></div></div>
       <p class="note" id="model-note"></p>
     </section>
@@ -47,7 +48,7 @@
     <footer>Data from ESPN. Not affiliated with DraftKings.</footer>
   </main>
 
-  <script src="model.js?v=589d5de9"></script>
+  <script src="model.js?v=aebaedbd"></script>
   <script src="common.js?v=5b32a8b4"></script>
   <script>
     const $ = (id) => document.getElementById(id);
@@ -124,6 +125,12 @@
               ]
             : []),
         ], { nosort: true }, () => {});
+        // Promo nights: the suggested picks (best value, chalk left out) as they stood at the lock.
+        const byPid = Object.fromEntries(list.map((x) => [x.pid, x]));
+        const picks = live?.picks ? live.picks.map((pid) => byPid[pid]).filter(Boolean) : b?.picks;
+        $("picks-note").innerHTML = picks?.length
+          ? `<b>Suggested picks</b> (best value, chalk left out): ${picks.map((x, i) => `${i + 1}. ${playerName(names, x.pid)} <span class="muted">${fmt.pct(x.win)} · ${valueCell(x.value)}</span>${kings.has(x.pid) ? ` ${crown}` : ""}`).join(" &nbsp; ")}`
+          : "";
         const res = live?.result ?? b;
         $("model-note").innerHTML = [
           res?.pKing != null ? `The model gave the King <b>${fmt.pct(res.pKing)}</b>${res.rank ? ` and ranked them <b>#${res.rank}</b>` : ", outside its top 25"}.` : "",
