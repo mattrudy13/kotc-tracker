@@ -24,12 +24,21 @@ const fit = args.includes("--fit");
 // Fit window: October–January. Holdout: February to the end of the season.
 const HOLDOUT_FROM = `${season + 1}-02-01`;
 
-const load = async (s) => JSON.parse(await readFile(path.join(DATA_DIR, `${s}.json`), "utf8"));
+const load = async (f) => JSON.parse(await readFile(path.join(DATA_DIR, `${f}.json`), "utf8"));
 const cur = await load(season);
 const prev = await load(season - 1);
 const rows = M.rowObjects(cur);
 const prior = M.priorTotals(M.rowObjects(prev));
 const days = M.dailyLeaders(cur, 3).filter((d) => d.final);
+let promos = null, pickshare = null;
+try {
+  promos = await load(`promos-${season}`);
+} catch {}
+try {
+  pickshare = await load(`pickshare-${season}`);
+} catch {}
+const fittedOn = new Set((pickshare?.nights ?? []).filter((n) => !n.partial).map((n) => n.date));
+const gameDays = days.map((d) => d.d);
 
 const byDay = {};
 for (const r of rows) (byDay[r.d] ??= []).push(r);
@@ -159,6 +168,20 @@ for (const { day, games, candidates, hist } of replay(() => true)) {
   const byAvg = candidates.map((c) => ({ pid: c.pid, avg: avg(c.pid) })).sort((a, b) => b.avg - a.avg);
   const byMean = [...preds].sort((a, b) => b.mean - a.mean);
   const rankOf = (list, pids) => Math.min(...pids.map((pid) => list.findIndex((p) => p.pid === pid) + 1 || 999));
+  // Value (promo nights): estimated pick shares over the whole field, then the three strategies.
+  const promo = M.promoInfo(promos, day.d, gameDays);
+  let value = null;
+  if (promo) {
+    M.addValue(preds, (pid) => M.shareFeatures(hist[pid], prior[pid]), promo, null);
+    const picks = M.valuePicks(preds);
+    const shareOf = (pid) => preds.find((p) => p.pid === pid)?.share;
+    value = {
+      picks,
+      returns: Object.fromEntries(Object.entries(picks).map(([k, pid]) => [k, M.pickReturn(pid, promo)])),
+      entrants: M.impliedEntrants(promo, shareOf),
+      fitted: fittedOn.has(day.d) || undefined, // the share model was fitted on this night
+    };
+  }
   out.push({
     d: day.d,
     games: games.length,
@@ -172,7 +195,8 @@ for (const { day, games, candidates, hist } of replay(() => true)) {
     rankMean: rankOf(byMean, day.kings),
     pick: preds[0].pid,
     avgPick: byAvg[0].pid,
-    top: preds.slice(0, 10).map((p) => ({ pid: p.pid, tm: p.tm, opp: p.opp, home: p.home, mean: +p.mean.toFixed(1), win: +p.win.toFixed(4), top3: +p.top3.toFixed(4), pra: praOf(day.d, p.pid) })),
+    top: preds.slice(0, 10).map((p) => ({ pid: p.pid, tm: p.tm, opp: p.opp, home: p.home, mean: +p.mean.toFixed(1), win: +p.win.toFixed(4), top3: +p.top3.toFixed(4), pra: praOf(day.d, p.pid), ...(promo ? { share: +p.share.toFixed(4), value: +p.value.toFixed(3) } : {}) })),
+    value,
     preds: preds.filter((p) => p.win > 0).map((p) => [p.pid, +p.win.toFixed(4)]),
   });
 }
@@ -205,6 +229,17 @@ for (const x of out) {
   }
 }
 
+// Value record: bonus bets per token for each strategy, on promo nights with known payouts.
+function valueRecord(list) {
+  const nights = list.filter((x) => x.value && Object.values(x.value.returns).every((r) => r != null));
+  const rec = {};
+  for (const k of ["favorite", "value", "public"]) {
+    rec[k] = { nights: nights.length, wins: nights.filter((x) => x.value.returns[k] > 0).length, total: nights.reduce((s, x) => s + x.value.returns[k], 0) };
+  }
+  return rec;
+}
+const entrantsList = out.map((x) => x.value?.entrants).filter((t) => t);
+
 const result = {
   season,
   label: cur.label,
@@ -214,8 +249,12 @@ const result = {
   summary: { fit: summary(out.filter((x) => !x.holdout)), holdout: summary(out.filter((x) => x.holdout)), all: summary(out) },
   calibration: calib.map((c) => ({ lo: c.lo, hi: c.hi, n: c.n, pred: c.n ? c.pred / c.n : null, actual: c.n ? c.won / c.n : null })),
   days: out.map(({ preds, ...x }) => x),
+  valueRecord: valueRecord(out),
+  // Entrants implied by winners' payouts (see impliedEntrants); predict.mjs uses the median
+  // until this season has enough nights of its own.
+  entrants: { median: M.median(entrantsList), nights: entrantsList.length },
 };
-result.names = M.nameMap(cur, [...new Set(out.flatMap((x) => [...x.kings, x.avgPick, ...x.top.map((t) => t.pid)]))]);
+result.names = M.nameMap(cur, [...new Set(out.flatMap((x) => [...x.kings, x.avgPick, ...x.top.map((t) => t.pid), ...Object.values(x.value?.picks ?? {})]))].filter(Boolean));
 await writeFile(path.join(DATA_DIR, `backtest-${season}.json`), JSON.stringify(result));
 const s = result.summary;
 for (const k of ["fit", "holdout"]) {
@@ -224,3 +263,5 @@ for (const k of ["fit", "holdout"]) {
   console.log(`   top pick won: model ${x.model.first}, best PRA avg ${x.avg.first}, highest projection ${x.mean.first} | King in model top 3: ${x.model.top3}, top 5: ${x.model.top5}`);
 }
 console.log("calibration:", result.calibration.map((c) => `${(c.lo * 100).toFixed(0)}–${(c.hi * 100).toFixed(0)}%: n=${c.n} pred ${c.pred == null ? "–" : (c.pred * 100).toFixed(1)} actual ${c.actual == null ? "–" : (c.actual * 100).toFixed(1)}`).join(" | "));
+const vr = result.valueRecord;
+console.log(`value record (${vr.favorite.nights} promo nights with known payouts): ${Object.entries(vr).map(([k, r]) => `${k} ${r.wins} wins $${Math.round(r.total).toLocaleString()}`).join(" | ")} · entrants median ${Math.round(result.entrants.median).toLocaleString()} (${result.entrants.nights} nights)`);

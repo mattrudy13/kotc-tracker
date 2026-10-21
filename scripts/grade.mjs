@@ -23,6 +23,11 @@ try {
   process.exit(0);
 }
 const data = await readJson(`${season}.json`);
+let promos = null;
+try {
+  promos = await readJson(`promos-${season}.json`);
+} catch {}
+const gameDays = [...new Set(Object.values(data.games).map((g) => g.d))];
 const leaders = Object.fromEntries(M.dailyLeaders(data, 3).map((x) => [x.d, x]));
 
 let graded = 0;
@@ -38,6 +43,15 @@ for (const [d, p] of Object.entries(store.days)) {
     rank: ranks.length ? Math.min(...ranks) + 1 : null, // null = outside the saved list
     pick: p.players[0]?.pid ?? null,
   };
+  // Value record: what a token on each strategy's pick won, once the night's payouts are entered.
+  const promo = M.promoInfo(promos, d, gameDays);
+  if (promo && p.players.some((x) => x.share != null)) {
+    const picks = M.valuePicks(p.players);
+    const returns = Object.fromEntries(Object.entries(picks).map(([k, pid]) => [k, M.pickReturn(pid, promo)]));
+    if (Object.values(returns).every((r) => r != null)) result.value = { picks, returns };
+    const t = M.impliedEntrants(promo, (pid) => p.players.find((x) => x.pid === pid)?.share);
+    if (t) result.entrants = Math.round(t);
+  }
   if (JSON.stringify(p.result) !== JSON.stringify(result)) {
     p.result = result;
     graded++;

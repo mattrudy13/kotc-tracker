@@ -44,6 +44,16 @@ if (nextPromo) targets.add(nextPromo);
 const rows = M.rowObjects(data);
 const prior = M.priorTotals(M.rowObjects(prevData));
 
+// Entrants per promo night, for the dollar estimates: this season's own nights once there are 3,
+// else last season's backtest median.
+const ownEntrants = Object.values(store.days).map((x) => x.result?.entrants).filter((t) => t);
+const lastBacktest = await readJson(`backtest-${season - 1}.json`, null);
+const entrants = ownEntrants.length >= 3
+  ? { n: Math.round(M.median(ownEntrants)), source: `${ownEntrants.length} nights this season` }
+  : lastBacktest?.entrants?.median
+    ? { n: Math.round(lastBacktest.entrants.median), source: `${lastBacktest.label} median (${lastBacktest.entrants.nights} nights)` }
+    : null;
+
 for (const d of [...targets].sort()) {
   const games = byDay[d];
   const firstTip = games.map((g) => g.tip).sort()[0];
@@ -61,6 +71,9 @@ for (const d of [...targets].sort()) {
   }
   const hist = M.historyBefore(rows, d);
   const preds = M.predictDay(d, games, candidates, hist, prior);
+  const promo = M.promoInfo(promos, d, gameDays);
+  // Value is only meaningful on promo nights; shares are computed over the whole field.
+  if (promo) M.addValue(preds, (pid) => M.shareFeatures(hist[pid], prior[pid]), promo, entrants?.n);
   const out = data.players;
   const prev = store.days[d];
   store.days[d] = {
@@ -70,13 +83,19 @@ for (const d of [...targets].sort()) {
     games: games.length,
     slate: games.map((g) => ({ gid: g.gid, home: g.home, away: g.away, tip: g.tip, spread: g.spread, total: g.total })),
     modelVersion: M.MODEL.version,
+    ...(promo ? { shareVersion: M.MODEL.share.version, entrants, pool: promo.pool, format: promo.format } : {}),
     // Keep everyone with a real chance plus the next few, so the page can show a top 25.
     players: preds.slice(0, Math.max(25, preds.filter((p) => p.win >= 0.001).length)).map((p) => ({
       pid: p.pid, tm: p.tm, opp: p.opp, home: p.home,
       mean: +p.mean.toFixed(1), min: +p.min.toFixed(1), win: +p.win.toFixed(4), top3: +p.top3.toFixed(4),
       pPlay: p.pPlay, gp: p.gp, isNew: p.isNew || undefined,
       inj: out[p.pid]?.injury?.status ?? undefined,
+      ...(promo
+        ? { share: +p.share.toFixed(5), value: +p.value.toFixed(3), estPayout: p.estPayout != null ? Math.round(p.estPayout) : null, ev: p.ev != null ? +p.ev.toFixed(2) : null }
+        : {}),
     })),
+    // How many players the best-value list leaves out as long shots (value above 1 but win < 2%).
+    ...(promo ? { longShots: preds.filter((p) => p.win > 0 && p.win < M.MODEL.valueMinWin && p.value > 1).length } : {}),
     // Only rotation players (15+ projected minutes) are worth naming as ruled out.
     out: Object.entries(out)
       .filter(([pid, p]) => playing.has(p.team) && M.playChance(p.injury) === 0 && (prior[pid]?.gp || hist[pid]?.length) && M.projectPlayer(hist[pid], prior[pid]).min >= 15)
