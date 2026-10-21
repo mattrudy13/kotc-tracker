@@ -59,6 +59,7 @@
         which matters on Three Kings nights. <span class="inj q">Q</span> marks a questionable / day-to-day player: the model gives them a
         70% chance to play, and Proj PRA assumes they play. Out players are left off. The prediction refreshes about every two hours
         until the first tip-off, then locks; that locked version is the one graded on the <a href="model.html">Model</a> page.
+        Click <b>Win</b>, <b>Top 3</b>, <b>Pick %</b> or <b>Value</b> to sort; <b>#</b> stays the model's rank by win chance.
       </p>
     </section>
 
@@ -81,6 +82,9 @@
   <script>
     const $ = (id) => document.getElementById(id);
     let pred, promos, leaders, names, teams, target, liveTimer;
+    // Sort state for the two tables (click a column header to sort).
+    const modelSort = { sort: "win", dir: "desc" };
+    const valueSort = { sort: "value", dir: "desc" };
 
     async function main() {
       const { current } = await getSeasons();
@@ -159,28 +163,31 @@
       $("model-title").textContent = `Model win chances · ${dateText(target)}`;
       $("model-updated").textContent = `${locked ? "Locked" : "Updated"} ${stampText(p.takenAt)}`;
       const max = Math.max(...p.players.map((x) => x.win), 0.01);
-      const rows = p.players.slice(0, 25);
+      // # stays the model's rank by win chance whatever the table is sorted by.
+      const rows = p.players.slice(0, 25).map((r, i) => ({ ...r, rank: i + 1 }));
       const kings = new Set(leaders?.days?.find((x) => x.d === target && x.final)?.kings ?? []);
       for (const r of rows) if (kings.has(r.pid)) r._cls = "king";
-      renderTable(
-        $("model"),
-        rows,
-        [
-          { key: "rank", label: "#", cls: "rank", fmt: (r, i) => i + 1 },
-          { key: "name", label: "Player", cls: "l", fmt: (r) => whoCell(names, r.pid, `${esc(r.tm)} ${vsText(r.home, r.opp)}${injuryTag(r.inj)}`) },
-          { key: "mean", label: "Proj PRA", fmt: (r) => fmt.d1(r.mean) },
-          { key: "win", label: "Win", fmt: (r) => winBar(r.win, max) },
-          { key: "top3", label: "Top 3", fmt: (r) => fmt.pct(r.top3) },
-          ...(hasValue(p)
-            ? [
-                { key: "share", label: "Pick %", cls: "hide-sm", fmt: (r) => fmt.pct(r.share) },
-                { key: "value", label: "Value", cls: "hide-sm", fmt: (r) => valueCell(r.value) },
-              ]
-            : []),
-        ],
-        { nosort: true },
-        () => {}
-      );
+      const draw = () =>
+        renderTable(
+          $("model"),
+          rows,
+          [
+            { key: "rank", label: "#", cls: "rank", nosort: true, fmt: (r) => r.rank },
+            { key: "name", label: "Player", cls: "l", nosort: true, fmt: (r) => whoCell(names, r.pid, `${esc(r.tm)} ${vsText(r.home, r.opp)}${injuryTag(r.inj)}`) },
+            { key: "mean", label: "Proj PRA", nosort: true, fmt: (r) => fmt.d1(r.mean) },
+            { key: "win", label: "Win", fmt: (r) => winBar(r.win, max) },
+            { key: "top3", label: "Top 3", fmt: (r) => fmt.pct(r.top3) },
+            ...(hasValue(p)
+              ? [
+                  { key: "share", label: "Pick %", cls: "hide-sm", fmt: (r) => fmt.pct(r.share) },
+                  { key: "value", label: "Value", cls: "hide-sm", fmt: (r) => valueCell(r.value) },
+                ]
+              : []),
+          ],
+          modelSort,
+          draw
+        );
+      draw();
       renderValue(p);
       const out = (p.out ?? []).map((o) => `${playerName(names, o.pid)} (${esc(o.tm)})`);
       $("out-note").innerHTML = out.length ? `<b>Ruled out:</b> ${out.join(", ")}.` : "";
@@ -192,35 +199,40 @@
     function renderValue(p) {
       if (!hasValue(p)) return;
       const three = p.format === "three";
-      const rows = p.players.filter((x) => x.win >= MODEL.valueMinWin && x.value != null).sort((a, b) => b.value - a.value).slice(0, 10);
+      const rows = p.players
+        .filter((x) => x.win >= MODEL.valueMinWin && x.value != null)
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 10)
+        .map((r, i) => ({ ...r, vrank: i + 1, name: names[r.pid]?.n ?? r.pid, chance: three ? r.top3 : r.win }));
       $("value-card").hidden = false;
       $("value-sub").textContent = p.entrants ? `≈${p.entrants.n.toLocaleString()} entrants assumed` : "";
-      renderTable(
-        $("value"),
-        rows,
-        [
-          { key: "rank", label: "#", cls: "rank hide-sm", fmt: (r, i) => i + 1 },
-          { key: "name", label: "Player", cls: "l", fmt: (r) => whoCell(names, r.pid, `${esc(r.tm)} ${vsText(r.home, r.opp)}${injuryTag(r.inj)}`) },
-          { key: "win", label: three ? "Top 3" : "Win", fmt: (r) => fmt.pct(three ? r.top3 : r.win) },
-          { key: "share", label: "Pick %", fmt: (r) => fmt.pct(r.share) },
-          { key: "value", label: "Value", cls: "key", fmt: (r) => valueCell(r.value) },
-          { key: "pay", label: `Payout if ${three ? "top 3" : "King"}`, cls: "hide-sm", fmt: (r) => approxMoney(r.estPayout) },
-          { key: "ev", label: "Per token", cls: "hide-sm", fmt: (r) => approxMoney(r.ev) },
-        ],
-        { nosort: true },
-        () => {},
-        "No player has a 2%+ chance yet."
-      );
-      const fair = p.entrants && p.pool ? p.pool / p.entrants.n : null;
+      // # stays the rank by value whatever the table is sorted by.
+      const draw = () =>
+        renderTable(
+          $("value"),
+          rows,
+          [
+            { key: "vrank", label: "#", cls: "rank hide-sm", nosort: true, fmt: (r) => r.vrank },
+            { key: "name", label: "Player", cls: "l", asc: true, fmt: (r) => whoCell(names, r.pid, `${esc(r.tm)} ${vsText(r.home, r.opp)}${injuryTag(r.inj)}`) },
+            { key: "chance", label: three ? "Top 3" : "Win", fmt: (r) => fmt.pct(r.chance) },
+            { key: "share", label: "Pick %", fmt: (r) => fmt.pct(r.share) },
+            { key: "value", label: "Value", cls: "key", fmt: (r) => valueCell(r.value) },
+            { key: "estPayout", label: `Payout if ${three ? "top 3" : "King"}`, cls: "hide-sm", fmt: (r) => approxMoney(r.estPayout) },
+          ],
+          valueSort,
+          draw,
+          "No player has a 2%+ chance yet."
+        );
+      draw();
       $("value-note").innerHTML = `
         The prize is split among everyone who picked the King, so a popular player pays less. <b>Pick %</b> is the share of
         entrants expected to pick the player. In DK's published payouts the public tracked win chances closely but leaned toward players
         with big season averages; the estimate copies that pattern (fitted on 11/18/25, the one night DK listed every player).
         <b>Value</b> is the ${three ? "top-3" : "win"} chance divided by that share: 1.00× means the player is picked exactly in line with
         their chance, 1.20× or more (green) means 20%+ more chance than picks, and under 0.80× (red) means overpicked.
-        <b>Payout if ${three ? "top 3" : "King"}</b> and <b>Per token</b> (chance × payout) assume ≈${p.entrants?.n.toLocaleString() ?? "–"} entrants
-        (${esc(p.entrants?.source ?? "no estimate")})${fair ? `; a random pick is worth about ${fmt.money(fair)}` : ""}.
-        On a phone those two dollar columns are left off to keep the table on screen.
+        <b>Payout if ${three ? "top 3" : "King"}</b> is the bonus bet each winning pick would get, assuming ≈${p.entrants?.n.toLocaleString() ?? "–"} entrants
+        (${esc(p.entrants?.source ?? "no estimate")}); it's left off on phones to keep the table on screen.
+        Click a column header to sort.
         Players under a 2% chance are left out${p.longShots ? ` (${p.longShots} more with value above 1.00×)` : ""}: their value is
         mostly noise. These are rough estimates; the edges are usually small. See how value picks have done on the <a href="model.html">Model</a> page.`;
     }
