@@ -104,7 +104,7 @@ function seasonAverages(data) {
 // October–January games (scripts/backtest.mjs --fit); February–April is the holdout.
 
 const MODEL = {
-  version: 1,
+  version: 2, // v2 (2026-10-21): teammates out and opponent defense
   halfLife: 6, // games: weight of a game halves every 6 games back (current season)
   minPriorGames: 1, // last season's minutes count as this many current-season games
   ratePriorMin: 100, // last season's PRA/min counts as this many current-season minutes
@@ -122,9 +122,21 @@ const MODEL = {
   gameSd: 0.12, // shared game factor (pace/overtime), as a share of PRA
   dtdPlay: 0.7, // chance a day-to-day (questionable) player suits up
   sims: 10000,
+  // Teammates out (v2): mean × (1 + teamK × (tonight's missing share − the player's usual share)).
+  // A team's regulars are players whose last game was for it, within its last regularGames games,
+  // projected regularMin+ minutes; the missing share is their projected PRA that isn't playing.
+  teamK: 0.4,
+  regularGames: 5,
+  regularMin: 10,
+  missBase: 0.15, // the usual missing share before a player has games of their own (worth missBaseGames)
+  missBaseGames: 1,
+  // Opponent defense (v2): PRA allowed ÷ what the players who faced them were projected for, shrunk
+  // toward the league by defShrink projected PRA (null = off). defByPos splits it into G/F/C.
+  defShrink: 12000,
+  defByPos: false,
   // Public pick share: softmax of bWin·log(win) + bSeason·season PRA avg + bPrior·last season's avg.
   // Fitted by scripts/fit-share.mjs on nights where DK published every player's payout.
-  share: { version: 1, bWin: 0.726, bSeason: 0.032, bPrior: 0.01, fallbackAvg: 15, minShareForEntrants: 0.05 },
+  share: { version: 2, bWin: 0.915, bSeason: 0.021, bPrior: -0.003, fallbackAvg: 15, minShareForEntrants: 0.05 },
   valueMinWin: 0.02, // the best-value list skips long shots below this win chance
 };
 
@@ -216,28 +228,52 @@ function seedFor(date) {
   return h >>> 0;
 }
 
-// Simulates a slate. `players`: [{ pid, gid, mean, sd, pPlay }]. Returns { pid: { win, top3 } }.
+// Simulates a slate. `players`: [{ pid, tm, gid, mean, sd, pPlay, k }]. Returns { pid: { win, top3 } }.
+// `sitters` ({ tm: [{ pid, pPlay, share }] }) are questionable regulars: in each simulation where
+// one sits, teammates' means rise by k × that player's share (teammates out, only when they sit).
 // Players who can't plausibly reach the top are dropped first to keep it fast.
-function simulateSlate(players, date, m = MODEL, sims = m.sims) {
+function simulateSlate(players, date, m = MODEL, sims = m.sims, sitters = null) {
   const live = players.filter((p) => p.pPlay > 0 && p.mean > 0);
   const best = Math.max(0, ...live.map((p) => p.mean));
-  const pool = live.filter((p) => p.mean + 4.5 * p.sd >= best);
+  const upside = (p) => p.mean + (p.k ?? 0) * (sitters?.[p.tm] ?? []).reduce((s, q) => s + q.share, 0);
+  const pool = live.filter((p) => upside(p) + 4.5 * Math.max(p.sd, playerSd(upside(p), m)) >= best);
   const gids = [...new Set(pool.map((p) => p.gid))];
   const gi = Object.fromEntries(gids.map((g, i) => [g, i]));
   const out = Object.fromEntries(pool.map((p) => [p.pid, { win: 0, top3: 0 }]));
+  // One play/sit draw per questionable player per simulation, shared by their own line and their
+  // teammates' bump.
+  const pPlayOf = {};
+  for (const p of pool) if (p.pPlay < 1) pPlayOf[p.pid] = p.pPlay;
+  for (const list of Object.values(sitters ?? {})) for (const q of list) pPlayOf[q.pid] = q.pPlay;
+  const drawPids = Object.keys(pPlayOf);
+  const dj = Object.fromEntries(drawPids.map((pid, j) => [pid, j]));
+  const playing = new Uint8Array(drawPids.length);
+  const teams = Object.entries(sitters ?? {}).filter(([tm]) => pool.some((p) => p.tm === tm && p.k));
+  const ti = Object.fromEntries(teams.map(([tm], t) => [tm, t]));
+  const extra = new Float64Array(teams.length);
+  const own = pool.map((p) => dj[p.pid] ?? -1);
+  const team = pool.map((p) => (p.k ? ti[p.tm] ?? -1 : -1));
   const norm = normals(rng(seedFor(date)));
   const rand = rng(seedFor(date) ^ 0x9e3779b9);
   const vals = new Float64Array(pool.length);
   const gf = new Float64Array(gids.length);
   for (let s = 0; s < sims; s++) {
     for (let g = 0; g < gids.length; g++) gf[g] = 1 + m.gameSd * norm();
+    for (let j = 0; j < drawPids.length; j++) playing[j] = rand() > pPlayOf[drawPids[j]] ? 0 : 1;
+    for (let t = 0; t < teams.length; t++) {
+      extra[t] = 0;
+      for (const q of teams[t][1]) if (!playing[dj[q.pid]]) extra[t] += q.share;
+    }
     for (let i = 0; i < pool.length; i++) {
       const p = pool[i];
-      if (p.pPlay < 1 && rand() > p.pPlay) {
+      if (own[i] >= 0 && !playing[own[i]]) {
         vals[i] = -1;
         continue;
       }
-      vals[i] = Math.max(0, Math.round(p.mean * gf[gi[p.gid]] + p.sd * norm()));
+      const bump = team[i] >= 0 ? p.k * extra[team[i]] : 0;
+      const mean = p.mean + bump;
+      const sd = bump ? playerSd(mean, m) : p.sd;
+      vals[i] = Math.max(0, Math.round(mean * gf[gi[p.gid]] + sd * norm()));
     }
     // First place (ties split) and top 3 (counting everyone tied at 3rd).
     let top = -1;
@@ -259,23 +295,163 @@ function simulateSlate(players, date, m = MODEL, sims = m.sims) {
   return out;
 }
 
+// ---- Team context (v2): teammates out and opponent defense ----
+//
+// Built one finished day at a time (addDay), so it only knows days before the one being predicted.
+// It keeps each team's recent players, the share of each team's usual production that sat out on
+// each date, and every team's PRA allowed against what the players who faced it were projected for.
+
+const posGroup = (pos) => (pos === "C" ? "C" : /G$/.test(pos ?? "") ? "G" : "F");
+
+// `posOf(pid)` gives ESPN's position (G, F, C, PG, …). `m` sets the projection constants.
+function newContext(prior, posOf, m = MODEL) {
+  return { prior, posOf, m, hist: {}, members: {}, teamDays: {}, miss: {}, allowed: {}, league: {}, lastDay: null };
+}
+
+// A team's regulars before the context's next day, each with projected PRA (minutes × rate).
+function teamRegulars(ctx, tm) {
+  const m = ctx.m;
+  const recent = new Set((ctx.teamDays[tm] ?? []).slice(0, m.regularGames));
+  const out = [];
+  for (const pid of ctx.members[tm] ?? []) {
+    const h = ctx.hist[pid];
+    if (!recent.has(h[0].d)) continue;
+    const pr = projectPlayer(h, ctx.prior[pid], m);
+    if (pr.min >= m.regularMin) out.push({ pid, pra: pr.min * pr.rate });
+  }
+  return out;
+}
+
+// Adds a finished day's box-score rows (rowObjects) to the context. Days must come in order.
+function addDay(ctx, d, dayRows, games) {
+  const m = ctx.m;
+  if (ctx.lastDay && d <= ctx.lastDay) throw new Error(`context day ${d} after ${ctx.lastDay}`);
+  const played = new Set(dayRows.map((r) => r.pid));
+  for (const tm of new Set(dayRows.map((r) => r.tm))) {
+    const regs = teamRegulars(ctx, tm);
+    const total = regs.reduce((s, r) => s + r.pra, 0);
+    if (total) (ctx.miss[tm] ??= {})[d] = regs.filter((r) => !played.has(r.pid)).reduce((s, r) => s + r.pra, 0) / total;
+  }
+  // Defense compares against the plain projection (no context), so it doesn't depend on teamK.
+  for (const r of dayRows) {
+    const g = games[r.gid];
+    const mean = gameMean(projectPlayer(ctx.hist[r.pid], ctx.prior[r.pid], m), g, g?.home === r.tm, m);
+    for (const key of ["all", posGroup(ctx.posOf(r.pid))]) {
+      const a = ((ctx.allowed[r.opp] ??= {})[key] ??= { pra: 0, proj: 0 });
+      const l = (ctx.league[key] ??= { pra: 0, proj: 0 });
+      a.pra += r.pra;
+      a.proj += mean;
+      l.pra += r.pra;
+      l.proj += mean;
+    }
+  }
+  for (const r of dayRows) {
+    const h = (ctx.hist[r.pid] ??= []);
+    const was = h[0]?.tm;
+    if (was !== r.tm) {
+      if (was) ctx.members[was].delete(r.pid);
+      (ctx.members[r.tm] ??= new Set()).add(r.pid);
+    }
+    h.unshift(r);
+    const td = (ctx.teamDays[r.tm] ??= []);
+    if (td[0] !== d) td.unshift(d);
+  }
+  ctx.lastDay = d;
+}
+
+// A context holding every day of `rows` before `date`.
+function contextBefore(rows, games, prior, posOf, date, m = MODEL) {
+  const ctx = newContext(prior, posOf, m);
+  const byDay = {};
+  for (const r of rows) if (r.d < date) (byDay[r.d] ??= []).push(r);
+  for (const d of Object.keys(byDay).sort()) addDay(ctx, d, byDay[d], games);
+  return ctx;
+}
+
+// The missing share a player's recent games had (weighted like the projection), so the bump is
+// relative: a star who has been out for weeks is already in the teammates' numbers.
+function missBaseline(ctx, pid, m = MODEL) {
+  let w = m.missBaseGames, s = m.missBaseGames * m.missBase;
+  (ctx.hist[pid] ?? []).forEach((g, i) => {
+    const x = ctx.miss[g.tm]?.[g.d];
+    if (x == null) return;
+    const wi = Math.pow(0.5, i / m.halfLife);
+    w += wi;
+    s += wi * x;
+  });
+  return s / w;
+}
+
+function defenseFactor(ctx, opp, pid, m = MODEL) {
+  if (m.defShrink == null || !opp) return 1;
+  const key = m.defByPos ? posGroup(ctx.posOf(pid)) : "all";
+  const a = ctx.allowed[opp]?.[key], l = ctx.league[key];
+  if (!a || !l?.proj) return 1;
+  const r = l.pra / l.proj;
+  return (a.pra + m.defShrink * r) / (a.proj + m.defShrink) / r;
+}
+
+// Context adjustments for one date: per player { bump, outPct, bumpIf, def }, and the questionable regulars
+// by team (`sitters`) for simulateSlate. A regular who isn't a candidate (or can't play) is out.
+function contextAdjust(ctx, date, candidates, byTeam, m = MODEL) {
+  if (ctx.lastDay && ctx.lastDay >= date) throw new Error(`context includes ${ctx.lastDay}, predicting ${date}`);
+  const cand = Object.fromEntries(candidates.map((c) => [c.pid, c]));
+  const teams = {}, sitters = {};
+  for (const tm of new Set(candidates.map((c) => c.tm))) {
+    const regs = teamRegulars(ctx, tm);
+    const total = regs.reduce((s, r) => s + r.pra, 0);
+    const t = (teams[tm] = { total, outShare: 0, q: [] });
+    for (const r of regs) {
+      const c = cand[r.pid];
+      const share = r.pra / total;
+      if (!c || c.tm !== tm || !(c.pPlay > 0)) t.outShare += share;
+      else if (c.pPlay < 1) t.q.push({ pid: r.pid, pPlay: c.pPlay, share });
+    }
+    if (t.q.length && m.teamK) sitters[tm] = t.q;
+  }
+  const players = {};
+  for (const c of candidates) {
+    const t = teams[c.tm];
+    let bump = 1, outPct = 0, bumpIf = null;
+    // A team's first game has no regulars yet: no bump either way.
+    if (t.total && m.teamK) {
+      const base = missBaseline(ctx, c.pid, m);
+      bump = Math.max(0, 1 + m.teamK * (t.outShare - base));
+      // For the page: the rise over the same night with every regular available (a fully healthy
+      // team sits a little below its recent games, which had the usual absences in them).
+      const healthy = 1 - m.teamK * base;
+      outPct = healthy > 0 ? bump / healthy - 1 : 0;
+      const top = t.q.filter((q) => q.pid !== c.pid).sort((a, b) => b.share - a.share)[0];
+      if (top && bump) bumpIf = { pid: top.pid, pct: (m.teamK * top.share) / bump };
+    }
+    players[c.pid] = { bump, outPct, bumpIf, def: defenseFactor(ctx, byTeam[c.tm]?.opp, c.pid, m) };
+  }
+  return { players, sitters };
+}
+
 // Full prediction for one day. `games`: [{ gid, home, away, spread, total }]. `candidates`:
-// [{ pid, tm, pPlay }]. `hist` from historyBefore(), `prior` from priorTotals().
-function predictDay(date, games, candidates, hist, prior, m = MODEL, sims = m.sims) {
+// [{ pid, tm, pPlay }]. `hist` from historyBefore(), `prior` from priorTotals(). `ctx` (a context
+// of the days before `date`) adds teammates out and opponent defense; without it this is model v1.
+function predictDay(date, games, candidates, hist, prior, m = MODEL, sims = m.sims, ctx = null) {
   const byTeam = {};
   for (const g of games) {
     byTeam[g.home] = { g, home: true, opp: g.away };
     byTeam[g.away] = { g, home: false, opp: g.home };
   }
+  const adj = ctx ? contextAdjust(ctx, date, candidates.filter((c) => byTeam[c.tm]), byTeam, m) : null;
   const players = [];
   for (const c of candidates) {
     const t = byTeam[c.tm];
     if (!t) continue;
     const proj = projectPlayer(hist[c.pid], prior[c.pid], m);
-    const mean = gameMean(proj, t.g, t.home, m);
-    players.push({ pid: c.pid, tm: c.tm, opp: t.opp, home: t.home, gid: t.g.gid, pPlay: c.pPlay, mean, sd: playerSd(mean, m), min: proj.min, rate: proj.rate, gp: proj.gp, isNew: proj.isNew });
+    const base = gameMean(proj, t.g, t.home, m);
+    const a = adj?.players[c.pid] ?? { bump: 1, outPct: 0, bumpIf: null, def: 1 };
+    const mean = base * a.def * a.bump;
+    // k: how much the mean rises per unit of share a questionable teammate takes with them.
+    const k = adj?.sitters[c.tm] ? base * a.def * m.teamK : 0;
+    players.push({ pid: c.pid, tm: c.tm, opp: t.opp, home: t.home, gid: t.g.gid, pPlay: c.pPlay, mean, sd: playerSd(mean, m), k, bump: a.bump, outPct: a.outPct, bumpIf: a.bumpIf, def: a.def, min: proj.min, rate: proj.rate, gp: proj.gp, isNew: proj.isNew });
   }
-  const sim = simulateSlate(players, date, m, sims);
+  const sim = simulateSlate(players, date, m, sims, adj?.sitters);
   for (const p of players) {
     p.win = sim[p.pid]?.win ?? 0;
     p.top3 = sim[p.pid]?.top3 ?? 0;
@@ -405,6 +581,7 @@ if (typeof module !== "undefined") {
   module.exports = {
     rowObjects, nameMap, finishedDays, dailyLeaders, seasonAverages,
     MODEL, priorTotals, historyBefore, projectPlayer, gameMean, playerSd, simulateSlate, predictDay,
+    posGroup, newContext, addDay, contextBefore, contextAdjust, missBaseline, defenseFactor,
     promoInfo, promoCrowns, playChance,
     shareFeatures, pickShares, valueFields, addValue, valuePicks, pickReturn, impliedEntrants, median,
   };

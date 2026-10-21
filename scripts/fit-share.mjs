@@ -30,7 +30,8 @@ function night(d) {
   const games = [...new Set(rows.filter((r) => r.d === d).map((r) => r.gid))].map((gid) => ({ gid, ...cur.games[gid] }));
   const cands = rows.filter((r) => r.d === d).map((r) => ({ pid: r.pid, tm: r.tm, pPlay: 1 }));
   const hist = M.historyBefore(rows, d);
-  return M.predictDay(d, games, cands, hist, prior).map((p) => ({ ...p, ...M.shareFeatures(hist[p.pid], prior[p.pid]) }));
+  const ctx = M.contextBefore(rows, cur.games, prior, (pid) => cur.players[pid]?.pos, d);
+  return M.predictDay(d, games, cands, hist, prior, M.MODEL, M.MODEL.sims, ctx).map((p) => ({ ...p, ...M.shareFeatures(hist[p.pid], prior[p.pid]) }));
 }
 
 const nights = pickshare.nights.filter((n) => !n.partial).map((n) => {

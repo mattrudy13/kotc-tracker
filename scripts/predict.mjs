@@ -70,7 +70,8 @@ for (const d of [...targets].sort()) {
     }
   }
   const hist = M.historyBefore(rows, d);
-  const preds = M.predictDay(d, games, candidates, hist, prior);
+  const ctx = M.contextBefore(rows, data.games, prior, (pid) => data.players[pid]?.pos, d);
+  const preds = M.predictDay(d, games, candidates, hist, prior, M.MODEL, M.MODEL.sims, ctx);
   const promo = M.promoInfo(promos, d, gameDays);
   // Value is only meaningful on promo nights; shares are computed over the whole field.
   if (promo) M.addValue(preds, (pid) => M.shareFeatures(hist[pid], prior[pid]), promo, entrants?.n);
@@ -90,6 +91,11 @@ for (const d of [...targets].sort()) {
       mean: +p.mean.toFixed(1), min: +p.min.toFixed(1), win: +p.win.toFixed(4), top3: +p.top3.toFixed(4),
       pPlay: p.pPlay, gp: p.gp, isNew: p.isNew || undefined,
       inj: out[p.pid]?.injury?.status ?? undefined,
+      // Context (v2): teammates-out bump, the bump if a questionable teammate sits, opponent defense.
+      bump: Math.abs(p.bump - 1) >= 0.005 ? +p.bump.toFixed(3) : undefined,
+      outPct: p.outPct >= 0.005 ? +p.outPct.toFixed(3) : undefined,
+      bumpIf: p.bumpIf && p.bumpIf.pct >= 0.005 ? { pid: p.bumpIf.pid, pct: +p.bumpIf.pct.toFixed(3) } : undefined,
+      def: Math.abs(p.def - 1) >= 0.005 ? +p.def.toFixed(3) : undefined,
       ...(promo
         ? { share: +p.share.toFixed(5), value: +p.value.toFixed(3), estPayout: p.estPayout != null ? Math.round(p.estPayout) : null, ev: p.ev != null ? +p.ev.toFixed(2) : null }
         : {}),
@@ -110,7 +116,10 @@ for (const d of [...targets].sort()) {
 // Names and teams for every player the page shows (graded days included).
 const pids = new Set();
 for (const day of Object.values(store.days)) {
-  for (const p of day.players) pids.add(p.pid);
+  for (const p of day.players) {
+    pids.add(p.pid);
+    if (p.bumpIf) pids.add(p.bumpIf.pid);
+  }
   for (const p of day.out ?? []) pids.add(p.pid);
   for (const pid of day.result?.kings ?? []) pids.add(pid);
 }

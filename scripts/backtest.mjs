@@ -3,7 +3,8 @@
 // writes data/backtest-<season>.json for the Model page.
 //
 //   node scripts/backtest.mjs [season]        # default 2025 (2025-26), prior = season − 1
-//   node scripts/backtest.mjs --fit           # grid-search the constants on Oct–Jan only
+//   node scripts/backtest.mjs --fit           # grid-search the v2 context constants on Oct–Jan only
+//   node scripts/backtest.mjs --fit-base      # grid-search the v1 projection constants on Oct–Jan only
 //
 // Known lookahead, stated on the Model page: the candidate list for a day is the players who
 // actually played, which stands in for the final injury report at tip-off (late scratches are
@@ -21,6 +22,7 @@ const DATA_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "
 const args = process.argv.slice(2);
 const season = Number(args.find((a) => /^\d{4}$/.test(a)) ?? 2025);
 const fit = args.includes("--fit");
+const fitBase = args.includes("--fit-base");
 // Fit window: October–January. Holdout: February to the end of the season.
 const HOLDOUT_FROM = `${season + 1}-02-01`;
 
@@ -42,23 +44,29 @@ const gameDays = days.map((d) => d.d);
 
 const byDay = {};
 for (const r of rows) (byDay[r.d] ??= []).push(r);
+const rowDays = Object.keys(byDay).sort();
+const posOf = (pid) => cur.players[pid]?.pos;
 
-// Current-season games per player, newest first, built incrementally as the days advance.
+// Current-season games per player, newest first, and the team context (teammates out, defense),
+// both built incrementally as the days advance.
 function* replay(filter) {
   const hist = {};
-  let i = 0;
+  const ctx = M.newContext(prior, posOf, M.MODEL);
+  let i = 0, j = 0;
   const sorted = [...rows].sort((a, b) => (a.d < b.d ? -1 : a.d > b.d ? 1 : 0));
   for (const day of days) {
     while (i < sorted.length && sorted[i].d < day.d) {
       (hist[sorted[i].pid] ??= []).unshift(sorted[i]);
       i++;
     }
+    while (j < rowDays.length && rowDays[j] < day.d) M.addDay(ctx, rowDays[j], byDay[rowDays[j++]], cur.games);
     if (!filter(day.d)) continue;
-    // No lookahead: everything in `hist` is from an earlier date.
+    // No lookahead: everything in `hist` and `ctx` is from an earlier date.
     for (const k in hist) if (hist[k][0] && hist[k][0].d >= day.d) throw new Error(`lookahead on ${day.d}`);
+    if (ctx.lastDay >= day.d) throw new Error(`context lookahead on ${day.d}`);
     const games = [...new Set(byDay[day.d].map((r) => r.gid))].map((gid) => ({ gid, ...cur.games[gid] }));
     const candidates = byDay[day.d].map((r) => ({ pid: r.pid, tm: r.tm, pPlay: 1 }));
-    yield { day, games, candidates, hist };
+    yield { day, games, candidates, hist, ctx };
   }
 }
 
@@ -67,7 +75,58 @@ const praOf = (d, pid) => byDay[d].find((r) => r.pid === pid)?.pra;
 
 // ---- Fitting: projection error for players who could plausibly win, then the spread ----
 
+// The context constants as fitted by --fit (2025-26 Oct–Jan), used by the ablation even when the
+// keep rule (lower holdout log loss) has switched a factor off in MODEL.
+const FITTED = { teamK: 0.4, defShrink: 12000 };
+
 if (fit) {
+  // v2 context constants, with the v1 projection constants held fixed. Same sample for every
+  // variant: players whose plain projection is 28+.
+  const grid = [];
+  for (const teamK of [0, 0.2, 0.3, 0.4, 0.5, 0.7])
+    for (const defShrink of [null, 1500, 3000, 6000, 12000, 24000])
+      for (const defByPos of defShrink == null ? [false] : [false, true]) grid.push({ ...M.MODEL, teamK, defShrink, defByPos });
+  const se = grid.map(() => 0);
+  let n = 0;
+  for (const { day, games, candidates, hist, ctx } of replay(inFit)) {
+    const byTeam = {};
+    for (const g of games) {
+      byTeam[g.home] = { g, home: true, opp: g.away };
+      byTeam[g.away] = { g, home: false, opp: g.home };
+    }
+    const base = {};
+    for (const c of candidates) {
+      const mean = M.gameMean(M.projectPlayer(hist[c.pid], prior[c.pid]), byTeam[c.tm].g, byTeam[c.tm].home);
+      if (mean >= 28) base[c.pid] = mean;
+    }
+    const keep = Object.keys(base);
+    if (!keep.length) continue;
+    n += keep.length;
+    grid.forEach((m, gi) => {
+      const adj = M.contextAdjust(ctx, day.d, candidates, byTeam, m).players;
+      for (const pid of keep) {
+        const e = praOf(day.d, pid) - base[pid] * adj[pid].bump * adj[pid].def;
+        se[gi] += e * e;
+      }
+    });
+  }
+  const results = grid.map((m, gi) => ({ m, rmse: Math.sqrt(se[gi] / n) })).sort((a, b) => a.rmse - b.rmse);
+  console.log(`Context constants by RMSE on players projected 28+, Oct–Jan (n=${n}):`);
+  for (const r of results.slice(0, 10)) console.log(`  rmse ${r.rmse.toFixed(3)}  teamK=${r.m.teamK} defShrink=${r.m.defShrink} defByPos=${r.m.defByPos}`);
+  const v1 = results.find((r) => !r.m.teamK && r.m.defShrink == null);
+  console.log(`  v1 (neither): rmse ${v1.rmse.toFixed(3)}`);
+  const best = results[0].m;
+  console.log("Log loss of the King's win chance, Oct–Jan (2,000 sims a day), with the best context constants:");
+  for (const sdScale of [0.9, 1, 1.1])
+    for (const gameSd of [0.06, 0.12]) {
+      const m = { ...best, sd0: best.sd0 * sdScale, sd1: best.sd1 * sdScale, gameSd };
+      const s = score(m, inFit, 2000);
+      console.log(`  sd×${sdScale} gameSd=${gameSd}: log loss ${s.logLoss.toFixed(3)}, top pick won ${s.hits}/${s.n}`);
+    }
+  process.exit(0);
+}
+
+if (fitBase) {
   const grid = [];
   for (const halfLife of [3, 4, 6, 8])
     for (const minPriorGames of [0.5, 1, 2])
@@ -143,8 +202,8 @@ function kingProb(preds, kings) {
 
 function score(m, filter, sims) {
   let ll = 0, n = 0, hits = 0;
-  for (const { day, games, candidates, hist } of replay(filter)) {
-    const preds = M.predictDay(day.d, games, candidates, hist, prior, m, sims);
+  for (const { day, games, candidates, hist, ctx } of replay(filter)) {
+    const preds = M.predictDay(day.d, games, candidates, hist, prior, m, sims, ctx);
     const p = Math.max(kingProb(preds, day.kings), 1e-4);
     ll -= Math.log(p);
     n++;
@@ -156,8 +215,8 @@ function score(m, filter, sims) {
 // ---- Full backtest ----
 
 const out = [];
-for (const { day, games, candidates, hist } of replay(() => true)) {
-  const preds = M.predictDay(day.d, games, candidates, hist, prior, M.MODEL);
+for (const { day, games, candidates, hist, ctx } of replay(() => true)) {
+  const preds = M.predictDay(day.d, games, candidates, hist, prior, M.MODEL, M.MODEL.sims, ctx);
   // Baseline: highest PRA per game so far (3+ games this season, else last season).
   const avg = (pid) => {
     const g = hist[pid];
@@ -195,7 +254,7 @@ for (const { day, games, candidates, hist } of replay(() => true)) {
     rankMean: rankOf(byMean, day.kings),
     pick: preds[0].pid,
     avgPick: byAvg[0].pid,
-    top: preds.slice(0, 10).map((p) => ({ pid: p.pid, tm: p.tm, opp: p.opp, home: p.home, mean: +p.mean.toFixed(1), win: +p.win.toFixed(4), top3: +p.top3.toFixed(4), pra: praOf(day.d, p.pid), ...(promo ? { share: +p.share.toFixed(4), value: +p.value.toFixed(3) } : {}) })),
+    top: preds.slice(0, 10).map((p) => ({ pid: p.pid, tm: p.tm, opp: p.opp, home: p.home, mean: +p.mean.toFixed(1), win: +p.win.toFixed(4), top3: +p.top3.toFixed(4), pra: praOf(day.d, p.pid), ...(p.outPct >= 0.005 ? { outPct: +p.outPct.toFixed(3) } : {}), ...(promo ? { share: +p.share.toFixed(4), value: +p.value.toFixed(3) } : {}) })),
     value,
     preds: preds.filter((p) => p.win > 0).map((p) => [p.pid, +p.win.toFixed(4)]),
   });
@@ -240,6 +299,29 @@ function valueRecord(list) {
 }
 const entrantsList = out.map((x) => x.value?.entrants).filter((t) => t);
 
+// Ablation: what each context factor adds, by window. The keep rule is holdout log loss.
+function windows(m) {
+  const acc = { fit: { ll: 0, n: 0, hits: 0 }, holdout: { ll: 0, n: 0, hits: 0 } };
+  for (const { day, games, candidates, hist, ctx } of replay(() => true)) {
+    const preds = M.predictDay(day.d, games, candidates, hist, prior, m, m.sims, ctx);
+    const a = acc[inFit(day.d) ? "fit" : "holdout"];
+    a.ll -= Math.log(Math.max(kingProb(preds, day.kings), 1e-4));
+    a.n++;
+    if (day.kings.includes(preds[0].pid)) a.hits++;
+  }
+  for (const a of Object.values(acc)) a.ll /= a.n;
+  return acc;
+}
+const variants = {
+  v1: { teamK: 0, defShrink: null },
+  teammates: { teamK: FITTED.teamK, defShrink: null },
+  defense: { teamK: 0, defShrink: FITTED.defShrink, defByPos: false },
+  defensePos: { teamK: 0, defShrink: FITTED.defShrink, defByPos: true },
+  both: { teamK: FITTED.teamK, defShrink: FITTED.defShrink, defByPos: false },
+};
+const ablation = { fitted: FITTED, variants: {} };
+for (const [k, v] of Object.entries(variants)) ablation.variants[k] = windows({ ...M.MODEL, ...v });
+
 const result = {
   season,
   label: cur.label,
@@ -250,6 +332,7 @@ const result = {
   calibration: calib.map((c) => ({ lo: c.lo, hi: c.hi, n: c.n, pred: c.n ? c.pred / c.n : null, actual: c.n ? c.won / c.n : null })),
   days: out.map(({ preds, ...x }) => x),
   valueRecord: valueRecord(out),
+  ablation,
   // Entrants implied by winners' payouts (see impliedEntrants); predict.mjs uses the median
   // until this season has enough nights of its own.
   entrants: { median: M.median(entrantsList), nights: entrantsList.length },
@@ -263,5 +346,7 @@ for (const k of ["fit", "holdout"]) {
   console.log(`   top pick won: model ${x.model.first}, best PRA avg ${x.avg.first}, highest projection ${x.mean.first} | King in model top 3: ${x.model.top3}, top 5: ${x.model.top5}`);
 }
 console.log("calibration:", result.calibration.map((c) => `${(c.lo * 100).toFixed(0)}–${(c.hi * 100).toFixed(0)}%: n=${c.n} pred ${c.pred == null ? "–" : (c.pred * 100).toFixed(1)} actual ${c.actual == null ? "–" : (c.actual * 100).toFixed(1)}`).join(" | "));
+console.log("ablation (log loss, top pick won):");
+for (const [k, a] of Object.entries(ablation.variants)) console.log(`  ${k.padEnd(11)} fit ${a.fit.ll.toFixed(3)} ${a.fit.hits}/${a.fit.n} | holdout ${a.holdout.ll.toFixed(3)} ${a.holdout.hits}/${a.holdout.n}`);
 const vr = result.valueRecord;
 console.log(`value record (${vr.favorite.nights} promo nights with known payouts): ${Object.entries(vr).map(([k, r]) => `${k} ${r.wins} wins $${Math.round(r.total).toLocaleString()}`).join(" | ")} · entrants median ${Math.round(result.entrants.median).toLocaleString()} (${result.entrants.nights} nights)`);
