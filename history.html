@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Promo History · King of the Court</title>
+  <meta name="description" content="Every 2025-26 DraftKings King of the Court night: winners, PRA, prize pool, payout per winning bet and the model's chance.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="style.css?v=63da8fbb">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <a class="wordmark" href="./">King of the <span>Court</span></a>
+      <nav class="tabs">
+        <a href="./">Tonight</a>
+        <a href="season.html">Season</a>
+        <a href="history.html" aria-current="page">History</a>
+        <a href="model.html">Model</a>
+        <button type="button" class="theme-btn" id="theme" aria-label="Switch theme">☾</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="page-head">
+      <h1 id="title">Promo history</h1>
+      <p class="sub" id="sub"></p>
+    </div>
+    <div id="status" hidden></div>
+
+    <section class="card">
+      <div class="tiles" id="tiles"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>Every promo night</h2><label class="field">Season<select id="season"></select></label></div>
+      <div class="table-wrap"><div id="table"></div></div>
+      <p class="note">
+        <b>King</b>: the players DraftKings paid. On Three Kings nights the top three PRA all won a share (a separate $1M pool per place), so
+        all three are listed, but only #1 gets a crown in the crown counts. <b>Payout</b> is the bonus bet each winning token received, as
+        reported by DK Network or DK's social accounts; "–" means it wasn't published. A small payout means lots of people picked that
+        player. <b>Model</b> is the chance the model gave the King that night in a replay of the season (see the <a href="model.html">Model</a>
+        page; for 2025-26 that's a backtest, not a live prediction), with the King's rank in the model's list under it.
+        Dates link to the full night. <b>Notes</b> flag where ESPN's final box score and DK's result differ.
+      </p>
+    </section>
+
+    <footer>Promo details hand-checked against DK Network's King of the Court posts (linked per night). Box scores from ESPN. Not affiliated with DraftKings.</footer>
+  </main>
+
+  <script src="model.js?v=50a4b540"></script>
+  <script src="common.js?v=dda2d96a"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const params = getParams();
+
+    async function main() {
+      const s = await getSeasons();
+      // History defaults to the last finished season.
+      const past = (s.seasons ?? []).filter((x) => x < s.current);
+      let season = Number(params.s ?? past.at(-1) ?? s.current);
+      $("season").innerHTML = (s.seasons ?? [s.current]).slice().reverse().map((x) => `<option value="${x}"${x === season ? " selected" : ""}>${seasonLabel(x)}</option>`).join("");
+      $("season").addEventListener("change", () => {
+        season = Number($("season").value);
+        setParams({ s: season });
+        load(season, s).catch(showError);
+      });
+      await load(season, s);
+    }
+
+    async function load(season, manifest) {
+      const [L, promos, bt, pred] = await Promise.all([
+        getData(`leaders-${season}.json`),
+        getData(`promos-${season}.json`, { optional: true }),
+        manifest.backtests?.includes(season) ? getData(`backtest-${season}.json`, { optional: true }) : null,
+        manifest.live?.includes(season) ? getData(`predictions-${season}.json`, { optional: true }) : null,
+      ]);
+      const names = { ...L.names, ...(bt?.names ?? {}), ...(pred?.names ?? {}) };
+      const gameDays = L.days.map((x) => x.d);
+      const dayOf = Object.fromEntries(L.days.map((x) => [x.d, x]));
+      const btOf = Object.fromEntries((bt?.days ?? []).map((x) => [x.d, x]));
+      $("title").textContent = `${L.label} promo history`;
+      $("sub").textContent = promos?.day ? `King of the Court ran on ${promos.day}s in ${L.label}.` : "";
+
+      const rows = gameDays
+        .map((d) => ({ d, promo: promoInfo(promos, d, gameDays), day: dayOf[d] }))
+        .filter((r) => r.promo && r.day?.final)
+        .map((r) => {
+          const crowns = promoCrowns(r.promo, r.day);
+          const paid = r.promo.winners.length ? r.promo.winners.map((w) => w.pid) : r.day.kings;
+          const live = pred?.days?.[r.d]?.result;
+          const b = live ?? btOf[r.d];
+          return {
+            ...r, crowns, paid,
+            pra: r.day.top.find((t) => t.pid === crowns[0])?.pra ?? r.day.top[0].pra,
+            payout: r.promo.winners.find((w) => crowns.includes(w.pid))?.payout ?? null,
+            pKing: b?.pKing ?? null, rank: b?.rank ?? null, live: !!live,
+          };
+        })
+        .reverse();
+
+      // Tiles: the season at a glance.
+      const crownsBy = {};
+      for (const r of rows) for (const pid of r.crowns) crownsBy[pid] = (crownsBy[pid] ?? 0) + 1;
+      const [topPid, topN] = Object.entries(crownsBy).sort((a, b) => b[1] - a[1])[0] ?? [];
+      const pays = rows.map((r) => r.payout).filter((x) => x != null).sort((a, b) => a - b);
+      const median = pays.length ? pays[Math.floor(pays.length / 2)] : null;
+      const withModel = rows.filter((r) => r.rank != null);
+      const tile = (k, v, s) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`;
+      $("tiles").innerHTML = [
+        tile("Promo nights", rows.length, rows.filter((r) => r.promo.format === "three").length ? `${rows.filter((r) => r.promo.format === "three").length} were Three Kings` : "&nbsp;"),
+        tile("Different Kings", Object.keys(crownsBy).length, "players with a crown"),
+        tile("Most crowns", topN ? `${crown}${topN}` : "–", topPid ? playerName(names, topPid) : "&nbsp;"),
+        tile("Median payout", fmt.money(median), `per winning bet · ${pays.length} published`),
+        tile("Model's top pick won", withModel.length ? `${withModel.filter((r) => r.rank === 1).length} of ${withModel.length}` : "–", "promo nights"),
+      ].join("");
+
+      renderTable(
+        $("table"),
+        rows.map((r) => ({ ...r, _cls: "" })),
+        [
+          { key: "d", label: "Date", cls: "l", fmt: (r) => `<a class="day" href="day.html?d=${r.d}">${dateText(r.d)}</a>${r.promo.format === "three" ? ` <span class="tag gold">Three Kings</span>` : ""}` },
+          { key: "pool", label: "Pool", fmt: (r) => fmt.money(r.promo.pool) },
+          {
+            key: "king", label: "King", cls: "l", nosort: true,
+            fmt: (r) => r.paid.map((pid) => `${r.crowns.includes(pid) ? crown : `<span class="muted">${r.day.top.findIndex((t) => t.pid === pid) + 1}.</span> `}${playerName(names, pid)} <span class="muted">${r.day.top.find((t) => t.pid === pid)?.pra ?? ""}</span>`).join("<br>"),
+          },
+          { key: "pra", label: "PRA", cls: "key", fmt: (r) => r.pra },
+          { key: "payout", label: "Payout", fmt: (r) => fmt.money(r.payout) },
+          { key: "pKing", label: "Model", fmt: (r) => (r.pKing == null ? "–" : `${fmt.pct(r.pKing)}<small class="ln">${r.rank ? `ranked ${ordinal(r.rank)}` : "outside top 25"}${r.live ? " · live" : ""}</small>`) },
+          { key: "note", label: "Notes", cls: "l wrap", nosort: true, fmt: (r) => `<span class="note-cell">${esc(r.promo.note ?? "")}</span>${r.promo.source ? ` <a href="${esc(r.promo.source)}" rel="noopener" target="_blank">Source</a>` : ""}` },
+        ],
+        { sort: "d", dir: "desc", nosort: true },
+        () => {},
+        "No promo nights yet."
+      );
+    }
+
+    function ordinal(n) {
+      const s = ["th", "st", "nd", "rd"], v = n % 100;
+      return n + (s[(v - 20) % 10] || s[v] || s[0]);
+    }
+
+    main().catch(showError);
+  </script>
+</body>
+</html>

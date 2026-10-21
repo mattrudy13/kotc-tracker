@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Season PRA Leaders · King of the Court</title>
+  <meta name="description" content="Every night's points + rebounds + assists leader, season PRA averages and King of the Court crown counts.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="style.css?v=63da8fbb">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <a class="wordmark" href="./">King of the <span>Court</span></a>
+      <nav class="tabs">
+        <a href="./">Tonight</a>
+        <a href="season.html" aria-current="page">Season</a>
+        <a href="history.html">History</a>
+        <a href="model.html">Model</a>
+        <button type="button" class="theme-btn" id="theme" aria-label="Switch theme">☾</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="page-head">
+      <h1 id="title">Season leaders</h1>
+      <p class="sub">Points + rebounds + assists (PRA) across every regular-season game, NBA Cup included. <span class="updated" id="updated"></span></p>
+    </div>
+    <div id="status" hidden></div>
+
+    <section class="card">
+      <div class="controls">
+        <label class="field">Season<select id="season"></select></label>
+        <div class="field">Show
+          <div class="seg" id="view">
+            <button type="button" data-v="days">Nightly leaders</button>
+            <button type="button" data-v="avg">PRA averages</button>
+            <button type="button" data-v="crowns">Crowns</button>
+          </div>
+        </div>
+        <label class="field" id="q-wrap" hidden>Search<input type="search" id="q" placeholder="Player name"></label>
+        <label class="field inline" id="promo-wrap"><input type="checkbox" id="promoOnly"> Promo nights only</label>
+        <label class="field inline" id="all-wrap" hidden><input type="checkbox" id="all"> Show everyone</label>
+      </div>
+      <div class="table-wrap" style="margin-top:1rem"><div id="table"></div></div>
+      <p class="note" id="note"></p>
+    </section>
+
+    <footer>Data from ESPN, refreshed automatically during the season. Not affiliated with DraftKings.</footer>
+  </main>
+
+  <script src="model.js?v=50a4b540"></script>
+  <script src="common.js?v=dda2d96a"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const params = getParams();
+    const state = { view: params.view ?? "days", sort: null, dir: "desc", promoOnly: params.promo === "1", all: params.all === "1", q: params.q ?? "" };
+    let L, promos, season, gameDays;
+
+    const NOTES = {
+      days: `One row per night. The <b>King</b> is the night's PRA leader in ESPN's final box score; ties share the crown.
+        Promo nights are marked with a purple edge and a <span class="tag gold">Promo</span> tag. On promo nights the crown follows who DraftKings paid
+        when that's known (on 3/17/26 DK paid Jalen Duren alone though ESPN's box score has a tie), and on Three Kings nights only #1 gets a crown.
+        <b>Runner-up</b> is the next-best PRA that night.`,
+      avg: `Per-game averages. By default a player needs to have played in at least 70% of their team's games so far (the NBA uses a
+        similar rule for its stat leaders); tick <b>Show everyone</b> to drop it. <b>Best</b> is the player's highest single-night PRA.`,
+      crowns: `<b>Promo crowns</b> count King of the Court nights won. <b>Nightly crowns</b> count every night the player led all players in PRA,
+        promo or not. Ties give each tied player a crown.`,
+    };
+
+    async function main() {
+      const s = await getSeasons();
+      const seasons = s.seasons ?? [s.current];
+      season = Number(params.s ?? s.current);
+      $("season").innerHTML = seasons.slice().reverse().map((x) => `<option value="${x}"${x === season ? " selected" : ""}>${seasonLabel(x)}</option>`).join("");
+      $("season").addEventListener("change", () => {
+        season = Number($("season").value);
+        load().catch(showError);
+      });
+      initSeg("view", state.view, (v) => {
+        state.view = v;
+        state.sort = null;
+        render();
+      });
+      $("promoOnly").checked = state.promoOnly;
+      $("all").checked = state.all;
+      $("q").value = state.q;
+      $("promoOnly").addEventListener("change", (e) => ((state.promoOnly = e.target.checked), render()));
+      $("all").addEventListener("change", (e) => ((state.all = e.target.checked), render()));
+      $("q").addEventListener("input", (e) => ((state.q = e.target.value), render()));
+      await load();
+    }
+
+    async function load() {
+      [L, promos] = await Promise.all([getData(`leaders-${season}.json`), getData(`promos-${season}.json`, { optional: true })]);
+      gameDays = L.days.map((x) => x.d);
+      $("title").textContent = `${L.label} season leaders`;
+      $("updated").textContent = `Updated ${stampText(L.updated)}.`;
+      render();
+    }
+
+    const promoOf = (d) => promoInfo(promos, d, gameDays);
+    const lineText = (t) => `${t.pts} / ${t.reb} / ${t.ast}`;
+
+    function render() {
+      setParams({ s: season, view: state.view === "days" ? "" : state.view, promo: state.promoOnly, all: state.all, q: state.q });
+      $("q-wrap").hidden = state.view === "days";
+      $("promo-wrap").hidden = state.view !== "days";
+      $("all-wrap").hidden = state.view !== "avg";
+      $("note").innerHTML = NOTES[state.view];
+      ({ days: renderDays, avg: renderAvg, crowns: renderCrowns })[state.view]();
+    }
+
+    function renderDays() {
+      state.sort ??= "d";
+      let rows = L.days.filter((x) => x.final).map((x) => {
+        const promo = promoOf(x.d);
+        const kings = promo ? promoCrowns(promo, x) : x.kings;
+        const runner = x.top.find((t) => !x.kings.includes(t.pid));
+        return { ...x, promo, crowns: kings, pra: x.top[0].pra, runner, _cls: promo ? "promo" : "" };
+      });
+      if (state.promoOnly) rows = rows.filter((r) => r.promo);
+      renderTable($("table"), rows, [
+        { key: "d", label: "Date", cls: "l", fmt: (r) => `<a class="day" href="day.html?d=${r.d}">${dateText(r.d)}</a>${r.promo ? ` <span class="tag gold">${r.promo.format === "three" ? "Three Kings" : "Promo"}</span>` : ""}` },
+        { key: "games", label: "Games", fmt: (r) => r.games },
+        { key: "king", label: "King", cls: "l", sort: (r) => L.names[r.crowns[0]]?.n ?? "", fmt: (r) => r.crowns.map((pid) => `${crown}${playerName(L.names, pid)}`).join("<br>") + `<small class="ln">${r.crowns.map((pid) => esc(r.top.find((t) => t.pid === pid)?.tm ?? "")).join(" · ")}</small>` },
+        { key: "line", label: "Pts / Reb / Ast", nosort: true, fmt: (r) => lineText(r.top.find((t) => t.pid === r.crowns[0]) ?? r.top[0]) },
+        { key: "pra", label: "PRA", cls: "key", fmt: (r) => r.pra },
+        { key: "runner", label: "Runner-up", cls: "l", sort: (r) => r.runner?.pra, fmt: (r) => (r.runner ? `${playerName(L.names, r.runner.pid)} <span class="muted">${r.runner.pra}</span>` : "–") },
+      ], state, render, "No finished nights yet.");
+    }
+
+    function renderAvg() {
+      state.sort ??= "pra";
+      const tg = L.averages.teamGames;
+      const q = state.q.trim().toLowerCase();
+      let rows = L.averages.players.map((p) => ({
+        ...p,
+        name: L.names[p.pid]?.n ?? p.pid,
+        mpg: p.min / p.gp, ppg: p.pts / p.gp, rpg: p.reb / p.gp, apg: p.ast / p.gp,
+        pra: (p.pts + p.reb + p.ast) / p.gp,
+        qualifies: p.gp >= 0.7 * (tg[p.tm] ?? 0),
+      }));
+      if (!state.all) rows = rows.filter((r) => r.qualifies);
+      if (q) rows = rows.filter((r) => r.name.toLowerCase().includes(q));
+      renderTable($("table"), rows, [
+        { key: "rank", label: "#", cls: "rank", nosort: true, fmt: (r, i) => i + 1 },
+        { key: "name", label: "Player", cls: "l", asc: true, fmt: (r) => whoCell(L.names, r.pid, teamChip(L.teams, r.tm)) },
+        { key: "gp", label: "GP", fmt: (r) => r.gp },
+        { key: "mpg", label: "Min", fmt: (r) => fmt.d1(r.mpg) },
+        { key: "ppg", label: "Pts", fmt: (r) => fmt.d1(r.ppg) },
+        { key: "rpg", label: "Reb", fmt: (r) => fmt.d1(r.rpg) },
+        { key: "apg", label: "Ast", fmt: (r) => fmt.d1(r.apg) },
+        { key: "pra", label: "PRA", cls: "key", fmt: (r) => fmt.d1(r.pra) },
+        { key: "best", label: "Best", fmt: (r) => `${r.best}<small class="ln">${r.bestD ? dateText(r.bestD, { month: "short", day: "numeric" }) : ""}</small>` },
+      ], state, render, "No players match.");
+    }
+
+    function renderCrowns() {
+      state.sort ??= "promo";
+      const by = {};
+      const get = (pid) => (by[pid] ??= { pid, name: L.names[pid]?.n ?? pid, promo: 0, nightly: 0, best: 0 });
+      for (const x of L.days.filter((x) => x.final)) {
+        for (const pid of x.kings) {
+          get(pid).nightly++;
+          get(pid).best = Math.max(get(pid).best, x.top[0].pra);
+        }
+        const promo = promoOf(x.d);
+        if (promo) for (const pid of promoCrowns(promo, x)) get(pid).promo++;
+      }
+      const q = state.q.trim().toLowerCase();
+      let rows = Object.values(by);
+      if (q) rows = rows.filter((r) => r.name.toLowerCase().includes(q));
+      const promoNights = L.days.filter((x) => x.final && promoOf(x.d)).length;
+      renderTable($("table"), rows, [
+        { key: "name", label: "Player", cls: "l", asc: true, fmt: (r) => whoCell(L.names, r.pid, teamChip(L.teams, L.names[r.pid]?.t)) },
+        { key: "promo", label: `Promo crowns <small class="ln">of ${promoNights}</small>`, cls: "key", sort: (r) => r.promo * 1000 + r.nightly, fmt: (r) => (r.promo ? `${crown}${r.promo}` : `<span class="muted">0</span>`) },
+        { key: "nightly", label: `Nightly crowns <small class="ln">of ${L.days.filter((x) => x.final).length}</small>`, sort: (r) => r.nightly * 1000 + r.promo, fmt: (r) => r.nightly },
+        { key: "best", label: "Best winning PRA", fmt: (r) => r.best },
+      ], state, render, "No crowns yet.");
+    }
+
+    main().catch(showError);
+  </script>
+</body>
+</html>

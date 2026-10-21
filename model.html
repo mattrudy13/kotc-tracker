@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Model Record · King of the Court</title>
+  <meta name="description" content="How the King of the Court model works and how it has done: the 2025-26 backtest and this season's locked predictions.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="style.css?v=63da8fbb">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <a class="wordmark" href="./">King of the <span>Court</span></a>
+      <nav class="tabs">
+        <a href="./">Tonight</a>
+        <a href="season.html">Season</a>
+        <a href="history.html">History</a>
+        <a href="model.html" aria-current="page">Model</a>
+        <button type="button" class="theme-btn" id="theme" aria-label="Switch theme">☾</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="page-head">
+      <h1>Model record</h1>
+      <p class="sub">How often the model's favorite wins, and whether its percentages mean what they say.</p>
+    </div>
+    <div id="status" hidden></div>
+
+    <section class="card">
+      <div class="card-head"><h2 id="live-title">This season (live)</h2><span class="updated" id="live-sub"></span></div>
+      <div class="tiles" id="live-tiles"></div>
+      <div class="table-wrap" style="margin-top:1rem"><div id="live"></div></div>
+      <p class="note">
+        Each night's prediction refreshes about every two hours and locks at the first tip-off; only that locked version is graded here.
+        GitHub sometimes starts scheduled runs hours late, so if no run made it before tip-off the night is listed as
+        <b>no prediction</b> rather than graded on a late one.
+      </p>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2 id="bt-title">2025-26 backtest</h2><span class="updated" id="bt-sub"></span></div>
+      <div class="table-wrap"><div id="bt"></div></div>
+      <p class="note" id="bt-note"></p>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>Are the percentages honest?</h2></div>
+      <div class="calib" id="calib"></div>
+      <p class="note">
+        Every player-night in the backtest, grouped by the win chance the model gave. The shaded bar is the average chance the model gave;
+        the gold mark is how often those players actually won. If they line up, a "20%" really means about one night in five.
+      </p>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>How it works</h2></div>
+      <div class="note" style="font-size:.9rem">
+        <p><b>Minutes.</b> A weighted average of the player's recent minutes this season (a game's weight halves every 6 games back),
+          with last season's average counting as one extra game. Players ruled out on ESPN's injury report are dropped; questionable or
+          day-to-day players get a 70% chance to play.</p>
+        <p><b>PRA per minute.</b> The same recent weighting, pulled toward last season's rate (worth 100 minutes of this season) and,
+          for players with little history, toward a league-wide 0.78.</p>
+        <p><b>Game.</b> Projected PRA = minutes × PRA per minute, scaled up or down with the betting total (a high total means more
+          possessions). A blowout adjustment for big spreads was tested and made the projections worse, so it's off.</p>
+        <p><b>Simulation.</b> Each night is played out 10,000 times. Every player's PRA varies around the projection (the spread was measured
+          from how far 2025-26 projections actually missed), and a shared game factor moves everyone in a fast or overtime game together.
+          Win = the share of simulations a player finished first; ties count as a split.</p>
+        <p><b>Fitting and testing.</b> The settings were chosen using October–January 2025-26 only, then tested untouched on
+          February–April. The replay only ever sees games before each night, with one shortcut: it knows who actually played
+          (standing in for the final injury report), so it never has to guess about late scratches. Live predictions do have to guess, so
+          expect them to do a bit worse.</p>
+        <p><b>What it ignores</b> (for now): teammates being out (more shots for everyone else), the opponent's defense, back-to-backs, and
+          how many people pick each player, which sets the payout. See the notes on the <a href="history.html">History</a> page.</p>
+      </div>
+    </section>
+
+    <footer>Data from ESPN. Not affiliated with DraftKings.</footer>
+  </main>
+
+  <script src="model.js?v=50a4b540"></script>
+  <script src="common.js?v=dda2d96a"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const tile = (k, v, s) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`;
+
+    async function main() {
+      const { current } = await getSeasons();
+      const [pred, L, promos, bt] = await Promise.all([
+        getData(`predictions-${current}.json`, { optional: true }),
+        getData(`leaders-${current}.json`, { optional: true }),
+        getData(`promos-${current}.json`, { optional: true }),
+        getData(`backtest-${current - 1}.json`, { optional: true }),
+      ]);
+      renderLive(current, pred, L, promos);
+      if (bt) renderBacktest(bt);
+    }
+
+    function renderLive(season, pred, L, promos) {
+      $("live-title").textContent = `${seasonLabel(season)} (live)`;
+      const names = { ...(L?.names ?? {}), ...(pred?.names ?? {}) };
+      const finals = (L?.days ?? []).filter((x) => x.final);
+      const gameDays = (L?.days ?? []).map((x) => x.d);
+      // Grading started with the first locked prediction; earlier nights are simply before launch.
+      const first = Object.keys(pred?.days ?? {}).sort()[0];
+      const rows = finals
+        .filter((x) => first && x.d >= first)
+        .map((x) => ({ d: x.d, day: x, p: pred.days[x.d], promo: promoInfo(promos, x.d, gameDays) }))
+        .reverse();
+      const graded = rows.filter((r) => r.p?.result);
+      const promoG = graded.filter((r) => r.promo);
+      const hits = (list) => list.filter((r) => r.p.result.rank === 1).length;
+      const avgP = graded.length ? graded.reduce((s, r) => s + r.p.result.pKing, 0) / graded.length : null;
+      $("live-sub").textContent = pred?.updated ? `Updated ${stampText(pred.updated)}` : "";
+      $("live-tiles").innerHTML = [
+        tile("Nights graded", graded.length, `${rows.length - graded.length} with no prediction`),
+        tile("Top pick won", graded.length ? `${hits(graded)} of ${graded.length}` : "–", graded.length ? fmt.pct0(hits(graded) / graded.length) : "&nbsp;"),
+        tile("On promo nights", promoG.length ? `${hits(promoG)} of ${promoG.length}` : "–", "&nbsp;"),
+        tile("King's avg chance", fmt.pct(avgP), "what the model gave the winner"),
+      ].join("");
+      renderTable($("live"), rows.map((r) => ({ ...r, _cls: r.promo ? "promo" : "" })), [
+        { key: "d", label: "Date", cls: "l", fmt: (r) => `<a class="day" href="day.html?d=${r.d}">${dateText(r.d)}</a>${r.promo ? ` <span class="tag gold">Promo</span>` : ""}` },
+        { key: "pick", label: "Model's pick", cls: "l", fmt: (r) => (r.p ? `${playerName(names, r.p.players[0].pid)} <span class="muted">${fmt.pct(r.p.players[0].win)}</span>` : `<span class="muted">no prediction</span>`) },
+        { key: "king", label: "King", cls: "l", fmt: (r) => r.day.kings.map((pid) => `${crown}${playerName(names, pid)}`).join("<br>") },
+        { key: "pk", label: "King's chance", cls: "key", fmt: (r) => (r.p?.result ? fmt.pct(r.p.result.pKing) : "–") },
+        { key: "rank", label: "King's rank", fmt: (r) => (r.p?.result ? r.p.result.rank ?? "25+" : "–") },
+      ], { nosort: true }, () => {}, "No graded nights yet. The first locked prediction is graded the morning after its games.");
+    }
+
+    function renderBacktest(bt) {
+      const s = bt.summary;
+      $("bt-title").textContent = `${bt.label} backtest`;
+      $("bt-sub").textContent = `Model v${bt.model.version}`;
+      const cell = (x, k) => `${x[k].first} <span class="muted">(${fmt.pct0(x[k].first / x.days)})</span>`;
+      const rows = [
+        { name: "Model's top pick", f: s.fit, h: s.holdout, k: "model" },
+        { name: "Highest PRA average", f: s.fit, h: s.holdout, k: "avg" },
+        { name: "Highest projected PRA", f: s.fit, h: s.holdout, k: "mean" },
+      ];
+      renderTable($("bt"), rows, [
+        { key: "name", label: "Who wins the night?", cls: "l", fmt: (r) => `<b>${r.name}</b>` },
+        { key: "f", label: `Oct–Jan <small class="ln">fitting · ${s.fit.days} nights</small>`, fmt: (r) => cell(r.f, r.k) },
+        { key: "h", label: `Feb–Apr <small class="ln">holdout · ${s.holdout.days} nights</small>`, cls: "key", fmt: (r) => cell(r.h, r.k) },
+        { key: "t5", label: `In its top 5 <small class="ln">holdout</small>`, fmt: (r) => `${r.h[r.k].top5} <span class="muted">(${fmt.pct0(r.h[r.k].top5 / r.h.days)})</span>` },
+      ], { nosort: true }, () => {});
+      const h = s.holdout;
+      $("bt-note").innerHTML = `On the holdout nights the model gave the eventual King <b>${fmt.pct(h.avgPKing)}</b> on average
+        (log loss ${h.logLoss.toFixed(2)}; a guess spread evenly over every player who played would score ${h.uniformLogLoss.toFixed(2)}, lower is better).
+        The plain "highest PRA average" pick is a strong baseline: the model's edge over it is real but small, about
+        ${h.model.first - h.avg.first} more winning nights out of ${h.days}. With ~200 players a night, even the favorite usually loses.
+        <b>Highest projected PRA</b> ranks by the model's projection alone, without the simulation.`;
+      $("calib").innerHTML = bt.calibration
+        .filter((c) => c.n)
+        .map((c) => {
+          const scale = 0.5; // 50% is the right edge of the track
+          const w = Math.min(100, (c.pred / scale) * 100), a = Math.min(100, (c.actual / scale) * 100);
+          return `<div class="row"><span>${fmt.pct0(c.lo)}–${fmt.pct0(c.hi)}</span><div class="track"><i style="width:${w}%"></i><b style="left:calc(${a}% - 1px)"></b></div><span>${fmt.pct(c.pred)} → <b>${fmt.pct(c.actual)}</b> <span class="muted">n=${c.n.toLocaleString()}</span></span></div>`;
+        })
+        .join("");
+    }
+
+    main().catch(showError);
+  </script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>King of the Court Tracker</title>
+  <meta name="description" content="DraftKings NBA King of the Court: the next promo night's slate, model win chances and a live PRA leaderboard.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="style.css?v=63da8fbb">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <a class="wordmark" href="./">King of the <span>Court</span></a>
+      <nav class="tabs">
+        <a href="./" aria-current="page">Tonight</a>
+        <a href="season.html">Season</a>
+        <a href="history.html">History</a>
+        <a href="model.html">Model</a>
+        <button type="button" class="theme-btn" id="theme" aria-label="Switch theme">☾</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="page-head">
+      <h1 id="title">King of the Court</h1>
+      <p class="sub" id="sub">The player with the most points + rebounds + assists (PRA) on the night wins. <span class="updated" id="updated"></span></p>
+    </div>
+    <div id="status" hidden></div>
+
+    <section class="card" id="hero" hidden>
+      <div class="hero">
+        <div>
+          <div class="card-head" style="margin:0"><h2 id="hero-title"></h2><span id="hero-tag"></span></div>
+          <div class="kv" id="hero-kv"></div>
+          <div class="slate" id="slate"></div>
+        </div>
+        <div id="hero-side"></div>
+      </div>
+    </section>
+
+    <section class="card" id="live-card" hidden>
+      <div class="card-head"><h2>Live leaderboard</h2><span class="updated" id="live-updated"></span></div>
+      <div class="table-wrap"><div id="live"></div></div>
+      <p class="note">Straight from ESPN's box scores, refreshed every minute while games are on. Ties at the top split the prize.</p>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2 id="model-title">Model win chances</h2><span class="updated" id="model-updated"></span></div>
+      <div class="table-wrap"><div id="model"></div></div>
+      <p class="note" id="out-note"></p>
+      <p class="note">
+        <b>Proj PRA</b> is the model's expected points + rebounds + assists. <b>Win</b> is the share of 10,000 simulated nights
+        in which the player finished first (a tie counts as a split). <b>Top 3</b> is the share in which they finished in the top three,
+        which matters on Three Kings nights. <span class="inj q">Q</span> marks a questionable / day-to-day player: the model gives them a
+        70% chance to play, and Proj PRA assumes they play. Out players are left off. The prediction refreshes about every two hours
+        until the first tip-off, then locks; that locked version is the one graded on the <a href="model.html">Model</a> page.
+      </p>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>This season's Kings</h2><a href="season.html">Full season →</a></div>
+      <div class="table-wrap"><div id="recent"></div></div>
+    </section>
+
+    <footer>Data from ESPN, refreshed automatically during the season. Not affiliated with DraftKings. Promo details from DK Network posts.</footer>
+  </main>
+
+  <script src="model.js?v=50a4b540"></script>
+  <script src="common.js?v=dda2d96a"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    let pred, promos, leaders, names, teams, target, liveTimer;
+
+    async function main() {
+      const { current } = await getSeasons();
+      [pred, promos, leaders] = await Promise.all([
+        getData(`predictions-${current}.json`, { optional: true }),
+        getData(`promos-${current}.json`, { optional: true }),
+        getData(`leaders-${current}.json`, { optional: true }),
+      ]);
+      names = { ...(leaders?.names ?? {}), ...(pred?.names ?? {}) };
+      teams = { ...(leaders?.teams ?? {}), ...(pred?.teams ?? {}) };
+      const today = easternToday();
+      const days = Object.keys(pred?.days ?? {}).sort();
+      const promoDays = days.filter((d) => pred.days[d].promo);
+      // Tonight if it's a promo night, else the next one; after the season, the last one.
+      target = promoDays.find((d) => d >= today) ?? promoDays.at(-1) ?? days.find((d) => d >= today) ?? days.at(-1);
+      if (pred?.updated) $("updated").textContent = `Updated ${stampText(pred.updated)}.`;
+      if (!target) {
+        $("model").innerHTML = `<p class="muted">No prediction yet. The model runs every two hours on game days.</p>`;
+      } else {
+        renderHero();
+        renderModel();
+        startLive();
+      }
+      renderRecent(current);
+    }
+
+    function promoFor(d) {
+      const gameDays = (leaders?.days ?? []).map((x) => x.d).concat(Object.keys(pred?.days ?? {}));
+      return promoInfo(promos, d, gameDays);
+    }
+
+    function dayLabel(d) {
+      const today = easternToday();
+      return d === today ? "Tonight" : dateText(d, { weekday: "long", month: "short", day: "numeric" });
+    }
+
+    function renderHero() {
+      const p = pred.days[target];
+      const promo = promoFor(target);
+      const done = leaders?.days?.find((x) => x.d === target && x.final);
+      $("hero").hidden = false;
+      $("title").textContent = promo ? `${dayLabel(target)}: King of the Court` : `${dayLabel(target)}`;
+      $("hero-title").textContent = dateText(target, { weekday: "long", month: "long", day: "numeric" });
+      $("hero-tag").innerHTML = promo
+        ? `<span class="tag gold">${promo.format === "three" ? "Three Kings" : "Promo night"}</span>`
+        : `<span class="tag">Not a promo night</span>`;
+      const kv = [];
+      if (promo) kv.push(`<span>Prize pool <b>${fmt.money(promo.pool)}</b> in bonus bets${promo.assumed ? " (assumed: same as the season's first Wednesday)" : ""}</span>`);
+      kv.push(`<span><b>${p.games}</b> games</span>`, `<span>First tip <b>${timeText(p.firstTip)}</b></span>`);
+      $("hero-kv").innerHTML = kv.join("");
+      $("slate").innerHTML = p.slate
+        .slice()
+        .sort((a, b) => (a.tip < b.tip ? -1 : 1))
+        .map((g) => `<div class="g" data-gid="${esc(g.gid)}"><b>${esc(g.away)} @ ${esc(g.home)}</b><div class="t">${timeText(g.tip)}${g.total ? ` · total ${g.total}` : ""}</div></div>`)
+        .join("");
+      const fav = p.players[0];
+      let side;
+      if (done) {
+        const kings = promo ? promoCrowns(promo, done) : done.kings;
+        side = `<div class="k">${kings.length > 1 ? "Kings" : "King"} of the Court</div>${kings
+          .map((pid) => `<div class="who" style="margin:.5rem 0">${headshot(pid, 44)}<div><span class="pn">${crown}${playerName(names, pid)}</span><small>${done.top[0].pra} PRA · model gave ${fmt.pct(p.players.find((x) => x.pid === pid)?.win ?? 0)}</small></div></div>`)
+          .join("")}<a href="day.html?d=${target}">Full night →</a>`;
+      } else {
+        side = `<div class="k muted">Model favorite</div><div class="who" style="margin:.5rem 0">${headshot(fav.pid, 44)}<div><span class="pn">${playerName(names, fav.pid)}</span><small>${esc(fav.tm)} ${vsText(fav.home, fav.opp)} · ${fmt.d1(fav.mean)} proj PRA</small></div></div><div class="big">${fmt.pct(fav.win)}</div><div class="muted" style="font-size:.85rem">chance to finish first</div>`;
+      }
+      $("hero-side").innerHTML = `<div class="tile">${side}</div>`;
+    }
+
+    function winBar(p, max) {
+      return `<div class="barcell"><span>${fmt.pct(p)}</span><span class="bar"><i style="width:${Math.min(100, (p / max) * 100).toFixed(1)}%"></i></span></div>`;
+    }
+
+    function renderModel() {
+      const p = pred.days[target];
+      const locked = new Date() >= new Date(p.firstTip);
+      $("model-title").textContent = `Model win chances · ${dateText(target)}`;
+      $("model-updated").textContent = `${locked ? "Locked" : "Updated"} ${stampText(p.takenAt)}`;
+      const max = Math.max(...p.players.map((x) => x.win), 0.01);
+      const rows = p.players.slice(0, 25);
+      const kings = new Set(leaders?.days?.find((x) => x.d === target && x.final)?.kings ?? []);
+      for (const r of rows) if (kings.has(r.pid)) r._cls = "king";
+      renderTable(
+        $("model"),
+        rows,
+        [
+          { key: "rank", label: "#", cls: "rank", fmt: (r, i) => i + 1 },
+          { key: "name", label: "Player", cls: "l", fmt: (r) => whoCell(names, r.pid, `${esc(r.tm)} ${vsText(r.home, r.opp)}${injuryTag(r.inj)}`) },
+          { key: "mean", label: "Proj PRA", fmt: (r) => fmt.d1(r.mean) },
+          { key: "win", label: "Win", fmt: (r) => winBar(r.win, max) },
+          { key: "top3", label: "Top 3", fmt: (r) => fmt.pct(r.top3) },
+        ],
+        { nosort: true },
+        () => {}
+      );
+      const out = (p.out ?? []).map((o) => `${playerName(names, o.pid)} (${esc(o.tm)})`);
+      $("out-note").innerHTML = out.length ? `<b>Ruled out:</b> ${out.join(", ")}.` : "";
+    }
+
+    // ---- Live leaderboard: polls ESPN from the browser on the night itself ----
+
+    const ESPN = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba";
+    function startLive() {
+      const p = pred.days[target];
+      if (target !== easternToday()) return;
+      const msToTip = new Date(p.firstTip) - Date.now();
+      if (msToTip > 10 * 60 * 1000) {
+        liveTimer = setTimeout(startLive, Math.min(msToTip - 9 * 60 * 1000, 2 ** 31 - 1));
+        return;
+      }
+      pollLive();
+    }
+
+    async function pollLive() {
+      try {
+        const board = await (await fetch(`${ESPN}/scoreboard?dates=${target.replace(/-/g, "")}`)).json();
+        const events = (board.events ?? []).filter((e) => e.season?.type === 2 && e.competitions?.[0]?.type?.abbreviation !== "ALLSTAR");
+        const started = events.filter((e) => e.status.type.state !== "pre");
+        const sums = await Promise.all(started.map((e) => fetch(`${ESPN}/summary?event=${e.id}`).then((r) => r.json()).catch(() => null)));
+        const lines = [];
+        sums.forEach((s, i) => {
+          const e = started[i];
+          for (const team of s?.boxscore?.players ?? []) {
+            const st = team.statistics?.[0];
+            if (!st) continue;
+            const k = Object.fromEntries(st.keys.map((key, j) => [key, j]));
+            for (const a of st.athletes ?? []) {
+              if (a.didNotPlay || !a.stats?.length) continue;
+              const n = (j) => Number(a.stats[j]) || 0;
+              const pts = n(k.points), reb = n(k.rebounds), ast = n(k.assists);
+              lines.push({ pid: a.athlete.id, name: a.athlete.displayName, tm: team.team.abbreviation, pts, reb, ast, pra: pts + reb + ast, min: a.stats[k.minutes], game: e.status.type.shortDetail, state: e.status.type.state });
+            }
+          }
+        });
+        for (const e of events) {
+          const el = document.querySelector(`.slate .g[data-gid="${e.id}"]`);
+          if (!el) continue;
+          el.classList.toggle("in", e.status.type.state === "in");
+          const c = e.competitions[0].competitors;
+          const away = c.find((x) => x.homeAway === "away"), home = c.find((x) => x.homeAway === "home");
+          if (e.status.type.state !== "pre") el.querySelector(".t").textContent = `${away.score}–${home.score} · ${e.status.type.shortDetail}`;
+        }
+        lines.sort((a, b) => b.pra - a.pra || b.pts - a.pts);
+        const allDone = events.length && events.every((e) => e.status.type.state === "post");
+        $("live-card").hidden = !started.length;
+        $("live-updated").innerHTML = allDone ? "Final" : `<span class="tag live">Live</span> ${new Date().toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}`;
+        const modelWin = Object.fromEntries(pred.days[target].players.map((p) => [p.pid, p.win]));
+        const top = lines.slice(0, 15);
+        for (const r of top) if (r.pra === top[0].pra) r._cls = "king";
+        renderTable(
+          $("live"),
+          top,
+          [
+            { key: "rank", label: "#", cls: "rank", fmt: (r, i) => i + 1 },
+            { key: "name", label: "Player", cls: "l", fmt: (r) => `<div class="who">${headshot(r.pid)}<div><span class="pn">${r._cls ? crown : ""}${esc(r.name)}</span><small>${esc(r.tm)} · ${esc(r.game)}</small></div></div>` },
+            { key: "pts", label: "Pts", fmt: (r) => r.pts },
+            { key: "reb", label: "Reb", fmt: (r) => r.reb },
+            { key: "ast", label: "Ast", fmt: (r) => r.ast },
+            { key: "pra", label: "PRA", cls: "key", fmt: (r) => r.pra },
+            { key: "model", label: "Model win", fmt: (r) => (modelWin[r.pid] != null ? fmt.pct(modelWin[r.pid]) : `<span class="muted">–</span>`) },
+          ],
+          { nosort: true },
+          () => {},
+          "No stats yet."
+        );
+        if (!allDone) liveTimer = setTimeout(pollLive, 60 * 1000);
+      } catch (err) {
+        console.error(err);
+        liveTimer = setTimeout(pollLive, 2 * 60 * 1000);
+      }
+    }
+
+    function renderRecent(current) {
+      const days = (leaders?.days ?? []).filter((x) => x.final && promoFor(x.d)).reverse();
+      renderTable(
+        $("recent"),
+        days.slice(0, 8),
+        [
+          { key: "d", label: "Date", cls: "l", fmt: (r) => `<a class="day" href="day.html?d=${r.d}">${dateText(r.d)}</a>` },
+          { key: "kings", label: "King", cls: "l", fmt: (r) => promoCrowns(promoFor(r.d), r).map((pid) => `${crown}${playerName(names, pid)}`).join(" · ") },
+          { key: "pra", label: "PRA", cls: "key", fmt: (r) => r.top[0].pra },
+          { key: "line", label: "Pts / Reb / Ast", fmt: (r) => `${r.top[0].pts} / ${r.top[0].reb} / ${r.top[0].ast}` },
+          { key: "pay", label: "Payout per bet", fmt: (r) => fmt.money(promoFor(r.d)?.winners?.[0]?.payout ?? null) },
+        ],
+        { nosort: true },
+        () => {},
+        `No promo nights finished yet in ${seasonLabel(current)}. Last season's are on the <a href="history.html">History</a> page.`
+      );
+    }
+
+    main().catch(showError);
+  </script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Night Detail · King of the Court</title>
+  <meta name="description" content="One NBA night: the PRA leaderboard and the model's chances for each player.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="style.css?v=63da8fbb">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <a class="wordmark" href="./">King of the <span>Court</span></a>
+      <nav class="tabs">
+        <a href="./">Tonight</a>
+        <a href="season.html">Season</a>
+        <a href="history.html">History</a>
+        <a href="model.html">Model</a>
+        <button type="button" class="theme-btn" id="theme" aria-label="Switch theme">☾</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="page-head">
+      <div class="daynav" id="daynav"></div>
+      <h1 id="title">Night</h1>
+      <p class="sub" id="sub"></p>
+    </div>
+    <div id="status" hidden></div>
+
+    <section class="card" id="result-card" hidden>
+      <div class="card-head"><h2>PRA leaderboard</h2><span class="updated" id="result-sub"></span></div>
+      <div class="table-wrap"><div id="result"></div></div>
+    </section>
+
+    <section class="card" id="model-card" hidden>
+      <div class="card-head"><h2>Model</h2><span class="updated" id="model-sub"></span></div>
+      <div class="table-wrap"><div id="model"></div></div>
+      <p class="note" id="model-note"></p>
+    </section>
+
+    <footer>Data from ESPN. Not affiliated with DraftKings.</footer>
+  </main>
+
+  <script src="model.js?v=50a4b540"></script>
+  <script src="common.js?v=dda2d96a"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    async function main() {
+      const manifest = await getSeasons();
+      const d = /^\d{4}-\d{2}-\d{2}$/.test(getParams().d ?? "") ? getParams().d : easternToday();
+      const [y, mo] = d.split("-").map(Number);
+      const season = mo >= 8 ? y : y - 1;
+      const [L, promos, pred, bt] = await Promise.all([
+        getData(`leaders-${season}.json`, { optional: true }),
+        getData(`promos-${season}.json`, { optional: true }),
+        manifest.live?.includes(season) ? getData(`predictions-${season}.json`, { optional: true }) : null,
+        manifest.backtests?.includes(season) ? getData(`backtest-${season}.json`, { optional: true }) : null,
+      ]);
+      const names = { ...(L?.names ?? {}), ...(bt?.names ?? {}), ...(pred?.names ?? {}) };
+      const days = [...new Set([...(L?.days ?? []).map((x) => x.d), ...Object.keys(pred?.days ?? {})])].sort();
+      const day = L?.days?.find((x) => x.d === d);
+      const promo = promoInfo(promos, d, days);
+
+      // Previous / next night.
+      const i = days.indexOf(d);
+      const prev = i > 0 ? days[i - 1] : days.filter((x) => x < d).at(-1);
+      const next = i >= 0 ? days[i + 1] : days.find((x) => x > d);
+      $("daynav").innerHTML = [prev && `<a href="?d=${prev}">← ${dateText(prev)}</a>`, next && `<a href="?d=${next}">${dateText(next)} →</a>`].filter(Boolean).join(" <span class='muted'>·</span> ");
+
+      document.title = `${dateText(d, { month: "short", day: "numeric", year: "numeric" })} · King of the Court`;
+      $("title").innerHTML = `${esc(dateText(d, { weekday: "long", month: "long", day: "numeric", year: "numeric" }))}`;
+      const bits = [];
+      if (promo) bits.push(`<span class="tag gold">${promo.format === "three" ? "Three Kings" : "Promo night"}</span> ${fmt.money(promo.pool)} pool.`);
+      else bits.push(`Not a King of the Court night.`);
+      if (day) bits.push(`${day.games} games${day.final ? "" : " (not all final yet)"}.`);
+      $("sub").innerHTML = bits.join(" ");
+
+      if (day) {
+        const crowns = promo ? promoCrowns(promo, day) : day.kings;
+        $("result-card").hidden = false;
+        $("result-sub").textContent = day.final ? "Final" : "In progress at the last data refresh";
+        const paidPay = Object.fromEntries((promo?.winners ?? []).map((w) => [w.pid, w.payout]));
+        renderTable($("result"), day.top.map((t) => ({ ...t, _cls: crowns.includes(t.pid) ? "king" : "" })), [
+          { key: "rank", label: "#", cls: "rank", fmt: (r, i) => i + 1 },
+          { key: "name", label: "Player", cls: "l", fmt: (r) => whoCell(names, r.pid, `${esc(r.tm)} ${vsText(r.home, r.opp)}`).replace('<span class="pn">', `<span class="pn">${crowns.includes(r.pid) ? crown : ""}`) },
+          { key: "min", label: "Min", fmt: (r) => r.min },
+          { key: "pts", label: "Pts", fmt: (r) => r.pts },
+          { key: "reb", label: "Reb", fmt: (r) => r.reb },
+          { key: "ast", label: "Ast", fmt: (r) => r.ast },
+          { key: "pra", label: "PRA", cls: "key", fmt: (r) => r.pra },
+          ...(promo?.winners?.length ? [{ key: "pay", label: "Payout", fmt: (r) => (r.pid in paidPay ? fmt.money(paidPay[r.pid]) : "") }] : []),
+        ], { nosort: true }, () => {});
+        if (promo?.note) $("result-sub").textContent += ` · ${promo.note}`;
+      }
+
+      // Model: the live (locked) prediction if there is one, else the backtest replay.
+      const live = pred?.days?.[d];
+      const b = bt?.days?.find((x) => x.d === d);
+      const list = live?.players ?? b?.top;
+      if (list) {
+        const actual = Object.fromEntries((day?.top ?? []).map((t) => [t.pid, t.pra]));
+        const kings = new Set(day?.final ? day.kings : []);
+        $("model-card").hidden = false;
+        $("model-sub").textContent = live ? `${new Date() >= new Date(live.firstTip) ? "Locked" : "Updated"} ${stampText(live.takenAt)}` : `Backtest replay (model v${bt.model.version})`;
+        renderTable($("model"), list.slice(0, 25).map((p) => ({ ...p, _cls: kings.has(p.pid) ? "king" : "" })), [
+          { key: "rank", label: "#", cls: "rank", fmt: (r, i) => i + 1 },
+          { key: "name", label: "Player", cls: "l", fmt: (r) => whoCell(names, r.pid, `${esc(r.tm)} ${r.opp ? vsText(r.home, r.opp) : ""}${injuryTag(r.inj)}`) },
+          { key: "mean", label: "Proj PRA", fmt: (r) => fmt.d1(r.mean) },
+          { key: "win", label: "Win", cls: "key", fmt: (r) => fmt.pct(r.win) },
+          { key: "top3", label: "Top 3", fmt: (r) => fmt.pct(r.top3) },
+          { key: "pra", label: "Actual", fmt: (r) => r.pra ?? actual[r.pid] ?? `<span class="muted">${day?.final ? "–" : ""}</span>` },
+        ], { nosort: true }, () => {});
+        const res = live?.result ?? b;
+        $("model-note").innerHTML = [
+          res?.pKing != null ? `The model gave the King <b>${fmt.pct(res.pKing)}</b>${res.rank ? ` and ranked them <b>#${res.rank}</b>` : ", outside its top 25"}.` : "",
+          live ? "" : `This is a replay using only games before this date; the players who actually played stand in for the final injury report.`,
+          live && day ? `<b>Actual</b> is shown only for players in that night's top 10.` : "",
+        ].filter(Boolean).join(" ");
+      }
+      if (!day && !list) $("sub").innerHTML += ` No games or predictions for this date.`;
+    }
+
+    main().catch(showError);
+  </script>
+</body>
+</html>
