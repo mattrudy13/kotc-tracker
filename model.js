@@ -467,17 +467,30 @@ function predictDay(date, games, candidates, hist, prior, m = MODEL, sims = m.si
 // the same information), with a lean toward big names, so the share estimate uses both.
 
 // Season PRA average so far and last season's, as the public sees them.
+// Also recent form (last 5 games' PRA minus the season average, 0 under 3 games) and whether the
+// player is a rookie (no NBA games last season): candidates for the public's lean toward hot streaks
+// and hype, tested by scripts/fit-share.mjs.
 function shareFeatures(games, prior, m = MODEL) {
   const season = games?.length ? games.reduce((s, g) => s + g.pra, 0) / games.length : null;
   const last = prior?.gp ? prior.pra / prior.gp : null;
-  return { season: season ?? last ?? m.share.fallbackAvg, last: last ?? season ?? m.share.fallbackAvg };
+  const recent = games?.length >= 3 ? games.slice(0, 5).reduce((s, g) => s + g.pra, 0) / Math.min(5, games.length) : null;
+  return {
+    season: season ?? last ?? m.share.fallbackAvg,
+    last: last ?? season ?? m.share.fallbackAvg,
+    form: recent != null ? recent - season : 0,
+    rookie: prior?.gp ? 0 : 1,
+  };
 }
 
-// Estimated share of entrants on each player. `players` need { win, season, last }; every
-// candidate that night must be included, since shares are relative to the whole field.
+// The share model's inputs for one player, in the order of SHARE_KEYS (the coefficient names).
+const SHARE_KEYS = ["bWin", "bSeason", "bPrior", "bForm", "bRookie"];
+const shareX = (p) => [Math.log(Math.max(p.win, 1e-4)), p.season, p.last, p.form ?? 0, p.rookie ?? 0];
+
+// Estimated share of entrants on each player. `players` need { win, season, last, form, rookie };
+// every candidate that night must be included, since shares are relative to the whole field.
 function pickShares(players, m = MODEL) {
-  const s = m.share;
-  const z = players.map((p) => Math.exp(s.bWin * Math.log(Math.max(p.win, 1e-4)) + s.bSeason * p.season + s.bPrior * p.last));
+  const b = SHARE_KEYS.map((k) => m.share[k] ?? 0);
+  const z = players.map((p) => Math.exp(shareX(p).reduce((s, x, i) => s + b[i] * x, 0)));
   const total = z.reduce((a, b) => a + b, 0);
   return z.map((x) => x / total);
 }
@@ -611,7 +624,7 @@ if (typeof module !== "undefined") {
     MODEL, priorTotals, historyBefore, projectPlayer, gameMean, playerSd, simulateSlate, predictDay,
     posGroup, newContext, addDay, contextBefore, contextAdjust, missBaseline, defenseFactor,
     promoInfo, promoCrowns, playChance,
-    shareFeatures, pickShares, valueFields, addValue, valuePicks, pickReturn, impliedEntrants, median,
+    shareFeatures, pickShares, SHARE_KEYS, shareX, valueFields, addValue, valuePicks, pickReturn, impliedEntrants, median,
     isChalk, isFillIn, topPicks,
   };
 }
