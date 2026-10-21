@@ -134,8 +134,9 @@ const MODEL = {
   // toward the league by defShrink projected PRA (null = off). defByPos splits it into G/F/C.
   defShrink: 12000,
   defByPos: false,
-  // Public pick share: softmax of bWin·log(win) + bSeason·season PRA avg + bPrior·last season's avg.
-  // Fitted by scripts/fit-share.mjs on nights where DK published every player's payout.
+  // Public pick share: softmax of bWin·log(win) + bSeason·season PRA avg + bPrior·last season's avg
+  // + bRookie·rookie (bForm, recent form, was tested and is left at 0). Fitted by scripts/fit-share.mjs on
+  // DK's "what could've been" payout lists (data/pickshare-<season>.json).
   share: { version: 3, bWin: 0.67, bSeason: 0.061, bPrior: -0.002, bRookie: 1.221, fallbackAvg: 15, minShareForEntrants: 0.05 },
   valueMinWin: 0.02, // the best-value list skips long shots below this win chance
   fillInMin: 0.05, // "filling in": teammates out lift the projection this much or more

@@ -8,16 +8,18 @@ Site: https://mattrudy13.github.io/kotc-tracker/
 
 ## Pages
 
-- **Tonight** (`index.html`): the next promo night: slate, prize pool, the model's win chance for each
-  player, the players ruled out, and a live PRA leaderboard. During games the page polls ESPN straight
-  from the browser every minute.
+- **Tonight** (`index.html`): the next promo night: the top 3 value picks (chalk left out), slate, prize
+  pool, the model's win chance and estimated pick share for each player (with "+N% teammates out" tags),
+  the players ruled out, a Best value list, a Most picked card, and a live PRA leaderboard. During games the
+  page polls ESPN straight from the browser every minute.
 - **Season** (`season.html`): the PRA leader for every night, season PRA averages (70% of team games
   to qualify), and crown counts.
 - **History** (`history.html`): every 2025-26 promo night: winners, PRA, pool, payout per winning bet,
   the model's backtest chance, and a link to the source post.
 - **Model** (`model.html`): this season's locked predictions graded, the 2025-26 backtest against two
-  baselines, a calibration chart, and how the model works.
-- **Night** (`day.html?d=YYYY-MM-DD`): one night's top 10 and the model's list.
+  baselines, what each model factor adds, the value-pick record by strategy, a calibration chart, and how
+  the model works.
+- **Night** (`day.html?d=YYYY-MM-DD`): one night's top 10, the suggested picks and the model's list.
 
 ## Best value
 
@@ -25,7 +27,9 @@ The prize is split among everyone who picked the King, so a popular favorite pay
 estimates each player's share of picks and shows **value = win chance ÷ pick share** (1.00× = fair),
 plus a rough dollar value per token. The share model is fitted on DK's "what could've been" payout lists
 (`data/pickshare-<season>.json`; partial lists through the listed players' shares of one another), with the
-post texts kept in `data/posts/`:
+post texts kept in `data/posts/`. Most lists come from u/DraftKings' posts on r/DKAssist, which have to be
+pasted in (Reddit blocks scripts). The public follows win chances loosely, leans toward big season averages,
+and piles onto rookies (about 3.4× the picks of a comparable veteran).
 
 ```sh
 node scripts/parse-dk-post.mjs <dk-network-url> --date YYYY-MM-DD --pool 5000000 --write
@@ -49,8 +53,11 @@ All data comes from ESPN's public site API (no key). `.github/workflows/update-d
    `data/predictions-<season>.json`. A night's prediction locks at its first tip-off.
 3. `scripts/grade.mjs`: grades locked predictions once the night's games are final.
 
-`data/promos-<season>.json` is edited by hand: the promo dates, format, pool, who DK paid, and the
-payout per winning bet.
+Edited by hand:
+
+- `data/promos-<season>.json`: the promo dates, format, pool, who DK paid, and the payout per winning bet.
+- `data/chalk.json`: the players always left out of the suggested picks.
+- `data/posts/<night>.txt`: pasted "what could've been" posts, parsed into `data/pickshare-<season>.json`.
 
 ## The model
 
