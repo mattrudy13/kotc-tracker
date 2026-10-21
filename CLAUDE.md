@@ -7,8 +7,8 @@ Condensed + Inter, dark top bar. Accent is royal purple, crowns are gold. README
 
 ## Status (2026-10-21)
 
-v0.3 (model v2: teammates out + opponent defense) on 2026-10-21, pushed after that night's first tip so the
-locked Oct 21 prediction stays v1. v0.1 built in one session. 2026-27's first promo night is Wed Oct 21 (11 games, $5M). The first prediction
+v0.3 (model v2: teammates out + opponent defense) and v0.4 (value-first picks, chalk, most picked) pushed
+2026-10-21 before tip, so the Oct 21 prediction was remade on v2 (Rudy's call: v1 had no record yet). v0.1 built in one session. 2026-27's first promo night is Wed Oct 21 (11 games, $5M). The first prediction
 (Doncic 29%) was made at 12:49 PM ET. Oct 28 is the first promo night with the full automated cycle.
 
 ## Rudy's decisions (don't relitigate)
