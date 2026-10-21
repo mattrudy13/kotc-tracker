@@ -102,7 +102,7 @@
     <footer>Data from ESPN. Not affiliated with DraftKings.</footer>
   </main>
 
-  <script src="model.js?v=cee45b78"></script>
+  <script src="model.js?v=66306ceb"></script>
   <script src="common.js?v=5b32a8b4"></script>
   <script>
     const $ = (id) => document.getElementById(id);
@@ -241,7 +241,7 @@
         (Luka Doncic, Giannis Antetokounmpo, Victor Wembanyama, LeBron James), applied to last season too.
         <b>Filling in</b> only picks among players whose projection is up 5%+ because teammates are out, and sits out nights with none.
         ${adebayo ? `Last season's value total rests on a few long-shot nights; Bam Adebayo's 83-point game on 3/10/26 alone paid ${fmt.money(adebayo)}. One hit like that swings a season, so read this as a sanity check, not proof.` : ""}
-        The pick-share estimate was fitted on 11/18/25, so that night is in-sample. Live nights are added the morning after their payouts are entered.`;
+        The pick-share estimate was fitted on last season's published payout lists (10 nights), so those nights are in-sample. Live nights are added the morning after their payouts are entered.`;
     }
 
     main().catch(showError);

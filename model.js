@@ -136,7 +136,7 @@ const MODEL = {
   defByPos: false,
   // Public pick share: softmax of bWin·log(win) + bSeason·season PRA avg + bPrior·last season's avg.
   // Fitted by scripts/fit-share.mjs on nights where DK published every player's payout.
-  share: { version: 2, bWin: 0.915, bSeason: 0.021, bPrior: -0.003, fallbackAvg: 15, minShareForEntrants: 0.05 },
+  share: { version: 3, bWin: 0.67, bSeason: 0.061, bPrior: -0.002, bRookie: 1.221, fallbackAvg: 15, minShareForEntrants: 0.05 },
   valueMinWin: 0.02, // the best-value list skips long shots below this win chance
   fillInMin: 0.05, // "filling in": teammates out lift the projection this much or more
 };

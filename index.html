@@ -89,7 +89,7 @@
     <footer>Data from ESPN, refreshed automatically during the season. Not affiliated with DraftKings. Promo details from DK Network posts.</footer>
   </main>
 
-  <script src="model.js?v=cee45b78"></script>
+  <script src="model.js?v=66306ceb"></script>
   <script src="common.js?v=5b32a8b4"></script>
   <script>
     const $ = (id) => document.getElementById(id);
@@ -242,8 +242,9 @@
       draw();
       $("value-note").innerHTML = `
         The prize is split among everyone who picked the King, so a popular player pays less. <b>Pick %</b> is the share of
-        entrants expected to pick the player. In DK's published payouts the public tracked win chances closely but leaned toward players
-        with big season averages; the estimate copies that pattern (fitted on 11/18/25, the one night DK listed every player).
+        entrants expected to pick the player. In DK's published payouts (10 nights of 2025-26) the public followed win chances only loosely,
+        leaned toward players with big season averages, and piled onto rookies (about 3.4× the picks of a veteran with the same chance);
+        the estimate copies that pattern.
         <b>Value</b> is the ${three ? "top-3" : "win"} chance divided by that share: 1.00× means the player is picked exactly in line with
         their chance, 1.20× or more (green) means 20%+ more chance than picks, and under 0.80× (red) means overpicked.
         <b>Payout if ${three ? "top 3" : "King"}</b> is the bonus bet each winning pick would get, assuming ≈${p.entrants?.n.toLocaleString() ?? "–"} entrants
@@ -286,8 +287,8 @@
         The three players whose ${three ? "top-3" : "win"} chance is highest compared with how many people are expected to pick them,
         among players with a 2%+ chance. ${left.length ? `<b>Left out as chalk:</b> ${left.join(", ")}.` : ""}
         Chalk is anyone expected to draw ${fmt.pct0(chalk?.shareCutoff ?? 0.1)}+ of the picks, plus a hand-kept list
-        (${(chalk?.players ?? []).map((c) => esc(c.name)).join(", ")}). Leaving chalk out is a choice for bigger payouts, not better
-        odds: the public picks close to each player's real chance. <b>Filling in</b> marks a player whose projection is up 5%+
+        (${(chalk?.players ?? []).map((c) => esc(c.name)).join(", ")}). Leaving chalk out mostly buys bigger payouts: the public picks
+        established stars roughly in line with their chances. Rookies are the big exception (heavily overpicked, so poor value). <b>Filling in</b> marks a player whose projection is up 5%+
         because teammates are out (or would be, if a questionable teammate sits). These are estimates with small edges, so
         expect most nights to miss; see how the picks have done on the <a href="model.html">Model</a> page.`;
     }
@@ -318,10 +319,12 @@
       draw();
       const over = rows.filter((r) => r.value < 0.8);
       $("most-note").innerHTML = `
-        The five players expected to draw the most picks. Crowded isn't the same as overpriced: the public picks close to each
-        player's real chance, so these usually show a value near 1.00×, and a win pays little because so many share it.
+        The five players expected to draw the most picks. Crowded isn't the same as overpriced: the public picks established stars
+        roughly in line with their chances, so they usually show a value around 1.0–1.2×, and a win pays little because so many share it.
+        Rookies are the exception: they draw about 3.4× the picks of a veteran with the same chance, so a popular rookie shows red.
         ${over.length ? `<b>Overpicked tonight</b> (red, under 0.80×): ${over.map((r) => playerName(names, r.pid)).join(", ")}.` : "No one here is clearly overpicked tonight (none under 0.80×)."}
-        The estimate can't see hype that isn't in the stats (a buzzy rookie, a big name on a down night), so real crowds on those players can be bigger.
+        The estimate includes the public's lean toward rookies and big season averages, but not hype it can't measure (a hot streak on national TV,
+        a big name on a down night), so real crowds on those players can be bigger.
         On phones the ${three ? "Top 3" : "Win"} column is left off to make room.`;
     }
 
