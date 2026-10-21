@@ -1,0 +1,350 @@
+{
+  "season": 2025,
+  "day": "Tuesday",
+  "notes": "Hand-checked against DK Network's King of the Court posts. `winners` are the players DK paid (ESPN ids), `payout` is the bonus bet each winning token received, in dollars (null = not published). No promo was found for Dec 9 or Dec 16 (NBA Cup knockout nights); Feb 17 was the All-Star break.",
+  "promos": [
+    {
+      "date": "2025-10-21",
+      "format": "king",
+      "pool": 2000000,
+      "winners": [
+        {
+          "pid": "3945274",
+          "name": "Luka Doncic",
+          "payout": 36
+        }
+      ],
+      "source": "https://www.bleachernation.com/betting/2025/10/21/draftkings-king-of-court/",
+      "note": "Opening night, $2M. Payout from DK Network's 10/28 recap."
+    },
+    {
+      "date": "2025-10-28",
+      "format": "king",
+      "pool": 1000000,
+      "winners": [
+        {
+          "pid": "4431678",
+          "name": "Tyrese Maxey",
+          "payout": 19
+        },
+        {
+          "pid": "3032977",
+          "name": "Giannis Antetokounmpo",
+          "payout": 19
+        }
+      ],
+      "source": "https://dknetwork.draftkings.com/2025/10/28/tracking-the-leader-for-draftkings-king-of-the-court-tuesday-10-28-25/",
+      "note": "Tie at 52; the prize was split across both players' bettors."
+    },
+    {
+      "date": "2025-11-04",
+      "format": "king",
+      "pool": 1000000,
+      "winners": [
+        {
+          "pid": "4871145",
+          "name": "Josh Giddey",
+          "payout": 94
+        }
+      ],
+      "source": "https://dknetwork.draftkings.com/2025/11/04/tracking-the-leader-for-draftkings-king-of-the-court-tuesday-11-4-25/",
+      "note": null
+    },
+    {
+      "date": "2025-11-11",
+      "format": "king",
+      "pool": 1000000,
+      "winners": [
+        {
+          "pid": "3112335",
+          "name": "Nikola Jokic",
+          "payout": 25
+        }
+      ],
+      "source": "https://dknetwork.draftkings.com/2025/11/11/tracking-the-leader-for-draftkings-king-of-the-court-tuesday-11-11-25/",
+      "note": null
+    },
+    {
+      "date": "2025-11-18",
+      "format": "king",
+      "pool": 1000000,
+      "winners": [
+        {
+          "pid": "3945274",
+          "name": "Luka Doncic",
+          "payout": 29
+        }
+      ],
+      "source": "https://dknetwork.draftkings.com/2025/11/18/tracking-the-leader-for-draftkings-king-of-the-court-tuesday-11-18-25/",
+      "note": "DK Network's recap says 57 PRA; ESPN's final box score has 52. Same winner."
+    },
+    {
+      "date": "2025-11-25",
+      "format": "king",
+      "pool": 1000000,
+      "winners": [
+        {
+          "pid": "3945274",
+          "name": "Luka Doncic",
+          "payout": 24
+        }
+      ],
+      "source": "https://dknetwork.draftkings.com/2025/11/25/tracking-the-leader-for-draftkings-king-of-the-court-tuesday-11-25-25/",
+      "note": null
+    },
+    {
+      "date": "2025-12-02",
+      "format": "king",
+      "pool": 1000000,
+      "winners": [
+        {
+          "pid": "4594268",
+          "name": "Anthony Edwards",
+          "payout": 108
+        }
+      ],
+      "source": "https://dknetwork.draftkings.com/2025/12/02/tracking-the-leader-for-draftkings-king-of-the-court-tuesday-12-2-25/",
+      "note": "9,321 Edwards bettors got $108 each (DK Sports)."
+    },
+    {
+      "date": "2025-12-23",
+      "format": "three",
+      "pool": 3000000,
+      "winners": [
+        {
+          "pid": "6450",
+          "name": "Kawhi Leonard",
+          "payout": 520
+        },
+        {
+          "pid": "3136195",
+          "name": "Karl-Anthony Towns",
+          "payout": 520
+        },
+        {
+          "pid": "3936299",
+          "name": "Jamal Murray",
+          "payout": null
+        }
+      ],
+      "source": "https://dknetwork.draftkings.com/2025/12/23/tracking-the-leader-for-draftkings-king-of-the-court-tuesday-12-23-25/",
+      "note": "Three Kings, $1M per place. Leonard and Towns tied for first (54); 3,853 bettors got $520. Murray (52) had 393 bettors; payout not published in full."
+    },
+    {
+      "date": "2025-12-30",
+      "format": "king",
+      "pool": 1000000,
+      "winners": [
+        {
+          "pid": "3059318",
+          "name": "Joel Embiid",
+          "payout": 815
+        }
+      ],
+      "source": "https://dknetwork.draftkings.com/2025/12/30/tracking-the-leader-for-draftkings-king-of-the-court-tuesday-12-30-25/",
+      "note": null
+    },
+    {
+      "date": "2026-01-06",
+      "format": "king",
+      "pool": 1000000,
+      "winners": [
+        {
+          "pid": "4397688",
+          "name": "Trey Murphy III",
+          "payout": 1300
+        }
+      ],
+      "source": "https://dknetwork.draftkings.com/2026/01/06/tracking-the-leader-for-draftkings-king-of-the-court-tuesday-1-6-26/",
+      "note": null
+    },
+    {
+      "date": "2026-01-13",
+      "format": "king",
+      "pool": 1000000,
+      "winners": [
+        {
+          "pid": "1966",
+          "name": "LeBron James",
+          "payout": 2100
+        }
+      ],
+      "source": "https://dknetwork.draftkings.com/2026/01/13/tracking-the-leader-for-draftkings-king-of-the-court-tuesday-1-13-26/",
+      "note": null
+    },
+    {
+      "date": "2026-01-20",
+      "format": "king",
+      "pool": 1000000,
+      "winners": [
+        {
+          "pid": "3945274",
+          "name": "Luka Doncic",
+          "payout": 40
+        }
+      ],
+      "source": "https://dknetwork.draftkings.com/2026/01/20/tracking-the-leader-for-draftkings-king-of-the-court-tuesday-1-20-26/",
+      "note": null
+    },
+    {
+      "date": "2026-01-27",
+      "format": "king",
+      "pool": 1000000,
+      "winners": [
+        {
+          "pid": "4278104",
+          "name": "Michael Porter Jr.",
+          "payout": 323
+        },
+        {
+          "pid": "5160992",
+          "name": "Alex Sarr",
+          "payout": 323
+        }
+      ],
+      "source": "https://dknetwork.draftkings.com/2026/01/27/tracking-the-leader-for-draftkings-king-of-the-court-tuesday-1-27-26/",
+      "note": "Tie at 44 in ESPN's box score. DK Network's live post quoted $323 for a shared crown."
+    },
+    {
+      "date": "2026-02-03",
+      "format": "king",
+      "pool": 1000000,
+      "winners": [
+        {
+          "pid": "5041939",
+          "name": "Cooper Flagg",
+          "payout": 62
+        },
+        {
+          "pid": "4701230",
+          "name": "Jalen Johnson",
+          "payout": 62
+        }
+      ],
+      "source": "https://dknetwork.draftkings.com/2026/02/03/tracking-the-leader-for-draftkings-king-of-the-court-tuesday-2-3-26/",
+      "note": "Tie at 51."
+    },
+    {
+      "date": "2026-02-10",
+      "format": "king",
+      "pool": 1000000,
+      "winners": [
+        {
+          "pid": "5104157",
+          "name": "Victor Wembanyama",
+          "payout": 63
+        }
+      ],
+      "source": "https://dknetwork.draftkings.com/2026/02/10/tracking-the-leader-for-draftkings-king-of-the-court-tuesday-2-10-26/",
+      "note": null
+    },
+    {
+      "date": "2026-02-24",
+      "format": "king",
+      "pool": 2000000,
+      "winners": [
+        {
+          "pid": "4432573",
+          "name": "Paolo Banchero",
+          "payout": null
+        }
+      ],
+      "source": "https://dknetwork.draftkings.com/2026/02/24/draftkings-king-of-the-court-value-picks-for-tuesday-2-24-26/",
+      "note": "No DK Network recap found; winner from ESPN's box score, payout unknown."
+    },
+    {
+      "date": "2026-03-03",
+      "format": "three",
+      "pool": 3000000,
+      "winners": [
+        {
+          "pid": "4594268",
+          "name": "Anthony Edwards",
+          "payout": null
+        },
+        {
+          "pid": "4432573",
+          "name": "Paolo Banchero",
+          "payout": null
+        },
+        {
+          "pid": "3945274",
+          "name": "Luka Doncic",
+          "payout": null
+        }
+      ],
+      "source": "https://dknetwork.draftkings.com/2026/03/03/tracking-the-leaders-for-draftkings-king-of-the-court-tuesday-3-3-26/",
+      "note": "Three Kings, $1M per place. Payouts not published."
+    },
+    {
+      "date": "2026-03-10",
+      "format": "king",
+      "pool": 2000000,
+      "winners": [
+        {
+          "pid": "4066261",
+          "name": "Bam Adebayo",
+          "payout": 1100
+        }
+      ],
+      "source": "https://dknetwork.draftkings.com/2026/03/10/tracking-the-leaders-for-draftkings-king-of-the-court-tuesday-3-10-26/",
+      "note": "Adebayo scored 83 points."
+    },
+    {
+      "date": "2026-03-17",
+      "format": "king",
+      "pool": 2000000,
+      "winners": [
+        {
+          "pid": "4433621",
+          "name": "Jalen Duren",
+          "payout": 1000
+        }
+      ],
+      "source": "https://dknetwork.draftkings.com/2026/03/17/tracking-the-leaders-for-draftkings-king-of-the-court-tuesday-3-17-26/",
+      "note": "DK paid Duren alone (50 PRA in DK's count). ESPN's final box score has Duren and LaMelo Ball tied at 49."
+    },
+    {
+      "date": "2026-03-24",
+      "format": "king",
+      "pool": 2000000,
+      "winners": [
+        {
+          "pid": "3112335",
+          "name": "Nikola Jokic",
+          "payout": 44
+        }
+      ],
+      "source": "https://dknetwork.draftkings.com/2026/03/24/tracking-the-leaders-for-draftkings-king-of-the-court-tuesday-3-24-26/",
+      "note": "45,590 Jokic bettors got $44 each (DK Sports)."
+    },
+    {
+      "date": "2026-03-31",
+      "format": "king",
+      "pool": 1000000,
+      "winners": [
+        {
+          "pid": "3945274",
+          "name": "Luka Doncic",
+          "payout": 20
+        }
+      ],
+      "source": "https://dknetwork.draftkings.com/2026/03/31/tracking-the-leaders-for-draftkings-king-of-the-court-tuesday-3-31-26/",
+      "note": null
+    },
+    {
+      "date": "2026-04-07",
+      "format": "king",
+      "pool": 1000000,
+      "winners": [
+        {
+          "pid": "5144091",
+          "name": "Jeremiah Fears",
+          "payout": 697
+        }
+      ],
+      "source": "https://dknetwork.draftkings.com/2026/04/07/tracking-the-leaders-for-draftkings-king-of-the-court-tuesday-4-7-26/",
+      "note": null
+    }
+  ]
+}

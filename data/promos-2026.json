@@ -1,0 +1,17 @@
+{
+  "season": 2026,
+  "day": "Wednesday",
+  "notes": "Every Wednesday with games is assumed to be a promo day ($5M, one King) unless listed in `skip`. Add an entry to `promos` after each Wednesday: `winners` are the players DK paid (ESPN ids), `payout` is the bonus bet each winning token received, in dollars (null = not published). An entry also overrides the default format or pool (e.g. a Three Kings night).",
+  "default": { "weekday": 3, "from": "2026-10-21", "format": "king", "pool": 5000000 },
+  "skip": [],
+  "promos": [
+    {
+      "date": "2026-10-21",
+      "format": "king",
+      "pool": 5000000,
+      "winners": [],
+      "source": "https://dknetwork.draftkings.com/2026/10/21/draftkings-king-of-the-court-value-picks-for-wednesday-10-21-26/",
+      "note": "First Wednesday edition: 11-game slate, $5M."
+    }
+  ]
+}
