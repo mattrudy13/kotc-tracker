@@ -418,6 +418,224 @@
           "payout": 333334
         }
       ]
+    },
+    {
+      "date": "2025-12-02",
+      "pool": 1000000,
+      "source": "u/DraftKings on r/DKAssist: What Could've Been (Top PRAs) 12/3/2025 (pasted)",
+      "partial": true,
+      "payouts": [
+        {
+          "pid": "4397688",
+          "name": "Trey Murphy III",
+          "payout": 3031,
+          "pra": 52
+        },
+        {
+          "pid": "3917376",
+          "name": "Jaylen Brown",
+          "payout": 144,
+          "pra": 50
+        },
+        {
+          "pid": "4683021",
+          "name": "Deni Avdija",
+          "payout": 80,
+          "pra": 47
+        },
+        {
+          "pid": "4431678",
+          "name": "Tyrese Maxey",
+          "payout": 57,
+          "pra": 45
+        },
+        {
+          "pid": "3147657",
+          "name": "Mikal Bridges",
+          "payout": 16394,
+          "pra": 44
+        },
+        {
+          "pid": "4433134",
+          "name": "Scottie Barnes",
+          "payout": 774,
+          "pra": 42
+        },
+        {
+          "pid": "6578",
+          "name": "Harrison Barnes",
+          "payout": 125000,
+          "pra": 41
+        },
+        {
+          "pid": "3032976",
+          "name": "Rudy Gobert",
+          "payout": 52632,
+          "pra": 41
+        },
+        {
+          "pid": "3136195",
+          "name": "Karl-Anthony Towns",
+          "payout": 164,
+          "pra": 38
+        },
+        {
+          "pid": "4066259",
+          "name": "De'Aaron Fox",
+          "payout": 323,
+          "pra": 37
+        },
+        {
+          "pid": "4395724",
+          "name": "Immanuel Quickley",
+          "payout": 5682,
+          "pra": 36
+        },
+        {
+          "pid": "4869780",
+          "name": "Derik Queen",
+          "payout": 3817,
+          "pra": 36
+        },
+        {
+          "pid": "4600663",
+          "name": "Zach Edey",
+          "payout": 927,
+          "pra": 35
+        },
+        {
+          "pid": "4433255",
+          "name": "Chet Holmgren",
+          "payout": 1023,
+          "pra": 32
+        },
+        {
+          "pid": "4593803",
+          "name": "Jalen Williams",
+          "payout": 966,
+          "pra": 31
+        },
+        {
+          "pid": "4397136",
+          "name": "Saddiq Bey",
+          "payout": 5051,
+          "pra": 31
+        },
+        {
+          "pid": "3913176",
+          "name": "Brandon Ingram",
+          "payout": 1292,
+          "pra": 30
+        },
+        {
+          "pid": "3062679",
+          "name": "Josh Hart",
+          "payout": 1292,
+          "pra": 30
+        },
+        {
+          "pid": "3078576",
+          "name": "Derrick White",
+          "payout": 3312,
+          "pra": 29
+        },
+        {
+          "pid": "5144091",
+          "name": "Jeremiah Fears",
+          "payout": 37038,
+          "pra": 29
+        },
+        {
+          "pid": "4594268",
+          "name": "Anthony Edwards",
+          "payout": 108,
+          "winner": true
+        }
+      ]
+    },
+    {
+      "date": "2026-04-07",
+      "pool": 1000000,
+      "source": "u/DraftKings on r/DKAssist: What Could've Been (Top PRAs) 4/8/26 (pasted)",
+      "partial": true,
+      "payouts": [
+        {
+          "pid": "3917376",
+          "name": "Jaylen Brown",
+          "payout": 129
+        },
+        {
+          "pid": "4432816",
+          "name": "LaMelo Ball",
+          "payout": 443
+        },
+        {
+          "pid": "3136193",
+          "name": "Devin Booker",
+          "payout": 287
+        },
+        {
+          "pid": "4684740",
+          "name": "Amen Thompson",
+          "payout": 4855
+        },
+        {
+          "pid": "6450",
+          "name": "Kawhi Leonard",
+          "payout": 167
+        },
+        {
+          "pid": "4277956",
+          "name": "Jordan Poole",
+          "payout": 500000
+        },
+        {
+          "pid": "4433134",
+          "name": "Scottie Barnes",
+          "payout": 1507
+        },
+        {
+          "pid": "5041939",
+          "name": "Cooper Flagg",
+          "payout": 46
+        },
+        {
+          "pid": "4869780",
+          "name": "Derik Queen",
+          "payout": 2825
+        },
+        {
+          "pid": "4684275",
+          "name": "Robert Dillingham",
+          "payout": 166667
+        },
+        {
+          "pid": "4278073",
+          "name": "Shai Gilgeous-Alexander",
+          "payout": 84
+        },
+        {
+          "pid": "4871144",
+          "name": "Alperen Sengun",
+          "payout": 363
+        },
+        {
+          "pid": "3913176",
+          "name": "Brandon Ingram",
+          "payout": 3497
+        },
+        {
+          "pid": "4065648",
+          "name": "Jayson Tatum",
+          "payout": 65
+        },
+        {
+          "pid": "5144091",
+          "name": "Jeremiah Fears",
+          "payout": 697,
+          "winner": true
+        }
+      ]
     }
   ]
 }
