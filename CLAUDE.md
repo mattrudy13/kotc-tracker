@@ -125,6 +125,12 @@ v0.3 (model v2: teammates out + opponent defense) and v0.4 (value-first picks, c
   `node scripts/parse-dk-post.mjs <url> --date YYYY-MM-DD --pool 5000000 [--write]`. Review the unmatched
   names, then rerun `fit-share.mjs`. If the coefficients move, update `MODEL.share`, bump its version and
   rerun `backtest.mjs`. Tweet lists cut off with "…" are partial (`--partial`) and aren't fitted.
+- **u/DraftKings "What Could've Been" posts on r/DKAssist** have more lists (Rudy's tip, e.g. /comments/1rr1ssv/).
+  Reddit blocks curl, WebFetch and the Chrome extension, so Rudy pastes them: save the text, then
+  `parse-dk-post.mjs --file <txt|-> --date YYYY-MM-DD --source <reddit url> [--partial] [--write]` (`--pool`
+  defaults to promos-<season>.json). It flags unmatched names, listed players who didn't play that date, and
+  lists that look partial. Most are partial. The Unicode name fix (2026-10-21) found Jusuf Nurkić missing from
+  11/18/25; refit moved MODEL.share by noise only (0.910/0.022/−0.002 vs 0.915/0.021/−0.003), left as is.
 
 ## Before every commit that touches model.js, common.js or style.css
 

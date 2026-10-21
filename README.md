@@ -28,6 +28,7 @@ would-be payout (`data/pickshare-<season>.json`):
 
 ```sh
 node scripts/parse-dk-post.mjs <dk-network-url> --date YYYY-MM-DD --pool 5000000 --write
+pbpaste | node scripts/parse-dk-post.mjs --file - --date YYYY-MM-DD --source <url> --partial --write  # pasted text
 node scripts/fit-share.mjs        # prints coefficients for MODEL.share in model.js
 ```
 
