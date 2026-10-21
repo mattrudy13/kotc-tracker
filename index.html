@@ -214,10 +214,10 @@
           [
             { key: "vrank", label: "#", cls: "rank hide-sm", nosort: true, fmt: (r) => r.vrank },
             { key: "name", label: "Player", cls: "l", asc: true, fmt: (r) => whoCell(names, r.pid, `${esc(r.tm)} ${vsText(r.home, r.opp)}${injuryTag(r.inj)}`) },
-            { key: "chance", label: three ? "Top 3" : "Win", fmt: (r) => fmt.pct(r.chance) },
+            { key: "chance", label: three ? "Top 3" : "Win", cls: "hide-sm", fmt: (r) => fmt.pct(r.chance) },
             { key: "share", label: "Pick %", fmt: (r) => fmt.pct(r.share) },
             { key: "value", label: "Value", cls: "key", fmt: (r) => valueCell(r.value) },
-            { key: "estPayout", label: `Payout if ${three ? "top 3" : "King"}`, cls: "hide-sm", fmt: (r) => approxMoney(r.estPayout) },
+            { key: "estPayout", label: `Payout if ${three ? "top 3" : "King"}`, fmt: (r) => approxMoney(r.estPayout) },
           ],
           valueSort,
           draw,
@@ -231,7 +231,7 @@
         <b>Value</b> is the ${three ? "top-3" : "win"} chance divided by that share: 1.00× means the player is picked exactly in line with
         their chance, 1.20× or more (green) means 20%+ more chance than picks, and under 0.80× (red) means overpicked.
         <b>Payout if ${three ? "top 3" : "King"}</b> is the bonus bet each winning pick would get, assuming ≈${p.entrants?.n.toLocaleString() ?? "–"} entrants
-        (${esc(p.entrants?.source ?? "no estimate")}); it's left off on phones to keep the table on screen.
+        (${esc(p.entrants?.source ?? "no estimate")}). On phones the ${three ? "Top 3" : "Win"} column is left off here to make room; it's in the table above.
         Click a column header to sort.
         Players under a 2% chance are left out${p.longShots ? ` (${p.longShots} more with value above 1.00×)` : ""}: their value is
         mostly noise. These are rough estimates; the edges are usually small. See how value picks have done on the <a href="model.html">Model</a> page.`;
