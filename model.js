@@ -138,6 +138,7 @@ const MODEL = {
   // Fitted by scripts/fit-share.mjs on nights where DK published every player's payout.
   share: { version: 2, bWin: 0.915, bSeason: 0.021, bPrior: -0.003, fallbackAvg: 15, minShareForEntrants: 0.05 },
   valueMinWin: 0.02, // the best-value list skips long shots below this win chance
+  fillInMin: 0.05, // "filling in": teammates out lift the projection this much or more
 };
 
 // Last season's per-player totals, used as the prior.
@@ -519,20 +520,47 @@ function addValue(players, featsOf, promo, entrants, m = MODEL) {
   return players;
 }
 
-// The three ways of picking the Model page tracks: the model's favorite, the best value among
-// players with a real chance, and the public's favorite (highest estimated share).
-function valuePicks(players, m = MODEL) {
+// Chalk: players the suggested picks leave out, because everyone else is on them too. Either the
+// night's estimated share of picks is at the cutoff or more, or the player is on data/chalk.json's list.
+// Crowded isn't the same as overpriced (the public picks close to real chances); leaving chalk out
+// trades a little expected value for bigger payouts.
+function isChalk(p, chalk) {
+  if (!chalk) return false;
+  return (p.share ?? 0) >= chalk.shareCutoff || (chalk.players ?? []).some((c) => c.pid === p.pid);
+}
+
+// Filling in for a missing star: teammates out (or a questionable one, if they sit) lift the projection
+// by fillInMin or more.
+const isFillIn = (p, m = MODEL) => (p.outPct ?? 0) >= m.fillInMin || (p.bumpIf?.pct ?? 0) >= m.fillInMin;
+
+// Tonight's suggested picks: the best value among non-chalk players with a real chance.
+function topPicks(players, promo, chalk, m = MODEL, n = 3) {
+  const three = promo?.format === "three";
+  return players
+    .filter((p) => p.value != null && (three ? p.top3 : p.win) >= m.valueMinWin && !isChalk(p, chalk))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, n);
+}
+
+// The ways of picking the Model page tracks: the model's favorite, the best value among players with a
+// real chance (with and without chalk, and among players filling in), and the public's favorite.
+function valuePicks(players, chalk = null, m = MODEL) {
   const top = (list, key) => list.reduce((a, b) => (b[key] > (a?.[key] ?? -Infinity) ? b : a), null)?.pid ?? null;
+  const real = players.filter((p) => p.win >= m.valueMinWin && p.value != null);
   return {
     favorite: top(players, "win"),
-    value: top(players.filter((p) => p.win >= m.valueMinWin && p.value != null), "value"),
+    value: top(real, "value"),
+    noChalk: top(real.filter((p) => !isChalk(p, chalk)), "value"),
+    fillIn: top(real.filter((p) => !isChalk(p, chalk) && isFillIn(p, m)), "value"),
     public: top(players, "share"),
   };
 }
 
 // Bonus bets one token on `pid` won: DK's payout if they were paid, else 0. Null when the night's
-// payouts aren't known (or it was a Three Kings night, which the record leaves out).
+// payouts aren't known (or it was a Three Kings night, which the record leaves out), or when the
+// strategy had no pick that night (no one filling in).
 function pickReturn(pid, promo) {
+  if (pid == null) return null;
   if (promo?.format !== "king" || !promo.winners?.length || promo.winners.some((w) => w.payout == null)) return null;
   return promo.winners.find((w) => w.pid === pid)?.payout ?? 0;
 }
@@ -584,5 +612,6 @@ if (typeof module !== "undefined") {
     posGroup, newContext, addDay, contextBefore, contextAdjust, missBaseline, defenseFactor,
     promoInfo, promoCrowns, playChance,
     shareFeatures, pickShares, valueFields, addValue, valuePicks, pickReturn, impliedEntrants, median,
+    isChalk, isFillIn, topPicks,
   };
 }

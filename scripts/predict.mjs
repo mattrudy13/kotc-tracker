@@ -29,6 +29,7 @@ const { current: season } = await readJson("seasons.json");
 const data = await readJson(`${season}.json`);
 const prevData = await readJson(`${season - 1}.json`);
 const promos = await readJson(`promos-${season}.json`, null);
+const chalk = await readJson("chalk.json", null);
 const file = `predictions-${season}.json`;
 const store = await readJson(file, { season, days: {} });
 
@@ -97,9 +98,11 @@ for (const d of [...targets].sort()) {
       bumpIf: p.bumpIf && p.bumpIf.pct >= 0.005 ? { pid: p.bumpIf.pid, pct: +p.bumpIf.pct.toFixed(3) } : undefined,
       def: Math.abs(p.def - 1) >= 0.005 ? +p.def.toFixed(3) : undefined,
       ...(promo
-        ? { share: +p.share.toFixed(5), value: +p.value.toFixed(3), estPayout: p.estPayout != null ? Math.round(p.estPayout) : null, ev: p.ev != null ? +p.ev.toFixed(2) : null }
+        ? { share: +p.share.toFixed(5), value: +p.value.toFixed(3), estPayout: p.estPayout != null ? Math.round(p.estPayout) : null, ev: p.ev != null ? +p.ev.toFixed(2) : null, chalk: M.isChalk(p, chalk) || undefined }
         : {}),
     })),
+    // Tonight's suggested picks (best value, chalk left out); saved so the locked version is what's graded.
+    ...(promo ? { picks: M.topPicks(preds, promo, chalk).map((p) => p.pid) } : {}),
     // How many players the best-value list leaves out as long shots (value above 1 but win < 2%).
     ...(promo ? { longShots: preds.filter((p) => p.win > 0 && p.win < M.MODEL.valueMinWin && p.value > 1).length } : {}),
     // Only rotation players (15+ projected minutes) are worth naming as ruled out.

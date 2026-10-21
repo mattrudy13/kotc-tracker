@@ -1,0 +1,10 @@
+{
+  "note": "Players left out of the suggested picks. Anyone at shareCutoff or more of the night's estimated picks is chalk too. Edited by hand; ESPN ids carry across seasons.",
+  "shareCutoff": 0.1,
+  "players": [
+    { "pid": "3945274", "name": "Luka Doncic" },
+    { "pid": "3032977", "name": "Giannis Antetokounmpo" },
+    { "pid": "5104157", "name": "Victor Wembanyama" },
+    { "pid": "1966", "name": "LeBron James" }
+  ]
+}

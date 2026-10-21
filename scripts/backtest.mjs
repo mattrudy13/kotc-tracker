@@ -33,6 +33,7 @@ const rows = M.rowObjects(cur);
 const prior = M.priorTotals(M.rowObjects(prev));
 const days = M.dailyLeaders(cur, 3).filter((d) => d.final);
 let promos = null, pickshare = null;
+const chalk = JSON.parse(await readFile(path.join(DATA_DIR, "chalk.json"), "utf8"));
 try {
   promos = await load(`promos-${season}`);
 } catch {}
@@ -232,7 +233,7 @@ for (const { day, games, candidates, hist, ctx } of replay(() => true)) {
   let value = null;
   if (promo) {
     M.addValue(preds, (pid) => M.shareFeatures(hist[pid], prior[pid]), promo, null);
-    const picks = M.valuePicks(preds);
+    const picks = M.valuePicks(preds, chalk);
     const shareOf = (pid) => preds.find((p) => p.pid === pid)?.share;
     value = {
       picks,
@@ -256,6 +257,8 @@ for (const { day, games, candidates, hist, ctx } of replay(() => true)) {
     avgPick: byAvg[0].pid,
     top: preds.slice(0, 10).map((p) => ({ pid: p.pid, tm: p.tm, opp: p.opp, home: p.home, mean: +p.mean.toFixed(1), win: +p.win.toFixed(4), top3: +p.top3.toFixed(4), pra: praOf(day.d, p.pid), ...(p.outPct >= 0.005 ? { outPct: +p.outPct.toFixed(3) } : {}), ...(promo ? { share: +p.share.toFixed(4), value: +p.value.toFixed(3) } : {}) })),
     value,
+    // The suggested picks (best value, chalk left out) as the Tonight page would have shown them.
+    ...(promo ? { picks: M.topPicks(preds, promo, chalk).map((p) => ({ pid: p.pid, tm: p.tm, opp: p.opp, home: p.home, win: +p.win.toFixed(4), top3: +p.top3.toFixed(4), share: +p.share.toFixed(4), value: +p.value.toFixed(3), pra: praOf(day.d, p.pid), ...(p.outPct >= 0.005 ? { outPct: +p.outPct.toFixed(3) } : {}) })) } : {}),
     preds: preds.filter((p) => p.win > 0).map((p) => [p.pid, +p.win.toFixed(4)]),
   });
 }
@@ -288,12 +291,14 @@ for (const x of out) {
   }
 }
 
-// Value record: bonus bets per token for each strategy, on promo nights with known payouts.
+// Value record: bonus bets per token for each strategy, on promo nights with known payouts. A
+// strategy with no pick on a night (no one filling in) sits that night out.
 function valueRecord(list) {
-  const nights = list.filter((x) => x.value && Object.values(x.value.returns).every((r) => r != null));
+  const nights = list.filter((x) => x.value && x.value.returns.favorite != null);
   const rec = {};
-  for (const k of ["favorite", "value", "public"]) {
-    rec[k] = { nights: nights.length, wins: nights.filter((x) => x.value.returns[k] > 0).length, total: nights.reduce((s, x) => s + x.value.returns[k], 0) };
+  for (const k of ["favorite", "value", "noChalk", "fillIn", "public"]) {
+    const mine = nights.filter((x) => x.value.returns[k] != null);
+    rec[k] = { nights: mine.length, wins: mine.filter((x) => x.value.returns[k] > 0).length, total: mine.reduce((s, x) => s + x.value.returns[k], 0) };
   }
   return rec;
 }
@@ -337,7 +342,7 @@ const result = {
   // until this season has enough nights of its own.
   entrants: { median: M.median(entrantsList), nights: entrantsList.length },
 };
-result.names = M.nameMap(cur, [...new Set(out.flatMap((x) => [...x.kings, x.avgPick, ...x.top.map((t) => t.pid), ...Object.values(x.value?.picks ?? {})]))].filter(Boolean));
+result.names = M.nameMap(cur, [...new Set(out.flatMap((x) => [...x.kings, x.avgPick, ...x.top.map((t) => t.pid), ...(x.picks ?? []).map((t) => t.pid), ...Object.values(x.value?.picks ?? {})]))].filter(Boolean));
 await writeFile(path.join(DATA_DIR, `backtest-${season}.json`), JSON.stringify(result));
 const s = result.summary;
 for (const k of ["fit", "holdout"]) {
