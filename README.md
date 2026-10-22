@@ -6,6 +6,19 @@ in 2025-26 ($1–3M pools) and on Wednesdays in 2026-27 ($5M).
 
 Site: https://mattrudy13.github.io/kotc-tracker/
 
+## At a glance
+
+- **What it does:** simulates each NBA night 10,000 times to estimate every player's chance of leading
+  the slate in PRA, estimates how many bettors will pick each player, and ranks players by value: win
+  chance divided by pick share, since a popular winner's prize is split many ways.
+- **How it was tested:** fitted on October–January 2025-26 and tested on February–April (64 nights). On
+  those nights the model's top pick won 18 times, against 16 for the plain "highest PRA average" pick: a
+  real but small edge. A model factor stays only if it improves the holdout score (log loss). The
+  pick-share model is fitted on DraftKings' published payout lists.
+- **Live record:** the first 2026-27 promo night was Oct 21, 2026; graded results build up from there on
+  the Model page.
+- **Built with:** JavaScript (Node), GitHub Actions on a schedule, GitHub Pages and ESPN's public API.
+
 ## Pages
 
 - **Tonight** (`index.html`): the next promo night: the top 3 value picks (chalk left out), slate, prize
