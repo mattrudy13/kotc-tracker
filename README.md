@@ -42,7 +42,8 @@ plus a rough dollar value per token. The share model is fitted on DK's "what cou
 (`data/pickshare-<season>.json`; partial lists through the listed players' shares of one another), with the
 post texts kept in `data/posts/`. Most lists come from u/DraftKings' posts on r/DKAssist, which have to be
 pasted in (Reddit blocks scripts). The public follows win chances loosely, leans toward big season averages,
-and piles onto rookies (about 3.4× the picks of a comparable veteran).
+and piles onto rookies (about 3.4× the picks of a comparable veteran). Last season's average counts as 10 games
+of the current one, so early-season averages don't swing on one game.
 
 ```sh
 node scripts/parse-dk-post.mjs <dk-network-url> --date YYYY-MM-DD --pool 5000000 --write

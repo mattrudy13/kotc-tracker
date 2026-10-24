@@ -113,6 +113,14 @@ All built and pushed on 2026-10-21, the first promo night of 2026-27 (Wed, 11 ga
 
 ## Value (v0.2–v0.5, 2026-10-21)
 
+- **Share v4 (2026-10-23)**: the season-average feature blends in last season's average as `priorGames` (10)
+  games of this one. Why: on 10/23/26 Jokic's one 25-PRA opener put him at 3.0% of picks (value 4.19×, the #1
+  pick) while Edwards' one 58-PRA game put him at 15.4%. The fit nights start 11/18, so v3 never saw a 1-game
+  average. Refit (base + rookie): bWin 0.652, bSeason 0.094, bPrior −0.029, bRookie 1.278; held out per pick
+  −2.0648 → −2.0626 (k = 3, 5, 10, 15, 20 all helped; 10 best). Oct 28 preview: Jokic 12.7% (chalk, 0.99×),
+  Luka 14.4%, Edwards 5.2%, Banchero 4.3%; picks Banchero, Maxey, Edwards. Backtest value record v3 → v4: value
+  $2,025 (3/20) → $1,321 (4/20); the early nights gained (Maxey 10/28, Giddey 11/4) and 12/30 lost Embiid ($817)
+  to Kawhi. Rudy delegated the go-ahead ("I trust you"). Entrants median 118.6k → 111.4k.
 - The pool is split among everyone on the King, so a pick's value = chance ÷ estimated pick share.
   `MODEL.share` v3 (2026-10-21, model v2): share ∝ win^0.67 × exp(0.061·season PRA avg − 0.002·last season's
   avg + 1.221·rookie), a softmax over the **whole field** (`pickShares`, `shareX`, `SHARE_KEYS`, `addValue`).
@@ -136,8 +144,9 @@ All built and pushed on 2026-10-21, the first promo night of 2026-27 (Wed, 11 ga
   fill-ins / public favorite) and `pickReturn()` (DK's actual payout, 0, or null when the strategy had no
   pick). The backtest is in `backtest-2025.json` `valueRecord`; live nights are in `predictions`
   `result.value` once `promos-2026.json` has payouts. Three Kings nights and nights with unknown payouts are left out.
-  2025-26 (model v2, share v3, DK's exact payouts from the Reddit posts): favorite $238 (8/20), value $2,025
-  (3/20: Adebayo $1,100 on 3/10, Embiid $817 on 12/30, Edwards $108), public = favorite.
+  2025-26 (model v2, share v4, DK's exact payouts from the Reddit posts): favorite $238 (8/20), value $1,321
+  (4/20; Adebayo $1,100 on 3/10 is most of it), noChalk = value, fillIn $1,194 (2/19), public = favorite.
+  Under share v3 it was value $2,025 (3/20, incl. Embiid $817 on 12/30) and fillIn $1,917.
 - **Picks and chalk (v0.4, 2026-10-21)**: Tonight leads with "Tonight's picks" (`topPicks`: top 3 by value,
   2%+ chance, chalk left out), then the hero/model table, Best value (chalk tagged) and "Most picked" (top 5 by
   share). Chalk (`isChalk`) = est. share ≥ `data/chalk.json` `shareCutoff` (0.10) or on its hand-kept list

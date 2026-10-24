@@ -136,8 +136,10 @@ const MODEL = {
   defByPos: false,
   // Public pick share: softmax of bWin·log(win) + bSeason·season PRA avg + bPrior·last season's avg
   // + bRookie·rookie (bForm, recent form, was tested and is left at 0). Fitted by scripts/fit-share.mjs on
-  // DK's "what could've been" payout lists (data/pickshare-<season>.json).
-  share: { version: 3, bWin: 0.67, bSeason: 0.061, bPrior: -0.002, bRookie: 1.221, fallbackAvg: 15, minShareForEntrants: 0.05 },
+  // DK's "what could've been" payout lists (data/pickshare-<season>.json). v4 (2026-10-23): the season
+  // average counts last season's as priorGames (10) games; held out −2.0648 → −2.0626 per pick (3–20 all
+  // helped, 10 best).
+  share: { version: 4, bWin: 0.652, bSeason: 0.094, bPrior: -0.029, bRookie: 1.278, priorGames: 10, fallbackAvg: 15, minShareForEntrants: 0.05 },
   valueMinWin: 0.02, // the best-value list skips long shots below this win chance
   fillInMin: 0.05, // "filling in": teammates out lift the projection this much or more
 };
@@ -475,8 +477,13 @@ function shareFeatures(games, prior, m = MODEL) {
   const season = games?.length ? games.reduce((s, g) => s + g.pra, 0) / games.length : null;
   const last = prior?.gp ? prior.pra / prior.gp : null;
   const recent = games?.length >= 3 ? games.slice(0, 5).reduce((s, g) => s + g.pra, 0) / Math.min(5, games.length) : null;
+  // Early in a season one game would set the "season average" (Jokic's 25-PRA opener in 2026 put him at
+  // 3% of picks). The public goes by reputation until a season builds up, so last season's average counts
+  // as priorGames games of this one. The fit nights start mid-November, when it barely matters.
+  const n = games?.length ?? 0, k = m.share.priorGames ?? 0;
+  const blended = season != null && last != null ? (n * season + k * last) / (n + k) : season;
   return {
-    season: season ?? last ?? m.share.fallbackAvg,
+    season: blended ?? last ?? m.share.fallbackAvg,
     last: last ?? season ?? m.share.fallbackAvg,
     form: recent != null ? recent - season : 0,
     rookie: prior?.gp ? 0 : 1,

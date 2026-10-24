@@ -89,7 +89,7 @@
     <footer>Data from ESPN, refreshed automatically during the season. Not affiliated with DraftKings. Promo details from DK Network posts.</footer>
   </main>
 
-  <script src="model.js?v=67a04647"></script>
+  <script src="model.js?v=b34c3560"></script>
   <script src="common.js?v=5b32a8b4"></script>
   <script>
     const $ = (id) => document.getElementById(id);
@@ -244,7 +244,8 @@
         The prize is split among everyone who picked the King, so a popular player pays less. <b>Pick %</b> is the share of
         entrants expected to pick the player. In DK's published payouts (10 nights of 2025-26) the public followed win chances only loosely,
         leaned toward players with big season averages, and piled onto rookies (about 3.4× the picks of a veteran with the same chance);
-        the estimate copies that pattern.
+        the estimate copies that pattern. Early in a season last season's average counts as 10 games of this one, so one quiet opener
+        doesn't make a star look unpopular.
         <b>Value</b> is the ${three ? "top-3" : "win"} chance divided by that share: 1.00× means the player is picked exactly in line with
         their chance, 1.20× or more (green) means 20%+ more chance than picks, and under 0.80× (red) means overpicked.
         <b>Payout if ${three ? "top 3" : "King"}</b> is the bonus bet each winning pick would get, assuming ≈${p.entrants?.n.toLocaleString() ?? "–"} entrants
