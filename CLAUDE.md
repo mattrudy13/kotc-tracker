@@ -30,7 +30,7 @@ All built and pushed on 2026-10-21, the first promo night of 2026-27 (Wed, 11 ga
   ("filling in") and tracked, not inflated beyond the fitted bump.
 - "Bad value" = a Most picked card (top 5 by share, red under 0.80×), not a strict overpriced list.
 - Model factors stay only if they lower **holdout log loss** (v0.3). Share-model changes go live only after
-  Rudy sees the held-out comparison (approved for v3).
+  Rudy sees the held-out comparison (approved for v3; Rudy confirmed the rule on 2026-10-23).
 
 ## Data
 
