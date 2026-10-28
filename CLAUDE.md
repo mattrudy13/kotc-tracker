@@ -2,15 +2,15 @@
 
 DraftKings NBA "King of the Court" tracker (night's PRA leader wins a share of a bonus-bet pool).
 GitHub Pages at https://mattrudy13.github.io/kotc-tracker/. Same conventions as `../te-tracker`: plain
-HTML/CSS/JS, no build step, globals in `model.js` (data/model, no DOM) and `common.js` (DOM), Barlow
-Condensed + Inter, dark top bar. Accent is royal purple, crowns are gold. README.md covers the pages and pipeline.
+HTML/CSS/JS, no build step, globals in `model.js` (data/model, no DOM) and `common.js` (DOM). Look since v0.6:
+"Fight card" (see Rudy's decisions). README.md covers the pages and pipeline.
 
 ## Status (2026-10-21)
 
 All built and pushed on 2026-10-21, the first promo night of 2026-27 (Wed, 11 games, $5M):
 - v0.1: site, history, model v1. v0.2: best value (pick share). v0.3: model v2 (teammates out + opponent
   defense). v0.4: value-first picks, chalk, Most picked. v0.5: 12 more payout lists from u/DraftKings' Reddit
-  posts, DK's exact 2025-26 payouts, pick share v3 (rookie lean).
+  posts, DK's exact 2025-26 payouts, pick share v3 (rookie lean). v0.6 (2026-10-27): "Fight card" redesign.
 - Oct 21's prediction was remade on model v2 / share v2 at 6:30 PM (Rudy's call: v1 had no record yet) and
   locked at the 7:00 PM tip, before share v3 went live. Oct 28 is the first night on share v3 and the first
   promo night with the full automated cycle.
@@ -26,6 +26,14 @@ All built and pushed on 2026-10-21, the first promo night of 2026-27 (Wed, 11 ga
 - Regular season + NBA Cup only. No playoffs, play-in or All-Star.
 - No betting odds yet (maybe later). Value angle added in v0.2 (see Value).
 - Home page = next promo night, led by the top 3 value picks with chalk left out (v0.4, see Value).
+- **Look (v0.6, 2026-10-27)**: "Fight card", picked from mockups (https://claude.ai/artifact/WQmPG8ECCJ3EVErbbkJhW5,
+  B1) because the old Barlow/Inter/dark-top-bar template matched te-tracker, h2h and nba-first-minute. Paper
+  background, Alfa Slab One + Archivo, 3px ink boxes, red (`--accent`) and mustard, gold crowns. **No dark top
+  bar**: Tonight opens with a fight-poster masthead (stacked KING / OF THE / COURT, date line, purse strip); every
+  other page gets the slim one-line wordmark + boxed nav. Tonight: #1 pick = "Main event" card (tale of the tape),
+  #2–3 = undercard (their middle gap lines up with the Main event's divider); "The field" = model table, top 15 +
+  "Show all"; each card has a one-line lead and the full explanation in a closed "How this works" `<details>`.
+  Value numbers keep the green/red value colors, so red elsewhere is only structure (ranks, bars, nav).
 - Chalk = est. pick share ≥ 10% **plus** a hand-kept list (`data/chalk.json`). Teammates out is flagged
   ("filling in") and tracked, not inflated beyond the fitted bump.
 - "Bad value" = a Most picked card (top 5 by share, red under 0.80×), not a strict overpriced list.

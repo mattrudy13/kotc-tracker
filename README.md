@@ -21,8 +21,8 @@ Site: https://mattrudy13.github.io/kotc-tracker/
 
 ## Pages
 
-- **Tonight** (`index.html`): the next promo night: the top 3 value picks (chalk left out), slate, prize
-  pool, the model's win chance and estimated pick share for each player (with "+N% teammates out" tags),
+- **Tonight** (`index.html`): the next promo night: the top 3 value picks (chalk left out; #1 as the "main
+  event"), slate, prize pool, the model's win chance (top 15, "Show all" for the rest) and estimated pick share for each player (with "+N% teammates out" tags),
   the players ruled out, a Best value list, a Most picked card, and a live PRA leaderboard. During games the
   page polls ESPN straight from the browser every minute.
 - **Season** (`season.html`): the PRA leader for every night, season PRA averages (70% of team games
