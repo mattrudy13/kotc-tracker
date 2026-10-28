@@ -5,6 +5,7 @@ Ideas, roughly by value. Nothing here is scheduled.
 Done: v0.3 (model v2) teammates out and opponent defense. Back-to-backs were tested and had no effect on
 2025-26 PRA (slope −0.03 fit, 0.00 holdout); defense split by position (G/F/C) did slightly worse than overall.
 v0.5 refit pick share on 10 nights of payout lists and added the rookie lean; recent form didn't help.
+v0.6 redesigned the site ("Fight card": poster masthead, main event + undercard picks, shorter Tonight).
 
 1. **Pick share: more of the public's habits.** Every new Reddit list helps (paste each Wednesday's). Ideas to
    test on held-out nights, as v3 was:

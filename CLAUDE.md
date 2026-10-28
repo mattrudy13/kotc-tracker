@@ -1,19 +1,21 @@
 # kotc-tracker: project notes
 
 DraftKings NBA "King of the Court" tracker (night's PRA leader wins a share of a bonus-bet pool).
-GitHub Pages at https://mattrudy13.github.io/kotc-tracker/. Same conventions as `../te-tracker`: plain
-HTML/CSS/JS, no build step, globals in `model.js` (data/model, no DOM) and `common.js` (DOM). Look since v0.6:
+GitHub Pages at https://mattrudy13.github.io/kotc-tracker/. Same code conventions as `../te-tracker` (not its
+look, since v0.6): plain HTML/CSS/JS, no build step, globals in `model.js` (data/model, no DOM) and `common.js` (DOM). Look since v0.6:
 "Fight card" (see Rudy's decisions). README.md covers the pages and pipeline.
 
-## Status (2026-10-21)
+## Status (2026-10-27)
 
-All built and pushed on 2026-10-21, the first promo night of 2026-27 (Wed, 11 games, $5M):
+v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed, 11 games, $5M):
 - v0.1: site, history, model v1. v0.2: best value (pick share). v0.3: model v2 (teammates out + opponent
   defense). v0.4: value-first picks, chalk, Most picked. v0.5: 12 more payout lists from u/DraftKings' Reddit
-  posts, DK's exact 2025-26 payouts, pick share v3 (rookie lean). v0.6 (2026-10-27): "Fight card" redesign.
+  posts, DK's exact 2025-26 payouts, pick share v3 (rookie lean). v0.6 (2026-10-27, PR #2, tagged):
+  "Fight card" redesign (see Look under Rudy's decisions).
 - Oct 21's prediction was remade on model v2 / share v2 at 6:30 PM (Rudy's call: v1 had no record yet) and
-  locked at the 7:00 PM tip, before share v3 went live. Oct 28 is the first night on share v3 and the first
-  promo night with the full automated cycle.
+  locked at the 7:00 PM tip, before share v3 went live. Tue Oct 27 ($1M; DK moved that week's promo off
+  Wednesday, so 10/28 is in `skip`) is the first promo night with the full automated cycle, on share v4: it
+  locked at 4:10 PM ET before the 7:30 tip. Its grading and payout entry come on 10/28.
 
 ## Rudy's decisions (don't relitigate)
 
@@ -155,8 +157,9 @@ All built and pushed on 2026-10-21, the first promo night of 2026-27 (Wed, 11 ga
   2025-26 (model v2, share v4, DK's exact payouts from the Reddit posts): favorite $238 (8/20), value $1,321
   (4/20; Adebayo $1,100 on 3/10 is most of it), noChalk = value, fillIn $1,194 (2/19), public = favorite.
   Under share v3 it was value $2,025 (3/20, incl. Embiid $817 on 12/30) and fillIn $1,917.
-- **Picks and chalk (v0.4, 2026-10-21)**: Tonight leads with "Tonight's picks" (`topPicks`: top 3 by value,
-  2%+ chance, chalk left out), then the hero/model table, Best value (chalk tagged) and "Most picked" (top 5 by
+- **Picks and chalk (v0.4, 2026-10-21)**: Tonight leads with the picks (`topPicks`: top 3 by value,
+  2%+ chance, chalk left out; since v0.6 #1 is the "Main event" card and #2–3 the undercard), then the games +
+  favorite, "The field" (model table), Best value (chalk tagged) and "Most picked" (top 5 by
   share). Chalk (`isChalk`) = est. share ≥ `data/chalk.json` `shareCutoff` (0.10) or on its hand-kept list
   (Luka, Giannis, Wemby, LeBron; Rudy's choice: both). "Filling in" (`isFillIn`) = `outPct` or `bumpIf.pct`
   ≥ `MODEL.fillInMin` (0.05). `predict.mjs` saves `picks` (pids) and `chalk` per player; grade/backtest
@@ -190,12 +193,15 @@ Run `node scripts/stamp-assets.mjs`. `check-assets.yml` fails the push otherwise
 
 - Serve with `python3 -m http.server`. Test with Playwright from `../apartments/.venv/bin/python`: every page
   in light and dark mode at 1280 and 375 px, with no console errors and no page-level sideways scroll. Wide
-  stat tables scroll inside `.table-wrap` on phones. The home model table fits at 375.
+  stat tables scroll inside `.table-wrap` on phones. The home model table fits at 375. Also check that "Show all"
+  toggles 15 ↔ 25 rows (and stays open after sorting) and that the phone nav fits one row with 44px+ boxes.
 - Test predict/grade on a scratch copy of the repo with `NOW=<iso>`; the scripts write to `data/` next to themselves.
 - Playwright's Chromium here can't reach ESPN from the page ("Failed to fetch", reported as CORS; curl with the
-  same headers works). Check the live leaderboard in real Chrome instead (it worked on 10/21/26).
-- Theme: follows the system, with a top-bar toggle (`data-theme` on `<html>`, saved in localStorage).
+  same headers works; on a game night it shows as a "Failed to load resource" console error, which is expected).
+  Check the live leaderboard in real Chrome instead (it worked on 10/21/26).
+- Theme: follows the system, with a toggle at the end of the nav (`data-theme` on `<html>`, saved in localStorage).
 - **Tooltips only for definitions**, by Rudy's request. None are used: everything is visible text or a page note.
+  The long explanations sit in closed "How this works" `<details>` under each card (opened by a click, not hover).
 - Copy is pronoun-neutral ("the player").
 - Commit prefixes: `feat:`, `fix:`, `docs:`, `data:` (the bot uses `data:`). No commits or pushes 8 AM–5 PM ET on
   weekdays unless Rudy asks.
