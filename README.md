@@ -21,10 +21,13 @@ Site: https://mattrudy13.github.io/kotc-tracker/
 
 ## Pages
 
-- **Tonight** (`index.html`): the next promo night: the top 3 value picks (chalk left out; #1 as the "main
-  event"), slate, prize pool, the model's win chance (top 15, "Show all" for the rest) and estimated pick share for each player (with "+N% teammates out" tags),
-  the players ruled out, a Best value list, a Most picked card, and a live PRA leaderboard. During games the
-  page polls ESPN straight from the browser every minute.
+- **Tonight** (`index.html`): the next promo night, under a fight-poster masthead with the date, prize pool,
+  games and first tip. It leads with the top 3 value picks (chalk left out): #1 as the "main event" with its
+  stats, #2 and #3 below. Then the night's games and the model favorite, the model's win chance and estimated
+  pick share for each player (top 15, "Show all" for the rest, with "+N% teammates out" tags), the players
+  ruled out, a Best value list, a Most picked card, a live PRA leaderboard during games (polled from ESPN in
+  the browser every minute) and this season's Kings. Each section has a one-line summary, with the full
+  explanation under "How this works".
 - **Season** (`season.html`): the PRA leader for every night, season PRA averages (70% of team games
   to qualify), and crown counts.
 - **History** (`history.html`): every 2025-26 promo night: winners, PRA, pool, payout per winning bet,
