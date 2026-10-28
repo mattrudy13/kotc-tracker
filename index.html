@@ -8,44 +8,46 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="style.css?v=cdba4991">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Archivo:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="style.css?v=7d1f7e79">
 </head>
 <body>
-  <header class="topbar">
+  <header class="masthead">
     <div class="wrap">
-      <a class="wordmark" href="./">King of the <span>Court</span></a>
-      <nav class="tabs">
+      <nav class="tabs" aria-label="Pages">
         <a href="./" aria-current="page">Tonight</a>
         <a href="season.html">Season</a>
         <a href="history.html">History</a>
         <a href="model.html">Model</a>
         <button type="button" class="theme-btn" id="theme" aria-label="Switch theme">☾</button>
       </nav>
+      <div class="poster">
+        <div class="poster-date">
+          <svg class="star" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6z"/></svg>
+          <span id="poster-date"></span>
+          <svg class="star" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6z"/></svg>
+        </div>
+        <h1><span class="pw">King</span><span class="pof"><span>of the</span></span><span class="pw red">Court</span></h1>
+        <div class="purse" id="hero-kv" hidden></div>
+        <p class="sub" id="sub">The player with the most points + rebounds + assists (PRA) on the night wins. <span class="updated" id="updated"></span></p>
+      </div>
     </div>
   </header>
 
   <main class="wrap">
-    <div class="page-head">
-      <h1 id="title">King of the Court</h1>
-      <p class="sub" id="sub">The player with the most points + rebounds + assists (PRA) on the night wins. <span class="updated" id="updated"></span></p>
-    </div>
     <div id="status" hidden></div>
 
     <section class="card" id="picks-card" hidden>
-      <div class="card-head"><h2 id="picks-title">Tonight's picks</h2><span class="updated" id="picks-sub"></span></div>
-      <div class="picks" id="picks"></div>
-      <p class="note" id="picks-note"></p>
+      <div class="card-head"><h2>Main event</h2><span class="updated" id="picks-sub"></span></div>
+      <div id="picks"></div>
+      <p class="lead" id="picks-lead"></p>
+      <details class="how"><summary>How this works</summary><p class="note" id="picks-note"></p></details>
     </section>
 
     <section class="card" id="hero" hidden>
       <div class="hero">
-        <div>
-          <div class="card-head" style="margin:0"><h2 id="hero-title"></h2><span id="hero-tag"></span></div>
-          <div class="kv" id="hero-kv"></div>
-          <div class="slate" id="slate"></div>
-        </div>
-        <div id="hero-side"></div>
+        <div class="games"><div class="box-k" id="hero-title">The games</div><div class="slate" id="slate"></div></div>
+        <div class="hero-side" id="hero-side"></div>
       </div>
     </section>
 
@@ -56,29 +58,35 @@
     </section>
 
     <section class="card">
-      <div class="card-head"><h2 id="model-title">Model win chances</h2><span class="updated" id="model-updated"></span></div>
-      <div class="table-wrap"><div id="model"></div></div>
+      <div class="card-head"><h2>The field</h2><span class="updated" id="model-updated"></span></div>
+      <div class="table-wrap collapsed" id="model-wrap"><div id="model"></div></div>
+      <div class="more" id="more-wrap" hidden><button type="button" class="btn ghost" id="more"></button></div>
+      <p class="lead">Model win chances. <b>Win</b> is the share of 10,000 simulated nights in which the player finished first.</p>
       <p class="note" id="out-note"></p>
-      <p class="note">
-        <b>Proj PRA</b> is the model's expected points + rebounds + assists. <b>Win</b> is the share of 10,000 simulated nights
-        in which the player finished first (a tie counts as a split). <b>Top 3</b> is the share in which they finished in the top three,
-        which matters on Three Kings nights. <span class="inj q">Q</span> marks a questionable / day-to-day player: the model gives them a
-        70% chance to play, and Proj PRA assumes they play. Out players are left off. The prediction refreshes about every two hours
-        until the first tip-off, then locks; that locked version is the one graded on the <a href="model.html">Model</a> page.
-        Click <b>Win</b>, <b>Top 3</b>, <b>Pick %</b> or <b>Value</b> to sort; <b>#</b> stays the model's rank by win chance.
-      </p>
+      <details class="how"><summary>How this works</summary>
+        <p class="note">
+          <b>Proj PRA</b> is the model's expected points + rebounds + assists. In <b>Win</b>, a tie for first counts as a split.
+          <b>Top 3</b> is the share of nights in which the player finished in the top three, which matters on Three Kings nights.
+          <span class="inj q">Q</span> marks a questionable / day-to-day player: the model gives them a 70% chance to play, and Proj PRA
+          assumes they play. Out players are left off. The prediction refreshes about every two hours until the first tip-off, then
+          locks; that locked version is the one graded on the <a href="model.html">Model</a> page.
+          Click <b>Win</b>, <b>Top 3</b>, <b>Pick %</b> or <b>Value</b> to sort; <b>#</b> stays the model's rank by win chance.
+        </p>
+      </details>
     </section>
 
     <section class="card" id="value-card" hidden>
       <div class="card-head"><h2>Best value</h2><span class="updated" id="value-sub"></span></div>
       <div class="table-wrap"><div id="value"></div></div>
-      <p class="note" id="value-note"></p>
+      <p class="lead" id="value-lead"></p>
+      <details class="how"><summary>How this works</summary><p class="note" id="value-note"></p></details>
     </section>
 
     <section class="card" id="most-card" hidden>
       <div class="card-head"><h2>Most picked</h2><span class="updated">Crowded, not always overpriced</span></div>
       <div class="table-wrap"><div id="most"></div></div>
-      <p class="note" id="most-note"></p>
+      <p class="lead" id="most-lead"></p>
+      <details class="how"><summary>How this works</summary><p class="note" id="most-note"></p></details>
     </section>
 
     <section class="card">
@@ -140,31 +148,31 @@
       const promo = promoFor(target);
       const done = leaders?.days?.find((x) => x.d === target && x.final);
       $("hero").hidden = false;
-      $("title").textContent = promo ? `${dayLabel(target)}: King of the Court` : `${dayLabel(target)}`;
-      $("hero-title").textContent = dateText(target, { weekday: "long", month: "long", day: "numeric" });
-      $("hero-tag").innerHTML = promo
-        ? `<span class="tag gold">${promo.format === "three" ? "Three Kings" : "Promo night"}</span>`
-        : `<span class="tag">Not a promo night</span>`;
+      const tonight = dayLabel(target) === "Tonight";
+      const kind = promo ? (promo.format === "three" ? "Three Kings" : "Promo night") : "Not a promo night";
+      $("poster-date").textContent = `${tonight ? "Tonight · " : ""}${dateText(target, { weekday: "long", month: "long", day: "numeric" })} · ${kind}`;
+      $("hero-title").textContent = tonight ? "Tonight's games" : `${dateText(target)} games`;
       const kv = [];
-      if (promo) kv.push(`<span>Prize pool <b>${fmt.money(promo.pool)}</b> in bonus bets${promo.assumed ? " (assumed: same as the season's first Wednesday)" : ""}</span>`);
-      kv.push(`<span><b>${p.games}</b> games</span>`, `<span>First tip <b>${timeText(p.firstTip)}</b></span>`);
+      if (promo) kv.push(`<div><b>${fmt.money(promo.pool)}</b><span>${promo.assumed ? "Purse (assumed: same as the season's first Wednesday)" : "Purse"}</span></div>`);
+      kv.push(`<div><b>${p.games}</b><span>${p.games === 1 ? "Game" : "Games"}</span></div>`, `<div><b>${timeText(p.firstTip).replace(/ ET$/, "")}</b><span>First tip ET</span></div>`);
       $("hero-kv").innerHTML = kv.join("");
+      $("hero-kv").hidden = false;
       $("slate").innerHTML = p.slate
         .slice()
         .sort((a, b) => (a.tip < b.tip ? -1 : 1))
-        .map((g) => `<div class="g" data-gid="${esc(g.gid)}"><b>${esc(g.away)} @ ${esc(g.home)}</b><div class="t">${timeText(g.tip)}${g.total ? ` · total ${g.total}` : ""}</div></div>`)
+        .map((g) => `<div class="g" data-gid="${esc(g.gid)}"><b>${esc(g.away)} @ ${esc(g.home)}</b><span class="t">${timeText(g.tip)}${g.total ? ` · total ${g.total}` : ""}</span></div>`)
         .join("");
       const fav = p.players[0];
       let side;
       if (done) {
         const kings = promo ? promoCrowns(promo, done) : done.kings;
-        side = `<div class="k">${kings.length > 1 ? "Kings" : "King"} of the Court</div>${kings
-          .map((pid) => `<div class="who" style="margin:.5rem 0">${headshot(pid, 44)}<div><span class="pn">${crown}${playerName(names, pid)}</span><small>${done.top[0].pra} PRA · model gave ${fmt.pct(p.players.find((x) => x.pid === pid)?.win ?? 0)}</small></div></div>`)
+        side = `<div class="box-k">${kings.length > 1 ? "Kings" : "King"} of the Court</div>${kings
+          .map((pid) => `<div class="who">${headshot(pid, 52)}<div><span class="pn">${crown}${playerName(names, pid)}</span><small>${done.top[0].pra} PRA · model gave ${fmt.pct(p.players.find((x) => x.pid === pid)?.win ?? 0)}</small></div></div>`)
           .join("")}<a href="day.html?d=${target}">Full night →</a>`;
       } else {
-        side = `<div class="k muted">Model favorite</div><div class="who" style="margin:.5rem 0">${headshot(fav.pid, 44)}<div><span class="pn">${playerName(names, fav.pid)}</span><small>${esc(fav.tm)} ${vsText(fav.home, fav.opp)} · ${fmt.d1(fav.mean)} proj PRA</small></div></div><div class="big">${fmt.pct(fav.win)}</div><div class="muted" style="font-size:.85rem">chance to finish first</div>`;
+        side = `<div class="box-k">Model favorite</div><div class="who">${headshot(fav.pid, 52)}<div><span class="pn">${playerName(names, fav.pid)}</span><small>${esc(fav.tm)} ${vsText(fav.home, fav.opp)} · ${fmt.d1(fav.mean)} proj PRA</small></div></div><div><span class="big">${fmt.pct(fav.win)}</span> <span class="muted">chance to finish first</span></div>`;
       }
-      $("hero-side").innerHTML = `<div class="tile">${side}</div>`;
+      $("hero-side").innerHTML = `<div class="fav">${side}</div>`;
     }
 
     function winBar(p, max) {
@@ -174,8 +182,7 @@
     function renderModel() {
       const p = pred.days[target];
       const locked = new Date() >= new Date(p.firstTip);
-      $("model-title").textContent = `Model win chances · ${dateText(target)}`;
-      $("model-updated").textContent = `${locked ? "Locked" : "Updated"} ${stampText(p.takenAt)}`;
+      $("model-updated").textContent = `${dateText(target)} · ${locked ? "Locked" : "Updated"} ${stampText(p.takenAt)}`;
       const max = Math.max(...p.players.map((x) => x.win), 0.01);
       // # stays the model's rank by win chance whatever the table is sorted by.
       const rows = p.players.slice(0, 25).map((r, i) => ({ ...r, rank: i + 1 }));
@@ -202,6 +209,15 @@
           draw
         );
       draw();
+      // The first 15 rows show until "Show all"; the CSS hides the rest, so sorting still ranks all 25.
+      const wrap = $("model-wrap"), more = $("more");
+      const label = () => (more.textContent = wrap.classList.contains("collapsed") ? `Show all ${rows.length} players` : "Show top 15");
+      $("more-wrap").hidden = rows.length <= 15;
+      label();
+      more.onclick = () => {
+        wrap.classList.toggle("collapsed");
+        label();
+      };
       renderPicks(p);
       renderValue(p);
       renderMost(p);
@@ -240,6 +256,8 @@
           "No player has a 2%+ chance yet."
         );
       draw();
+      $("value-lead").innerHTML = `<b>Value</b> is the ${three ? "top-3" : "win"} chance divided by the expected share of picks:
+        1.20× or more (green) means more chance than picks, under 0.80× (red) means overpicked.`;
       $("value-note").innerHTML = `
         The prize is split among everyone who picked the King, so a popular player pays less. <b>Pick %</b> is the share of
         entrants expected to pick the player. In DK's published payouts (10 nights of 2025-26) the public followed win chances only loosely,
@@ -267,23 +285,48 @@
       const byPid = Object.fromEntries(p.players.map((x) => [x.pid, x]));
       const list = (p.picks ? p.picks.map((pid) => byPid[pid]).filter(Boolean) : topPicks(p.players, promo, chalk)).map((x) => ({ ...x, chalk: chalkOf(x) }));
       $("picks-card").hidden = false;
-      $("picks-title").textContent = `${dayLabel(target) === "Tonight" ? "Tonight's" : `${dateText(target)}`} picks`;
-      $("picks-sub").textContent = "Best value, chalk left out";
-      $("picks").innerHTML = list.length
-        ? list
-            .map((r, i) => {
-              const fill = isFillIn(r) ? ` <span class="tag gold">Filling in</span>` : "";
-              return `<div class="tile pick"><div class="k">#${i + 1} pick${fill}</div>${whoCell(names, r.pid, `${esc(r.tm)} ${vsText(r.home, r.opp)}${injuryTag(r.inj)}${bumpTag(r, names)}`)}
-                <div class="pick-kv"><span><b>${valueCell(r.value)}</b> value</span><span><b>${fmt.pct(three ? r.top3 : r.win)}</b> ${three ? "top 3" : "to win"}</span><span><b>${fmt.pct(r.share)}</b> of picks</span><span><b>${approxMoney(r.estPayout)}</b> if ${three ? "top 3" : "King"}</span></div></div>`;
-            })
-            .join("")
+      $("picks-sub").textContent = `${dayLabel(target) === "Tonight" ? "" : `${dateText(target)} · `}#1 pick · best value, chalk left out`;
+      const chance = (r) => (three ? r.top3 : r.win);
+      const ifWin = three ? "top 3" : "King";
+      const line2 = (r) => `${esc(r.tm)} ${vsText(r.home, r.opp)}${injuryTag(r.inj)}${bumpTag(r, names)}${isFillIn(r) ? ` <span class="tag gold">Filling in</span>` : ""}`;
+      // #1 is the main event (its stats as a tale of the tape); #2 and #3 are the undercard below it.
+      const [top, ...rest] = list;
+      $("picks").innerHTML = top
+        ? `<div class="main-event">
+            <div class="me-fighter">
+              <div class="me-who"><div class="me-photo">${headshot(top.pid, 72)}</div><div><div class="me-name">${playerName(names, top.pid)}</div><small>${line2(top)}</small></div></div>
+              <div class="me-value"><b>${valueCell(top.value)}</b><span>VALUE</span></div>
+            </div>
+            <div class="divider" aria-hidden="true"></div>
+            <div class="tape">
+              <div class="k">Tale of the tape</div>
+              <div class="row"><span>Chance to ${three ? "finish top 3" : "win"}</span><b>${fmt.pct(chance(top))}</b></div>
+              <div class="row"><span>Share of picks</span><b>${fmt.pct(top.share)}</b></div>
+              <div class="row"><span>Payout if ${ifWin}</span><b>${approxMoney(top.estPayout)}</b></div>
+              <div class="row"><span>Projected PRA</span><b>${fmt.d1(top.mean)}</b></div>
+            </div>
+          </div>${
+            rest.length
+              ? `<div class="undercard">${rest
+                  .map(
+                    (r, i) => `<div class="uc"><div class="uc-n">#${i + 2}</div>
+                      <div class="uc-body"><span class="pn">${playerName(names, r.pid)}</span><small>${line2(r)}</small>
+                        <div class="uc-kv"><b>${fmt.pct(chance(r))}</b> ${three ? "top 3" : "to win"} · <b>${fmt.pct(r.share)}</b> of picks · <b>${approxMoney(r.estPayout)}</b> if ${ifWin}</div></div>
+                      <div class="uc-val"><b>${valueCell(r.value)}</b><span>VALUE</span></div></div>`
+                  )
+                  .join("")}</div>`
+              : ""
+          }`
         : `<p class="muted">No non-chalk player has a 2%+ chance tonight.</p>`;
       // Name the chalk that a pick would otherwise have come from, with the reason.
       const onList = new Set((chalk?.players ?? []).map((c) => c.pid));
-      const left = p.players
-        .filter((x) => (three ? x.top3 : x.win) >= MODEL.valueMinWin && chalkOf(x))
-        .sort((a, b) => b.share - a.share)
-        .map((x) => `${playerName(names, x.pid)} (${fmt.pct(x.share)} of picks${onList.has(x.pid) && x.share < chalk.shareCutoff ? ", on the list" : ""})`);
+      const leftOut = p.players
+        .filter((x) => chance(x) >= MODEL.valueMinWin && chalkOf(x))
+        .sort((a, b) => b.share - a.share);
+      const left = leftOut.map((x) => `${playerName(names, x.pid)} (${fmt.pct(x.share)} of picks${onList.has(x.pid) && x.share < chalk.shareCutoff ? ", on the list" : ""})`);
+      $("picks-lead").innerHTML = `Best value among players with a 2%+ chance.${
+        leftOut.length ? ` <b>Left out as chalk:</b> ${leftOut.map((x) => playerName(names, x.pid)).join(", ")}.` : ""
+      }`;
       $("picks-note").innerHTML = `
         The three players whose ${three ? "top-3" : "win"} chance is highest compared with how many people are expected to pick them,
         among players with a 2%+ chance. ${left.length ? `<b>Left out as chalk:</b> ${left.join(", ")}.` : ""}
@@ -319,11 +362,13 @@
         );
       draw();
       const over = rows.filter((r) => r.value < 0.8);
+      $("most-lead").innerHTML = `The five players expected to draw the most picks. ${
+        over.length ? `<b>Overpicked tonight</b> (red, under 0.80×): ${over.map((r) => playerName(names, r.pid)).join(", ")}.` : "No one here is clearly overpicked tonight (none under 0.80×)."
+      }`;
       $("most-note").innerHTML = `
-        The five players expected to draw the most picks. Crowded isn't the same as overpriced: the public picks established stars
+        Crowded isn't the same as overpriced: the public picks established stars
         roughly in line with their chances, so they usually show a value around 1.0–1.2×, and a win pays little because so many share it.
         Rookies are the exception: they draw about 3.4× the picks of a veteran with the same chance, so a popular rookie shows red.
-        ${over.length ? `<b>Overpicked tonight</b> (red, under 0.80×): ${over.map((r) => playerName(names, r.pid)).join(", ")}.` : "No one here is clearly overpicked tonight (none under 0.80×)."}
         The estimate includes the public's lean toward rookies and big season averages, but not hype it can't measure (a hot streak on national TV,
         a big name on a down night), so real crowds on those players can be bigger.
         On phones the ${three ? "Top 3" : "Win"} column is left off to make room.`;
