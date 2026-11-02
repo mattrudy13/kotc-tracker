@@ -1,0 +1,46 @@
+{
+  "season": 2026,
+  "notes": "Every player's would-be payout on nights DK published the full list. Bettors on a player = pool ÷ payout.",
+  "nights": [
+    {
+      "date": "2026-10-27",
+      "pool": 1000000,
+      "source": "DK What Could've Been 10/28/26 (relayed by Rudy)",
+      "partial": true,
+      "list": "topPra",
+      "payouts": [
+        {
+          "pid": "4065648",
+          "name": "Jayson Tatum",
+          "payout": 148
+        },
+        {
+          "pid": "3136195",
+          "name": "Karl-Anthony Towns",
+          "payout": 199
+        },
+        {
+          "pid": "3155942",
+          "name": "Domantas Sabonis",
+          "payout": 123
+        },
+        {
+          "pid": "4278104",
+          "name": "Michael Porter Jr.",
+          "payout": 1150
+        },
+        {
+          "pid": "5104157",
+          "name": "Victor Wembanyama",
+          "payout": 164
+        },
+        {
+          "pid": "3945274",
+          "name": "Luka Doncic",
+          "payout": 21,
+          "winner": true
+        }
+      ]
+    }
+  ]
+}
