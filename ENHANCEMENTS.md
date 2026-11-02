@@ -6,8 +6,11 @@ Done: v0.3 (model v2) teammates out and opponent defense. Back-to-backs were tes
 2025-26 PRA (slope −0.03 fit, 0.00 holdout); defense split by position (G/F/C) did slightly worse than overall.
 v0.5 refit pick share on 10 nights of payout lists and added the rookie lean; recent form didn't help.
 v0.6 redesigned the site ("Fight card": poster masthead, main event + undercard picks, shorter Tonight).
+The pick record (2026-11-01) tracks Tonight's three picks on the Model page, by slot and night by night.
 
-1. **Pick share: more of the public's habits.** Every new Reddit list helps (paste each Wednesday's). Ideas to
+1. **Pick share: more of the public's habits.** `fit-share.mjs` reads one season (2025 by default), so this
+   season's lists (`pickshare-2026.json`, from 10/27/26) aren't in the fit yet: fit both seasons together
+   once there are a few. Every new Reddit list helps (paste each Wednesday's). Ideas to
    test on held-out nights, as v3 was:
    - Is the public slow on late injury news? Compare fill-ins' actual vs. estimated share on the lists; if
      they're underpicked, fill-ins are real value.

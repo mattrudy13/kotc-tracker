@@ -187,13 +187,15 @@ v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed,
   1. Rudy pastes u/DraftKings' r/DKAssist "What Could've Been" post (Reddit blocks curl, WebFetch and the
      Chrome extension) into `data/posts/<night>.txt`. DK Network's tracking post is the fallback
      (`parse-dk-post.mjs <url> …`).
-  2. Add the night's winners and exact payout to `promos-<season>.json`.
+  2. Add the night's winners and exact payout to `promos-<season>.json`. Until then the pick record shows a
+     winning pick as "payout pending" (losses are graded as soon as the games end). Rerun `grade.mjs` after.
   3. `node scripts/parse-dk-post.mjs --file data/posts/<night>.txt --date <night> --partial --source "<title>"`.
      Check its report: unmatched names (last-name fallback handles Rob/Robert), listed players who didn't
      play that date, PRA mismatches, list type (topPra/mostBet, guessed from the wording; `--list` overrides)
      and top-PRA players left off. Then rerun with `--write`. `--pool` defaults to the promos file (÷3 on
      Three Kings nights). Leave out `--partial` only for a list of everyone anyone picked.
-  4. `node scripts/fit-share.mjs`: if the held-out comparison or coefficients change meaningfully, show Rudy
+  4. `node scripts/fit-share.mjs` (one season per run, 2025 by default; 2026 lists aren't in the fit yet,
+     see ENHANCEMENTS #1): if the held-out comparison or coefficients change meaningfully, show Rudy
      before updating `MODEL.share` (bump its version, rerun `backtest.mjs`, update the page notes).
 - Parser history: the Unicode name fix (2026-10-21) found Jusuf Nurkić missing from 11/18/25 (about 34 bettors).
 

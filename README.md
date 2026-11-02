@@ -16,7 +16,8 @@ Site: https://mattrudy13.github.io/kotc-tracker/
   real but small edge. A model factor stays only if it improves the holdout score (log loss). The
   pick-share model is fitted on DraftKings' published payout lists.
 - **Live record:** the first 2026-27 promo night was Oct 21, 2026; graded results build up from there on
-  the Model page.
+  the Model page. Tonight's three picks are tracked night by night: the #1 pick (Anthony Edwards) won $824
+  on Oct 21.
 - **Built with:** JavaScript (Node), GitHub Actions on a schedule, GitHub Pages and ESPN's public API.
 
 ## Pages
@@ -33,8 +34,8 @@ Site: https://mattrudy13.github.io/kotc-tracker/
 - **History** (`history.html`): every 2025-26 promo night: winners, PRA, pool, payout per winning bet,
   the model's backtest chance, and a link to the source post.
 - **Model** (`model.html`): this season's locked predictions graded, the 2025-26 backtest against two
-  baselines, what each model factor adds, the value-pick record by strategy, a calibration chart, and how
-  the model works.
+  baselines, what each model factor adds, how Tonight's three picks did (totals by pick and a result card per
+  promo night), the value-pick record by strategy, a calibration chart, and how the model works.
 - **Night** (`day.html?d=YYYY-MM-DD`): one night's top 10, the suggested picks and the model's list.
 
 ## Best value
@@ -49,7 +50,7 @@ and piles onto rookies (about 3.4× the picks of a comparable veteran). Last sea
 of the current one, so early-season averages don't swing on one game.
 
 ```sh
-node scripts/parse-dk-post.mjs <dk-network-url> --date YYYY-MM-DD --pool 5000000 --write
+node scripts/parse-dk-post.mjs <dk-network-url> --date YYYY-MM-DD --pool 2000000 --write
 pbpaste | node scripts/parse-dk-post.mjs --file - --date YYYY-MM-DD --source <url> --partial --write  # pasted text
 node scripts/fit-share.mjs        # compares variants on held-out nights, prints MODEL.share coefficients
 ```
@@ -69,7 +70,9 @@ All data comes from ESPN's public site API (no key). `.github/workflows/update-d
    `data/leaders-<season>.json` for the pages. Seasons are named by start year (2026 = 2026-27).
 2. `scripts/predict.mjs`: the model's predictions for today and the next promo night →
    `data/predictions-<season>.json`. A night's prediction locks at its first tip-off.
-3. `scripts/grade.mjs`: grades locked predictions once the night's games are final.
+3. `scripts/grade.mjs`: grades locked predictions once the night's games are final, including how each of
+   the night's three picks finished. A losing pick counts right away; a winning one counts once DK's payout is
+   in `data/promos-<season>.json`.
 
 Edited by hand:
 
