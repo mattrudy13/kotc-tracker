@@ -9,16 +9,20 @@
       "date": "2026-10-21",
       "format": "king",
       "pool": 5000000,
-      "winners": [],
-      "source": "https://dknetwork.draftkings.com/2026/10/21/draftkings-king-of-the-court-value-picks-for-wednesday-10-21-26/",
-      "note": "First Wednesday edition: 11-game slate, $5M (a one-off; the usual purse is $2M)."
+      "winners": [
+        { "pid": "4594268", "name": "Anthony Edwards", "payout": 824 },
+        { "pid": "4065733", "name": "Ty Jerome", "payout": 824 }
+      ],
+      "source": "https://dknetwork.draftkings.com/2026/10/21/tracking-the-leaders-for-draftkings-king-of-the-court-wednesday-10-21-26/",
+      "note": "First Wednesday edition: 11-game slate, $5M (a one-off; the usual purse is $2M). Edwards and Jerome tied at 58 PRA; each winning bet got $824 (DK Network, quoting @DK_Assist)."
     },
     {
       "date": "2026-10-27",
       "format": "king",
       "pool": 1000000,
-      "winners": [],
-      "note": "Moved to Tuesday this week (4-game slate), $1M; no promo on Wed 10/28 (Rudy, 2026-10-27)."
+      "winners": [{ "pid": "3945274", "name": "Luka Doncic", "payout": 21 }],
+      "source": "https://dknetwork.draftkings.com/2026/10/27/tracking-the-leaders-for-draftkings-king-of-the-court-tuesday-10-27-26/",
+      "note": "Payout $21 from DK's What Could've Been post (Rudy, 2026-11-01). Moved to Tuesday this week (4-game slate), $1M; no promo on Wed 10/28 (Rudy, 2026-10-27)."
     }
   ]
 }
