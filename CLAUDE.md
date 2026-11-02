@@ -61,7 +61,8 @@ v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed,
   `shareVersion`, `longShots`. `result.value` = `{picks, returns}` for favorite / value / noChalk / fillIn / public.
 - `promos-<season>.json`: `promos[]` = `{date, format: king|three, pool, winners: [{pid, name, payout}],
   source, note}`. `winners` = who DK paid. `payout` = bonus bet per winning token in dollars (null =
-  unpublished). 2026 has a `default` (every Wednesday from 10-21, $5M, king) plus `skip`. `promoInfo()`
+  unpublished). 2026 has a `default` (every Wednesday from 10-21, king, **$2M**: DK's usual purse; 10/21's $5M was a one-off,
+  Rudy 2026-11-01; Rudy will say when a night differs) plus `skip`. `promoInfo()`
   merges them. **After each Wednesday, add that night's entry** (winners + payout from u/DraftKings' r/DKAssist
   post, DK Network's "Tracking the leader(s)" post or @DKSports). The Reddit posts give exact payouts and
   bettor counts; 2025-26's were corrected from them (see notes per night).
@@ -149,7 +150,7 @@ v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed,
 - Entrants (for the ≈$ figures): pool ÷ (payout × est. share of the winners), only when that share is ≥ 5%
   (`impliedEntrants`). The 2025-26 median is ~119k over 12 nights (with share v3). `predict.mjs` uses this
   season's own nights once there are 3 (graded into `result.entrants`), else last season's backtest median.
-  The $5M Wednesday pool may draw more entrants, so the ≈$ figures may run high until then.
+  Last season's pools were $1–3M, so the $2M default sits inside that range; 10/21's $5M pool may have drawn more.
 - Record: `valuePicks()` (model favorite / best value / best value with chalk left out / best value among
   fill-ins / public favorite) and `pickReturn()` (DK's actual payout, 0, or null when the strategy had no
   pick). The backtest is in `backtest-2025.json` `valueRecord`; live nights are in `predictions`

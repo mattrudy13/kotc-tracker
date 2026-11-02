@@ -153,7 +153,7 @@
       $("poster-date").textContent = `${tonight ? "Tonight · " : ""}${dateText(target, { weekday: "long", month: "long", day: "numeric" })} · ${kind}`;
       $("hero-title").textContent = tonight ? "Tonight's games" : `${dateText(target)} games`;
       const kv = [];
-      if (promo) kv.push(`<div><b>${fmt.money(promo.pool)}</b><span>${promo.assumed ? "Purse (assumed: same as the season's first Wednesday)" : "Purse"}</span></div>`);
+      if (promo) kv.push(`<div><b>${fmt.money(promo.pool)}</b><span>${promo.assumed ? "Purse (assumed: DK's usual $2M)" : "Purse"}</span></div>`);
       kv.push(`<div><b>${p.games}</b><span>${p.games === 1 ? "Game" : "Games"}</span></div>`, `<div><b>${timeText(p.firstTip).replace(/ ET$/, "")}</b><span>First tip ET</span></div>`);
       $("hero-kv").innerHTML = kv.join("");
       $("hero-kv").hidden = false;

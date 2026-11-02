@@ -2,7 +2,7 @@
 
 A tracker for DraftKings Sportsbook's NBA **King of the Court** promo. Bettors who used their token on
 the night's points + rebounds + assists (PRA) leader split the bonus-bet pool. The promo ran on Tuesdays
-in 2025-26 ($1–3M pools) and on Wednesdays in 2026-27 ($5M).
+in 2025-26 ($1–3M pools) and on Wednesdays in 2026-27 (usually $2M; $5M on opening night).
 
 Site: https://mattrudy13.github.io/kotc-tracker/
 
