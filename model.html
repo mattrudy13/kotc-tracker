@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Archivo:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="style.css?v=7d1f7e79">
+  <link rel="stylesheet" href="style.css?v=52e4b075">
 </head>
 <body>
   <header class="masthead slim">
@@ -53,6 +53,16 @@
       <div class="card-head"><h2>What each factor adds</h2><span class="updated">Model v2</span></div>
       <div class="table-wrap"><div id="abl"></div></div>
       <p class="note" id="abl-note"></p>
+    </section>
+
+    <section class="card" id="picks-card" hidden>
+      <div class="card-head"><h2>Tonight's picks: how they did</h2><span class="updated">One token on each pick, every promo night</span></div>
+      <div class="table-wrap"><div id="pick-rec"></div></div>
+      <p class="lead" id="pick-lead"></p>
+      <div class="card-head sub-head" id="bouts-head" hidden><h3>Night by night</h3><span class="updated" id="bouts-sub"></span></div>
+      <div class="bouts" id="bouts"></div>
+      <div class="more" id="bouts-more" hidden><button type="button" class="btn ghost" id="bouts-btn" aria-expanded="false"></button></div>
+      <details class="how"><summary>How this works</summary><p class="note" id="pick-note"></p></details>
     </section>
 
     <section class="card" id="value-card" hidden>
@@ -102,7 +112,7 @@
     <footer>Data from ESPN. Not affiliated with DraftKings.</footer>
   </main>
 
-  <script src="model.js?v=b34c3560"></script>
+  <script src="model.js?v=6c2ae853"></script>
   <script src="common.js?v=5b32a8b4"></script>
   <script>
     const $ = (id) => document.getElementById(id);
@@ -119,7 +129,97 @@
       renderLive(current, pred, L, promos);
       if (bt) renderBacktest(bt);
       if (bt?.ablation) renderAblation(bt);
+      renderPicks(current, bt, pred, L, promos);
       renderValue(current, bt, pred);
+    }
+
+    // Tonight's three picks: totals by slot (last season replayed, this season live), then a box per night.
+    function renderPicks(season, bt, pred, L, promos) {
+      const names = { ...(bt?.names ?? {}), ...(L?.names ?? {}), ...(pred?.names ?? {}) };
+      const gameDays = (L?.days ?? []).map((x) => x.d);
+      const nights = Object.entries(pred?.days ?? {})
+        .filter(([, p]) => p.result?.picks)
+        .map(([d, p]) => ({ d, p, promo: promoInfo(promos, d, gameDays) }))
+        .sort((a, b) => b.d.localeCompare(a.d));
+      const live = slotRecord(nights.map((n) => n.p.result.picks.map((x) => x.ret)));
+      const btRec = bt?.pickRecord;
+      if (!btRec && !nights.length) return;
+      $("picks-card").hidden = false;
+
+      // The per-night (per-token) average drops out on phones so the live column fits without sideways scrolling.
+      const cell = (r, all) => {
+        const n = all ? r?.tokens : r?.nights;
+        if (!n) return `<span class="muted">–</span>`;
+        const avg = r.total ? `<span class="hide-sm"> · ${fmt.money(r.total / n)} a ${all ? "token" : "night"}</span>` : "";
+        return `${fmt.money(r.total)}<small class="ln">${r.wins} of ${n}${all ? " tokens" : ""} won${avg}</small>`;
+      };
+      const rows = [
+        { k: 0, label: `<span class="rank">#1</span> <b>Main event</b>` },
+        { k: 1, label: `<span class="rank">#2</span> <b>Undercard</b>` },
+        { k: 2, label: `<span class="rank">#3</span> <b>Undercard</b>` },
+        { k: "all", label: `<b>All 3</b><small class="ln">3 tokens a night</small>` },
+      ];
+      const pick = (rec, k) => (k === "all" ? rec?.all : rec?.slots[k]);
+      renderTable($("pick-rec"), rows, [
+        { key: "label", label: "Pick", cls: "l", fmt: (r) => r.label },
+        { key: "bt", label: `${bt?.label ?? "Last season"} <small class="ln">backtest</small>`, fmt: (r) => cell(pick(btRec, r.k), r.k === "all") },
+        { key: "live", label: `${seasonLabel(season)} <small class="ln">live</small>`, cls: "key", fmt: (r) => cell(pick(live, r.k), r.k === "all") },
+      ], { nosort: true }, () => {});
+
+      const pending = nights
+        .filter((n) => n.promo?.format === "king")
+        .flatMap((n) => n.p.result.picks)
+        .filter((x) => x.won && x.ret == null).length;
+      $("pick-lead").innerHTML = `The picks are the ones the <a href="./">Tonight</a> page showed when the night locked at the first tip-off.
+        A pick pays only if that player is King${pending ? `; <b>${pending}</b> winning pick${pending > 1 ? "s" : ""} will count once DK's payout is entered` : ""}.`;
+
+      // A box per night, newest first; the last 4 show until "Show all nights" is pressed.
+      const SHOWN = 4;
+      const ord = (n) => n + ([11, 12, 13].includes(n % 100) ? "th" : ["th", "st", "nd", "rd"][n % 10] ?? "th");
+      const bout = ({ d, p, promo }) => {
+        const r = p.result;
+        const three = promo?.format === "three";
+        const counted = r.picks.filter((x) => x.ret != null);
+        const won = counted.reduce((s, x) => s + x.ret, 0);
+        const head = three ? `<span class="tag">Three Kings · not counted</span>`
+          : r.picks.some((x) => x.won && x.ret == null) ? `<span class="tag gold">Won · payout pending</span>`
+          : won > 0 ? `<span class="tag gold">Won ${fmt.money(won)}</span>` : `<span>Won $0</span>`;
+        const paid = promo?.winners?.find((w) => w.payout != null)?.payout;
+        const kings = r.kings.map((pid) => playerName(names, pid)).join(" &amp; ");
+        const king = `${r.kings.length > 1 ? "Kings" : "King"}: ${crown}<b>${kings}</b>, ${r.kingPra} PRA · ${paid != null ? `paid ${fmt.money(paid)}` : "payout not entered yet"}`;
+        const picks = r.picks.map((x, i) => {
+          const finish = x.finish == null ? "didn't play" : `${x.pra} PRA, ${x.finish === 1 && x.tied ? "tied 1st" : `finished ${ord(x.finish)}`}`;
+          const res = x.won
+            ? `<span class="stamp won">${x.ret != null ? `Won ${fmt.money(x.ret)}` : "Won"}</span>${x.ret == null && !three ? `<small>payout pending</small>` : ""}`
+            : `<span class="stamp">Lost</span>${x.would != null ? `<small>would've paid ${x.wouldEst ? approxMoney(x.would) : fmt.money(x.would)}</small>` : ""}`;
+          return `<div class="bp${x.won ? " hit" : ""}"><span class="bp-n">${i + 1}</span>
+            <div class="bp-body"><span class="pn">${playerName(names, x.pid)}</span><small>${x.tm ? `${esc(x.tm)} · ` : ""}${finish}</small></div>
+            <div class="bp-res">${res}</div></div>`;
+        }).join("");
+        return `<article class="bout"><div class="bout-head"><a href="day.html?d=${d}">${dateText(d)}${promo ? ` · ${fmt.money(promo.pool)}` : ""}</a>${head}</div>
+          <div class="bout-king">${king}</div>${picks}</article>`;
+      };
+      $("bouts-head").hidden = !nights.length;
+      $("bouts-sub").textContent = nights.length > SHOWN ? `Newest first · last ${SHOWN} of ${nights.length}` : "Newest first";
+      let open = false;
+      const draw = () => {
+        $("bouts").innerHTML = (open ? nights : nights.slice(0, SHOWN)).map(bout).join("");
+        $("bouts-btn").textContent = open ? "Show fewer nights" : `Show all ${nights.length} nights`;
+        $("bouts-btn").setAttribute("aria-expanded", String(open));
+      };
+      $("bouts-more").hidden = nights.length <= SHOWN;
+      $("bouts-btn").onclick = () => { open = !open; draw(); };
+      draw();
+
+      const n = btRec?.all.nights ?? 0;
+      $("pick-note").innerHTML = `
+        <b>#1</b> is the Main event and <b>#2–3</b> the undercard: the best value (win chance ÷ expected share of picks) among players with a 2%+
+        chance, chalk left out. <b>All 3</b> puts a token on each, so its cost is three tokens a night. A pick pays DK's actual payout when that
+        player is King and nothing otherwise; Three Kings nights are left out, as in the value record below.
+        <b>Would've paid</b> is DK's own "what could've been" number when the night's list has the player; with <b>≈</b> it's the site's
+        pre-game estimate instead.
+        ${bt ? `The backtest replays ${bt.label} (${n} promo nights with known payouts) with today's model and pick-share estimate, which was fitted on
+        that season's payout lists, so read it as a sanity check rather than proof. The #1 row matches "Best value, chalk left out" below.` : ""}`;
     }
 
     function renderLive(season, pred, L, promos) {

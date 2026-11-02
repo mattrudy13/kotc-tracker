@@ -57,7 +57,8 @@ node scripts/fit-share.mjs        # compares variants on held-out nights, prints
 The Tonight page leads with the top 3 value picks, leaving out "chalk": anyone expected to draw 10%+ of the
 picks, plus the hand-kept list in `data/chalk.json`. A "Most picked" card shows who the crowd is on and what
 they'd pay. The Model page tracks each way of picking (favorite, best value, chalk left out, filling in for a
-missing star, public favorite) with DK's actual payouts.
+missing star, public favorite) with DK's actual payouts, and how Tonight's three picks did night by night
+(won or lost, where each finished, and what it paid or would have paid).
 
 ## Data and automation
 

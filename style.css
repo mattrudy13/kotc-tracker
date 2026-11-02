@@ -345,3 +345,28 @@ a.day { color: inherit; font-weight: 700; }
   .uc-val { flex-basis: 100%; display: flex; align-items: baseline; gap: .5rem; text-align: left; padding-left: 3.5rem; }
   .uc-val b { display: inline; }
 }
+
+/* ---- Model page: how Tonight's picks did, a box per night ---- */
+.rank { font-family: var(--display); color: var(--accent); }
+.card-head.sub-head { margin-top: 1.6rem; }
+.card-head.sub-head h3 { font-size: 1.15rem; text-transform: uppercase; }
+.card-head.sub-head h3 { order: 0; }
+.bouts { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: .9rem; }
+.bout { background: var(--surface); border: 3px solid var(--rule); }
+.bout-head { background: var(--rule); color: var(--bg); padding: .6rem .9rem; display: flex; justify-content: space-between; align-items: center; gap: .6rem; flex-wrap: wrap; }
+.bout-head a { color: var(--bg); font-family: var(--display); font-size: 1.05rem; text-transform: uppercase; text-decoration: none; }
+.bout-head a:hover { text-decoration: underline; }
+.bout-head > span:not(.tag) { font-weight: 800; font-size: .76rem; letter-spacing: .1em; text-transform: uppercase; }
+.bout-head .tag { border-color: var(--bg); color: var(--bg); }
+.bout-head .tag.gold { border-color: var(--mustard); color: var(--ink-fixed); }
+.bout-king { padding: .55rem .9rem; border-bottom: 3px solid var(--rule); background: var(--surface-2); color: var(--muted); font-size: .88rem; }
+.bout-king b { color: var(--fg); }
+.bp { display: flex; align-items: center; gap: .75rem; padding: .7rem .9rem; border-bottom: 2px solid var(--border); }
+.bp:last-child { border-bottom: 0; }
+.bp.hit { background: var(--gold-soft); }
+.bp-n { font-family: var(--display); font-size: 1.4rem; color: var(--accent); width: 1.5rem; flex: none; }
+.bp-body { flex: 1; min-width: 0; }
+.bp-body small, .bp-res small { display: block; color: var(--muted); font-size: .8rem; }
+.bp-res { text-align: right; flex: none; }
+.stamp { display: inline-block; font-weight: 800; font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; padding: .1rem .4rem; border: 2px solid var(--rule); }
+.stamp.won { background: var(--mustard); border-color: var(--mustard); color: var(--ink-fixed); font-family: var(--display); font-weight: 400; font-size: 1rem; letter-spacing: .02em; padding: .15rem .5rem; }

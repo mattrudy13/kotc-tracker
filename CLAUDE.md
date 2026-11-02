@@ -5,7 +5,7 @@ GitHub Pages at https://mattrudy13.github.io/kotc-tracker/. Same code convention
 look, since v0.6): plain HTML/CSS/JS, no build step, globals in `model.js` (data/model, no DOM) and `common.js` (DOM). Look since v0.6:
 "Fight card" (see Rudy's decisions). README.md covers the pages and pipeline.
 
-## Status (2026-10-27)
+## Status (2026-11-01)
 
 v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed, 11 games, $5M):
 - v0.1: site, history, model v1. v0.2: best value (pick share). v0.3: model v2 (teammates out + opponent
@@ -15,7 +15,8 @@ v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed,
 - Oct 21's prediction was remade on model v2 / share v2 at 6:30 PM (Rudy's call: v1 had no record yet) and
   locked at the 7:00 PM tip, before share v3 went live. Tue Oct 27 ($1M; DK moved that week's promo off
   Wednesday, so 10/28 is in `skip`) is the first promo night with the full automated cycle, on share v4: it
-  locked at 4:10 PM ET before the 7:30 tip. Its grading and payout entry come on 10/28.
+  locked at 4:10 PM ET before the 7:30 tip. Payouts for 10/21 ($824, Edwards and Jerome, the #1 pick) and 10/27
+  ($21, Luka) were entered on 11/01, the same day the default purse became $2M and the pick record was added.
 
 ## Rudy's decisions (don't relitigate)
 
@@ -59,6 +60,11 @@ v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed,
   `pPlay`, `inj`, the v2 context (`bump`, `outPct`, `bumpIf`, `def`) and, on promo nights, `share`, `value`,
   `estPayout`, `ev`, `chalk`. Promo nights also save `picks` (top 3 pids), `entrants`, `pool`, `format`,
   `shareVersion`, `longShots`. `result.value` = `{picks, returns}` for favorite / value / noChalk / fillIn / public.
+  `result.picks` (grade.mjs `pickResults`, promo nights) = how each locked pick did, in slot order: `{pid, tm, pra,
+  finish, tied?, won, ret, would?, wouldEst?}`. `ret` = bonus bets won (0 lost; null = Three Kings, or a win
+  whose payout isn't entered yet), so losses count as soon as the games end. `would` = what a loser would've
+  paid: DK's number from `pickshare-<season>.json` when the night's list has the player, else the
+  prediction's `estPayout` (`wouldEst`).
 - `promos-<season>.json`: `promos[]` = `{date, format: king|three, pool, winners: [{pid, name, payout}],
   source, note}`. `winners` = who DK paid. `payout` = bonus bet per winning token in dollars (null =
   unpublished). 2026 has a `default` (every Wednesday from 10-21, king, **$2M**: DK's usual purse; 10/21's $5M was a one-off,
@@ -172,6 +178,11 @@ v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed,
     Rudy wanted more weight on teammates out; we flag/track it instead of inflating the fitted bump (would
     break the win %). The 11/18/25 fit suggested the public already prices injuries (not retested on the
     partial lists yet; see ENHANCEMENTS).
+- **Pick record (2026-11-01, Rudy's picks from mockups https://claude.ai/artifact/1baKF23KukLRCCWu6qTDRh, B)**:
+  Model page card "Tonight's picks: how they did": a totals table by slot (#1 main event, #2, #3, All 3 =
+  three tokens a night; `slotRecord()`), backtest (`backtest-2025.json` `pickRecord`, `days[].picks[].ret`) next
+  to live, then a result card per promo night (newest first, last 4 + "Show all nights"). 2025-26: #1 $1,321
+  (4/20, same as noChalk), #2 $817 (1/20), #3 $873 (2/20), all 3 $3,011 (7/60 tokens). Live after 10/27: $824.
 - **After each Wednesday** (the post is up Thursday morning; its date is the night + 1):
   1. Rudy pastes u/DraftKings' r/DKAssist "What Could've Been" post (Reddit blocks curl, WebFetch and the
      Chrome extension) into `data/posts/<night>.txt`. DK Network's tracking post is the fallback

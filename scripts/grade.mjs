@@ -27,9 +27,40 @@ let promos = null;
 try {
   promos = await readJson(`promos-${season}.json`);
 } catch {}
+let pickshare = null;
+try {
+  pickshare = await readJson(`pickshare-${season}.json`);
+} catch {}
 const gameDays = [...new Set(Object.values(data.games).map((g) => g.d))];
-const leaders = Object.fromEntries(M.dailyLeaders(data, 3).map((x) => [x.d, x]));
+// Every player who played, ranked by PRA, so a pick's finish can be shown however far down it was.
+const leaders = Object.fromEntries(M.dailyLeaders(data, Infinity).map((x) => [x.d, x]));
 const chalk = await readJson("chalk.json");
+
+// How each of the night's locked picks did. `ret` = bonus bets one token won (0 = lost; null = a
+// winner whose payout isn't entered yet, or a Three Kings night, which the record leaves out).
+// `would` = what a losing pick would have paid: DK's "what could've been" number when the night's list
+// has the player, else the prediction's own estimate (`wouldEst`).
+function pickResults(p, day, promo) {
+  const paid = promo.winners ?? [];
+  const listed = pickshare?.nights?.find((n) => n.date === day.d)?.payouts ?? [];
+  return p.picks.map((pid) => {
+    const row = day.top.find((r) => r.pid === pid);
+    const pred = p.players.find((x) => x.pid === pid);
+    const won = paid.length ? paid.some((w) => w.pid === pid) : day.kings.includes(pid);
+    const out = { pid, tm: pred?.tm ?? row?.tm ?? null, pra: row?.pra ?? null, won };
+    if (row) {
+      out.finish = 1 + day.top.filter((r) => r.pra > row.pra).length;
+      if (day.top.filter((r) => r.pra === row.pra).length > 1) out.tied = true;
+    }
+    out.ret = promo.format !== "king" ? null : won ? paid.find((w) => w.pid === pid)?.payout ?? null : 0;
+    if (!won) {
+      const dk = listed.find((x) => x.pid === pid)?.payout;
+      if (dk != null) out.would = dk;
+      else if (pred?.estPayout != null) Object.assign(out, { would: Math.round(pred.estPayout), wouldEst: true });
+    }
+    return out;
+  });
+}
 
 let graded = 0;
 for (const [d, p] of Object.entries(store.days)) {
@@ -54,6 +85,7 @@ for (const [d, p] of Object.entries(store.days)) {
     const t = M.impliedEntrants(promo, (pid) => p.players.find((x) => x.pid === pid)?.share);
     if (t) result.entrants = Math.round(t);
   }
+  if (promo && p.picks?.length) result.picks = pickResults(p, day, promo);
   if (JSON.stringify(p.result) !== JSON.stringify(result)) {
     p.result = result;
     graded++;

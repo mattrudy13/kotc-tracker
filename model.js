@@ -586,6 +586,29 @@ function pickReturn(pid, promo) {
   return promo.winners.find((w) => w.pid === pid)?.payout ?? 0;
 }
 
+// The record of Tonight's three picks: one token on each slot every promo night. `nights` holds each
+// night's returns by slot (dollars, 0 = lost, null = not counted: a Three Kings night, a payout not
+// entered yet, or no pick in that slot). Each slot counts on its own; "all" adds up every counted token.
+function slotRecord(nights) {
+  const slots = [0, 1, 2].map(() => ({ nights: 0, wins: 0, total: 0 }));
+  const all = { nights: 0, tokens: 0, wins: 0, total: 0 };
+  for (const rets of nights) {
+    let counted = false;
+    rets.slice(0, 3).forEach((r, i) => {
+      if (r == null) return;
+      counted = true;
+      for (const x of [slots[i], all]) {
+        if (r > 0) x.wins++;
+        x.total += r;
+      }
+      slots[i].nights++;
+      all.tokens++;
+    });
+    if (counted) all.nights++;
+  }
+  return { slots, all };
+}
+
 const median = (xs) => {
   const s = [...xs].sort((a, b) => a - b);
   return s.length ? (s.length % 2 ? s[(s.length - 1) / 2] : (s[s.length / 2 - 1] + s[s.length / 2]) / 2) : null;
@@ -632,7 +655,7 @@ if (typeof module !== "undefined") {
     MODEL, priorTotals, historyBefore, projectPlayer, gameMean, playerSd, simulateSlate, predictDay,
     posGroup, newContext, addDay, contextBefore, contextAdjust, missBaseline, defenseFactor,
     promoInfo, promoCrowns, playChance,
-    shareFeatures, pickShares, SHARE_KEYS, shareX, valueFields, addValue, valuePicks, pickReturn, impliedEntrants, median,
+    shareFeatures, pickShares, SHARE_KEYS, shareX, valueFields, addValue, valuePicks, pickReturn, slotRecord, impliedEntrants, median,
     isChalk, isFillIn, topPicks,
   };
 }

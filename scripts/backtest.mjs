@@ -258,7 +258,7 @@ for (const { day, games, candidates, hist, ctx } of replay(() => true)) {
     top: preds.slice(0, 10).map((p) => ({ pid: p.pid, tm: p.tm, opp: p.opp, home: p.home, mean: +p.mean.toFixed(1), win: +p.win.toFixed(4), top3: +p.top3.toFixed(4), pra: praOf(day.d, p.pid), ...(p.outPct >= 0.005 ? { outPct: +p.outPct.toFixed(3) } : {}), ...(promo ? { share: +p.share.toFixed(4), value: +p.value.toFixed(3) } : {}) })),
     value,
     // The suggested picks (best value, chalk left out) as the Tonight page would have shown them.
-    ...(promo ? { picks: M.topPicks(preds, promo, chalk).map((p) => ({ pid: p.pid, tm: p.tm, opp: p.opp, home: p.home, win: +p.win.toFixed(4), top3: +p.top3.toFixed(4), share: +p.share.toFixed(4), value: +p.value.toFixed(3), pra: praOf(day.d, p.pid), ...(p.outPct >= 0.005 ? { outPct: +p.outPct.toFixed(3) } : {}) })) } : {}),
+    ...(promo ? { picks: M.topPicks(preds, promo, chalk).map((p) => ({ pid: p.pid, tm: p.tm, opp: p.opp, home: p.home, win: +p.win.toFixed(4), top3: +p.top3.toFixed(4), share: +p.share.toFixed(4), value: +p.value.toFixed(3), pra: praOf(day.d, p.pid), ret: M.pickReturn(p.pid, promo), ...(p.outPct >= 0.005 ? { outPct: +p.outPct.toFixed(3) } : {}) })) } : {}),
     preds: preds.filter((p) => p.win > 0).map((p) => [p.pid, +p.win.toFixed(4)]),
   });
 }
@@ -337,6 +337,8 @@ const result = {
   calibration: calib.map((c) => ({ lo: c.lo, hi: c.hi, n: c.n, pred: c.n ? c.pred / c.n : null, actual: c.n ? c.won / c.n : null })),
   days: out.map(({ preds, ...x }) => x),
   valueRecord: valueRecord(out),
+  // Tonight's three picks (#1 main event, #2–3 undercard), one token on each.
+  pickRecord: M.slotRecord(out.filter((x) => x.picks).map((x) => x.picks.map((p) => p.ret))),
   ablation,
   // Entrants implied by winners' payouts (see impliedEntrants); predict.mjs uses the median
   // until this season has enough nights of its own.
@@ -354,4 +356,6 @@ console.log("calibration:", result.calibration.map((c) => `${(c.lo * 100).toFixe
 console.log("ablation (log loss, top pick won):");
 for (const [k, a] of Object.entries(ablation.variants)) console.log(`  ${k.padEnd(11)} fit ${a.fit.ll.toFixed(3)} ${a.fit.hits}/${a.fit.n} | holdout ${a.holdout.ll.toFixed(3)} ${a.holdout.hits}/${a.holdout.n}`);
 const vr = result.valueRecord;
+const pr = result.pickRecord;
+console.log(`pick record: ${pr.slots.map((r, i) => `#${i + 1} ${r.wins}/${r.nights} $${Math.round(r.total).toLocaleString()}`).join(" | ")} | all 3 ${pr.all.wins}/${pr.all.tokens} tokens $${Math.round(pr.all.total).toLocaleString()}`);
 console.log(`value record (${vr.favorite.nights} promo nights with known payouts): ${Object.entries(vr).map(([k, r]) => `${k} ${r.wins} wins $${Math.round(r.total).toLocaleString()}`).join(" | ")} · entrants median ${Math.round(result.entrants.median).toLocaleString()} (${result.entrants.nights} nights)`);
