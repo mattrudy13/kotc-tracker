@@ -7,6 +7,8 @@ on:
     # can start scheduled runs hours late; a night with no run before tip-off is shown as
     # "no prediction", never graded on a late one.
     - cron: "15 */2 * 10-12,1-4 *"
+    # hub's cron Worker (hub/worker/src/index.js) also starts this 10:20 AM–6:50 PM ET, so the lock
+    # before tip-off doesn't depend on GitHub's schedule.
   workflow_dispatch:
 
 permissions:

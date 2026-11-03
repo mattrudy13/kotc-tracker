@@ -24,7 +24,7 @@ v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed,
   crown counts.
 - History: real promo dates hand-checked against DK Network posts, in `data/promos-<season>.json`.
 - Model: win chance per player by simulation, predicted and graded **every** game night. Promo nights are highlighted.
-  Refresh about every 2 h; the graded prediction is the last one before the first tip-off.
+  Refresh about every 2 h (GitHub cron), plus on-time runs from hub's cron Worker 10:20 AM–6:50 PM ET (`hub/worker`, added 2026-11-02, because GitHub started the 2-hourly runs 5–8 h apart); the graded prediction is the last one before the first tip-off.
 - Three Kings nights: **only #1 gets a crown**. All three are still listed on History and the night's page.
 - Regular season + NBA Cup only. No playoffs, play-in or All-Star.
 - No betting odds yet (maybe later). Value angle added in v0.2 (see Value).
