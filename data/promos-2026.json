@@ -3,7 +3,7 @@
   "day": "Wednesday",
   "notes": "Every Wednesday with games is assumed to be a promo day ($2M, one King: DK's usual purse; Rudy says when it differs) unless listed in `skip`. Add an entry to `promos` after each Wednesday: `winners` are the players DK paid (ESPN ids), `payout` is the bonus bet each winning token received, in dollars (null = not published). An entry also overrides the default format or pool (e.g. a Three Kings night).",
   "default": { "weekday": 3, "from": "2026-10-21", "format": "king", "pool": 2000000 },
-  "skip": ["2026-10-28", "2026-11-04"],
+  "skip": ["2026-10-28", "2026-11-04", "2026-11-11"],
   "promos": [
     {
       "date": "2026-10-21",
@@ -23,6 +23,14 @@
       "winners": [{ "pid": "3945274", "name": "Luka Doncic", "payout": 21 }],
       "source": "https://dknetwork.draftkings.com/2026/10/27/tracking-the-leaders-for-draftkings-king-of-the-court-tuesday-10-27-26/",
       "note": "Payout $21 from DK's What Could've Been post (Rudy, 2026-11-01). Moved to Tuesday this week (4-game slate), $1M; no promo on Wed 10/28 (Rudy, 2026-10-27)."
+    },
+    {
+      "date": "2026-11-10",
+      "format": "king",
+      "pool": 1000000,
+      "winners": [],
+      "source": null,
+      "note": "Moved to Tuesday this week (6-game slate), $1M; no promo on Wed 11/11 (Rudy, 2026-11-10)."
     }
   ]
 }
