@@ -278,11 +278,13 @@ footer { color: var(--muted); font-size: .8rem; padding: 2rem 0 3rem; border-top
 .games { background: var(--surface); border: 3px solid var(--rule); padding: 1rem 1.1rem; }
 .box-k { font-weight: 800; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 .hero-side { display: flex; }
-.hero-side > .fav { flex: 1; }
+.hero-side > .fav { flex: 1; min-width: 0; }
 .fav { background: var(--accent-fill); color: #fff; padding: 1rem 1.1rem; display: flex; flex-direction: column; justify-content: space-between; gap: .6rem; }
 .fav .box-k, .fav small, .fav .muted { color: rgba(255, 255, 255, .88); }
 .fav a { color: #fff; font-weight: 700; }
-.fav .pn { font-family: var(--display); font-weight: 400; font-size: 1.9rem; line-height: 1.05; text-transform: uppercase; }
+.fav .pn { font-family: var(--display); font-weight: 400; font-size: 1.9rem; line-height: 1.05; text-transform: uppercase; overflow-wrap: break-word; }
+/* min-width 0 lets a long one-word name (Antetokounmpo) wrap or shrink instead of widening the hero row. */
+.fav .who > div { min-width: 0; }
 .fav .hs { border-color: rgba(255, 255, 255, .5); }
 .fav .crown { color: var(--mustard); }
 .big { font-family: var(--display); font-size: 3.2rem; line-height: 1; }
@@ -307,7 +309,9 @@ a.day { color: inherit; font-weight: 700; }
 @media (max-width: 720px) {
   h1 { font-size: 1.9rem; }
   .poster .pw { font-size: 4rem; }
-  .two-col, .hero { grid-template-columns: 1fr; }
+  /* minmax(0, 1fr), not 1fr: a plain 1fr column grows to its widest unbreakable word and pushes the
+     games box and favorite off the screen. */
+  .two-col, .hero { grid-template-columns: minmax(0, 1fr); }
   .tabs { gap: .35rem; }
   .tabs a { padding: .6rem .6rem; font-size: .74rem; letter-spacing: .08em; }
   .masthead.slim .wrap { justify-content: center; }
@@ -344,6 +348,8 @@ a.day { color: inherit; font-weight: 700; }
   .poster-date { letter-spacing: .14em; font-size: .72rem; }
   .uc-val { flex-basis: 100%; display: flex; align-items: baseline; gap: .5rem; text-align: left; padding-left: 3.5rem; }
   .uc-val b { display: inline; }
+  /* Sized so the longest regular's name (Antetokounmpo) fits on one line at 360px. */
+  .fav .pn { font-size: 1.2rem; }
 }
 
 /* ---- Model page: how Tonight's picks did, a box per night ---- */
