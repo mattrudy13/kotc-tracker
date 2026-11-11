@@ -31,3 +31,25 @@ Late runs: solved 2026-11-02 by hub's cron Worker (on-time runs 10:20 AM–6:50 
    loss drops). Favorites are fine (top pick 7/20 vs ~6 expected).
 6. **Teammates out, early season.** Regulars come only from this season's games, so a team's first game gets no
    bump and its second compares against a fixed 15% baseline. Last season's roster could fill that gap.
+7. **Pick share on second-tier winners.** On 11/10/26 Franz Wagner was given 3.0% of picks (≈$297 if King); DK
+   paid 6,319 bettors $159, about 5.5% if entrants were near the usual ~111k. One night, so watch it, don't
+   refit: as lists come in, compare estimated vs. actual share for 25–35 PRA non-stars (part of #1).
+8. **Fetch the winner and payout from DK Network.** The tracking post has both the morning after (curl with a
+   browser user agent works; 11/10/26's had "All 6,319 Wagner bettors have received $159"). A small script
+   could print a ready `promos` entry (winner pid matched against the box score, payout, source URL) for Rudy
+   to check and paste, leaving only the Reddit list as a manual step. Flag it when the post's numbers disagree
+   (11/10: tweet $159, article $158, pool ÷ bettors $158.25).
+9. **Ruled-out list a week ahead.** Between promo nights, Tonight shows next week's slate with today's injury
+   report: about 45 names on 11/11 for 11/18, most stale by then. Hide the list (or show only long-term
+   absences) until the day of the promo. Needs Rudy's call on which.
+10. **Page-check script.** The check from the dev notes (every page, light and dark, 1280 and 375 px, console
+    errors, sideways scroll, "undefined"/"NaN" text) is rewritten by hand each time. Keep it as
+    `scripts/check-pages.py`, run from `../apartments/.venv`, and add the "Show all" toggle and phone-nav checks.
+11. **Model page wording on run timing.** It still says a night can miss its lock because GitHub starts runs
+    late. Since 2026-11-02 the hub Worker starts on-time runs through 6:50 PM ET; say that, and that a late
+    tip-off after a missed Worker run is the remaining gap.
+12. **Entrants from this season.** `predict.mjs` switches to this season's own entrant counts after 3 nights,
+    but a night only counts when the winner's estimated share is 5%+ (1 of 3 so far: 10/27). If long-shot
+    winners keep coming, the ≈$ figures stay on last season's median all year; the "What Could've Been"
+    lists could give an entrant estimate on every night instead (sum of pool ÷ payout over the listed players
+    is a floor).
