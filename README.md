@@ -84,7 +84,9 @@ Edited by hand:
 
 Projected PRA = recent minutes × PRA per minute (both weighted toward recent games and pulled toward
 last season), scaled by the game's betting total, then adjusted for teammates who are out (relative to the
-player's recent games) and the opponent's PRA allowed (model v2). Each night is then simulated 10,000 times;
+player's recent games) and the opponent's PRA allowed (model v2). Each night is then simulated 10,000 times,
+with each player's draw leaning a little toward big nights (model v3: role players blow past their projection
+far more often than they fall short of it);
 a questionable teammate's bump only applies in the simulations where they sit. The constants were fit on
 October–January 2025-26 and tested on February–April. Rerun the fit and the backtest with:
 

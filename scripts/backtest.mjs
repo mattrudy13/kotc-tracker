@@ -322,6 +322,8 @@ const variants = {
   teammates: { teamK: FITTED.teamK, defShrink: null },
   defense: { teamK: 0, defShrink: FITTED.defShrink, defByPos: false },
   defensePos: { teamK: 0, defShrink: FITTED.defShrink, defByPos: true },
+  // v2 = both factors with the normal curve; "both" uses MODEL's skewed noise (v3), like every row above.
+  normal: { teamK: FITTED.teamK, defShrink: FITTED.defShrink, defByPos: false, skew: 0 },
   both: { teamK: FITTED.teamK, defShrink: FITTED.defShrink, defByPos: false },
 };
 const ablation = { fitted: FITTED, variants: {} };

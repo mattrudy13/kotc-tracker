@@ -100,11 +100,12 @@ function seasonAverages(data) {
 //
 // Each player's PRA for a day is projected as minutes × PRA per minute, adjusted for the game's
 // expected pace (betting total) and blowout risk (spread). The day is then simulated many times
-// to get each player's chance of finishing first (and top 3). Constants are fitted on 2025-26
+// to get each player's chance of finishing first (and top 3), with a little right skew in each
+// player's draw (v3). Constants are fitted on 2025-26
 // October–January games (scripts/backtest.mjs --fit); February–April is the holdout.
 
 const MODEL = {
-  version: 2, // v2 (2026-10-21): teammates out and opponent defense
+  version: 3, // v2 (2026-10-21): teammates out and opponent defense. v3 (2026-11-11): skewed noise
   halfLife: 6, // games: weight of a game halves every 6 games back (current season)
   minPriorGames: 1, // last season's minutes count as this many current-season games
   ratePriorMin: 100, // last season's PRA/min counts as this many current-season minutes
@@ -120,6 +121,14 @@ const MODEL = {
   sd0: 5.6, // player noise: sd = sd0 + sd1 × mean (fitted on projection errors, so it includes them)
   sd1: 0.12,
   gameSd: 0.12, // shared game factor (pace/overtime), as a share of PRA
+  // Shape of a player's noise (v3): skew-normal with this shape, same sd (0 = the normal curve of v1–v2).
+  // Why: a player can't fall far below the projection but can blow past it (starters sit, overtime, a
+  // big matchup), most of all role players: in 2025-26, players projected 12–20 PRA had 3+ sd games
+  // 4× as often as a normal curve allows, so long shots won more than predicted. Skew 1 lowered holdout
+  // log loss 2.620 → 2.602 (30,000 sims) and 2026-27's first 21 nights 3.007 → 2.963, but raised
+  // Oct–Jan 2.389 → 2.394; top-pick wins unchanged. Skew 2, 3 and a skew for players under 32 only
+  // did about as well; 1 is the mildest.
+  skew: 1,
   dtdPlay: 0.7, // chance a day-to-day (questionable) player suits up
   sims: 10000,
   // Teammates out (v2): mean × (1 + teamK × (tonight's missing share − the player's usual share)).
@@ -258,6 +267,10 @@ function simulateSlate(players, date, m = MODEL, sims = m.sims, sitters = null) 
   const own = pool.map((p) => dj[p.pid] ?? -1);
   const team = pool.map((p) => (p.k ? ti[p.tm] ?? -1 : -1));
   const norm = normals(rng(seedFor(date)));
+  // Skew-normal draw rescaled to mean 0, sd 1: δ|z0| + √(1 − δ²)·z1, minus its mean, over its sd.
+  const dl = m.skew ? m.skew / Math.sqrt(1 + m.skew * m.skew) : 0;
+  const dlMean = dl * Math.sqrt(2 / Math.PI), dlSd = Math.sqrt(1 - dlMean * dlMean), dlRest = Math.sqrt(1 - dl * dl);
+  const noise = m.skew ? () => (dl * Math.abs(norm()) + dlRest * norm() - dlMean) / dlSd : norm;
   const rand = rng(seedFor(date) ^ 0x9e3779b9);
   const vals = new Float64Array(pool.length);
   const gf = new Float64Array(gids.length);
@@ -277,7 +290,7 @@ function simulateSlate(players, date, m = MODEL, sims = m.sims, sitters = null) 
       const bump = team[i] >= 0 ? p.k * extra[team[i]] : 0;
       const mean = p.mean + bump;
       const sd = bump ? playerSd(mean, m) : p.sd;
-      vals[i] = Math.max(0, Math.round(mean * gf[gi[p.gid]] + sd * norm()));
+      vals[i] = Math.max(0, Math.round(mean * gf[gi[p.gid]] + sd * noise()));
     }
     // First place (ties split) and top 3 (counting everyone tied at 3rd).
     let top = -1;
