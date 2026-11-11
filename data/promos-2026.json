@@ -28,9 +28,9 @@
       "date": "2026-11-10",
       "format": "king",
       "pool": 1000000,
-      "winners": [],
-      "source": null,
-      "note": "Moved to Tuesday this week (6-game slate), $1M; no promo on Wed 11/11 (Rudy, 2026-11-10)."
+      "winners": [{ "pid": "4566434", "name": "Franz Wagner", "payout": 159 }],
+      "source": "https://dknetwork.draftkings.com/2026/11/10/tracking-the-leaders-for-draftkings-king-of-the-court-tuesday-11-10-26/",
+      "note": "Wagner led with 47 PRA. Payout $159 from @DKSports (6,319 bettors, quoted by DK Network; its article text says $158 and $1M / 6,319 = $158.25). Moved to Tuesday this week (6-game slate), $1M; no promo on Wed 11/11 (Rudy, 2026-11-10)."
     }
   ]
 }
