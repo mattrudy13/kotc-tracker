@@ -7,6 +7,7 @@ Done: v0.3 (model v2) teammates out and opponent defense. Back-to-backs were tes
 v0.5 refit pick share on 10 nights of payout lists and added the rookie lean; recent form didn't help.
 v0.6 redesigned the site ("Fight card": poster masthead, main event + undercard picks, shorter Tonight).
 The pick record (2026-11-01) tracks Tonight's three picks on the Model page, by slot and night by night.
+Late runs: solved 2026-11-02 by hub's cron Worker (on-time runs 10:20 AM–6:50 PM ET).
 
 1. **Pick share: more of the public's habits.** `fit-share.mjs` reads one season (2025 by default), so this
    season's lists (`pickshare-2026.json`, from 10/27/26) aren't in the fit yet: fit both seasons together
@@ -24,7 +25,9 @@ The pick record (2026-11-01) tracks Tonight's three picks on the Model page, by 
    share on `top3` chances (3/3/26's list is stored but left out of the fit).
 4. **Questionable players.** Fit the 70% play chance once a season of injury snapshots has built up in git
    history.
-5. **Late runs.** If GitHub keeps starting runs late on Wednesday afternoons, add a 22:00 UTC cron on
-   Wednesdays only.
+5. **Fatter tails.** The simulation draws PRA from a normal curve, and long shots win more than it says. Live
+   through 11/10/26 (20 nights): players under 2% won 5.5 times vs 2.9 predicted; the 2025-26 backtest's under-2%
+   bucket leans the same way (27 wins vs 22). Test a skewed or heavier-tailed draw (keep only if holdout log
+   loss drops). Favorites are fine (top pick 7/20 vs ~6 expected).
 6. **Teammates out, early season.** Regulars come only from this season's games, so a team's first game gets no
    bump and its second compares against a fixed 15% baseline. Last season's roster could fill that gap.

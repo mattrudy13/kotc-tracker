@@ -5,7 +5,7 @@ GitHub Pages at https://mattrudy13.github.io/kotc-tracker/. Same code convention
 look, since v0.6): plain HTML/CSS/JS, no build step, globals in `model.js` (data/model, no DOM) and `common.js` (DOM). Look since v0.6:
 "Fight card" (see Rudy's decisions). README.md covers the pages and pipeline.
 
-## Status (2026-11-01)
+## Status (2026-11-11)
 
 v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed, 11 games, $5M):
 - v0.1: site, history, model v1. v0.2: best value (pick share). v0.3: model v2 (teammates out + opponent
@@ -17,6 +17,8 @@ v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed,
   Wednesday, so 10/28 is in `skip`) is the first promo night with the full automated cycle, on share v4: it
   locked at 4:10 PM ET before the 7:30 tip. Payouts for 10/21 ($824, Edwards and Jerome, the #1 pick) and 10/27
   ($21, Luka) were entered on 11/01, the same day the default purse became $2M and the pick record was added.
+- Tue Nov 10 ($1M; 11/04 and 11/11 are in `skip`): locked 6:50 PM ET from a hub Worker run. Franz Wagner won (47 PRA,
+  $159, entered 11/11); all three picks lost. Live through 11/10: top pick 7/20, log loss 2.92 (see ENHANCEMENTS #5).
 
 ## Rudy's decisions (don't relitigate)
 
