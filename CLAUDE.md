@@ -18,7 +18,7 @@ v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed,
   locked at 4:10 PM ET before the 7:30 tip. Payouts for 10/21 ($824, Edwards and Jerome, the #1 pick) and 10/27
   ($21, Luka) were entered on 11/01, the same day the default purse became $2M and the pick record was added.
 - Tue Nov 10 ($1M; 11/04 and 11/11 are in `skip`): locked 6:50 PM ET from a hub Worker run. Franz Wagner won (47 PRA,
-  $159, entered 11/11); all three picks lost. Live through 11/10: top pick 7/20, log loss 2.92 (see ENHANCEMENTS #5).
+  $159, entered 11/11); all three picks lost. Live through 11/10: top pick 7/20, log loss 2.92 (v2); model v3 (skewed noise) live from 11/11.
 
 ## Rudy's decisions (don't relitigate)
 
@@ -106,7 +106,13 @@ v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed,
   weighting, last season's rate worth 100 minutes, which is itself shrunk to 0.78 by 150 minutes. Mean ×
   (total/230)^0.6. Blowout adjustment tested and left at 0 (worse at 0.006 and 0.012).
 - Noise: sd = 5.6 + 0.12 × mean, fitted on projection residuals for 2025-26 Oct–Jan, plus a shared game
-  factor (sd 12%). Day-to-day players play 70% of the time (a guess; no historical injury data to fit it).
+  factor (sd 12%). **v3 (2026-11-11, Rudy approved)**: each player's draw is skew-normal (`MODEL.skew` 1, same sd),
+  because role players' residuals are right-skewed (2025-26, projected 12–20: skew 0.51, 3+ sd games 0.53% vs
+  0.12% normal; 28+: symmetric). Log loss (30,000 sims) normal → skew 1: Oct–Jan 2.389 → 2.394, holdout
+  2.620 → 2.602, 2026-27's first 21 nights 3.007 → 2.963; top-pick wins unchanged; the under-2% bucket is now
+  calibrated. Skew 2/3, skew only under 32 PRA, a tighter star spread and bootstrapped residuals were no better
+  (experiment in the 2026-11-11 session, not kept as a script). Fit-window-only tuning would have kept the
+  normal curve; Rudy went with the out-of-sample nights. Ablation has a `normal` row (v2). Day-to-day players play 70% of the time (a guess; no historical injury data to fit it).
 - **v2 (2026-10-21): team context** (`newContext`/`addDay`/`contextAdjust`; the backtest feeds it day by day,
   predict.mjs and fit-share build it with `contextBefore`). Regulars = players whose last game was for the
   team, within its last 5 games, projected 10+ min. Missing share = their projected PRA that isn't playing.
@@ -124,7 +130,8 @@ v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed,
     defense by position 2.672 (19), both 2.617 (18). Fit window 2.400 → 2.387. Both kept.
   - Back-to-backs: no effect (slope −0.03 fit, 0.00 holdout), not built.
   - Gap: the backtest's "missing" is who didn't play; live it's the injury report (late scratches unknown).
-- Backtest (`scripts/backtest.mjs`, fit Oct–Jan, holdout Feb–Apr 2025-26), v2: the holdout top pick won 18/64
+- Backtest (`scripts/backtest.mjs`, fit Oct–Jan, holdout Feb–Apr 2025-26), v3: log loss fit 2.397, holdout 2.593,
+  top pick 35/101 and 18/64, entrants median 116.1k (was 111.4k). v2: the holdout top pick won 18/64
   vs 16/64 for highest PRA average and 18/64 for highest projection; fit window 35/101. The King's average
   chance was 16.5%. Calibration is close (35%+ bucket: 43.6% predicted, 43.2% actual). Its lookahead: the
   candidates are the players who actually played.
@@ -183,8 +190,9 @@ v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed,
 - **Pick record (2026-11-01, Rudy's picks from mockups https://claude.ai/artifact/1baKF23KukLRCCWu6qTDRh, B)**:
   Model page card "Tonight's picks: how they did": a totals table by slot (#1 main event, #2, #3, All 3 =
   three tokens a night; `slotRecord()`), backtest (`backtest-2025.json` `pickRecord`, `days[].picks[].ret`) next
-  to live, then a result card per promo night (newest first, last 4 + "Show all nights"). 2025-26: #1 $1,321
-  (4/20, same as noChalk), #2 $817 (1/20), #3 $873 (2/20), all 3 $3,011 (7/60 tokens). Live after 10/27: $824.
+  to live, then a result card per promo night (newest first, last 4 + "Show all nights"). 2025-26 (model v3): #1
+  $1,321 (4/20, same as noChalk), #2 $879 (2/20), #3 $811 (1/20), all 3 $3,011 (7/60 tokens); v2 had #2 $817
+  (1/20), #3 $873 (2/20). Live through 11/10: $824 (1 of 9 tokens, all on v2).
 - **After each Wednesday** (the post is up Thursday morning; its date is the night + 1):
   1. Rudy pastes u/DraftKings' r/DKAssist "What Could've Been" post (Reddit blocks curl, WebFetch and the
      Chrome extension) into `data/posts/<night>.txt`. DK Network's tracking post is the fallback
