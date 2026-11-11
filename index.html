@@ -101,6 +101,8 @@
   <script src="common.js?v=5b32a8b4"></script>
   <script>
     const $ = (id) => document.getElementById(id);
+    // A list of names as the end of a sentence: no second period after "Jr.".
+    const endList = (list) => list.join(", ").replace(/\.?$/, ".");
     let pred, promos, leaders, chalk, names, teams, target, liveTimer;
     // Sort state for the two tables (click a column header to sort).
     const modelSort = { sort: "win", dir: "desc" };
@@ -325,11 +327,11 @@
         .sort((a, b) => b.share - a.share);
       const left = leftOut.map((x) => `${playerName(names, x.pid)} (${fmt.pct(x.share)} of picks${onList.has(x.pid) && x.share < chalk.shareCutoff ? ", on the list" : ""})`);
       $("picks-lead").innerHTML = `Best value among players with a 2%+ chance.${
-        leftOut.length ? ` <b>Left out as chalk:</b> ${leftOut.map((x) => playerName(names, x.pid)).join(", ")}.` : ""
+        leftOut.length ? ` <b>Left out as chalk:</b> ${endList(leftOut.map((x) => playerName(names, x.pid)))}` : ""
       }`;
       $("picks-note").innerHTML = `
         The three players whose ${three ? "top-3" : "win"} chance is highest compared with how many people are expected to pick them,
-        among players with a 2%+ chance. ${left.length ? `<b>Left out as chalk:</b> ${left.join(", ")}.` : ""}
+        among players with a 2%+ chance. ${left.length ? `<b>Left out as chalk:</b> ${endList(left)}` : ""}
         Chalk is anyone expected to draw ${fmt.pct0(chalk?.shareCutoff ?? 0.1)}+ of the picks, plus a hand-kept list
         (${(chalk?.players ?? []).map((c) => esc(c.name)).join(", ")}). Leaving chalk out mostly buys bigger payouts: the public picks
         established stars roughly in line with their chances. Rookies are the big exception (heavily overpicked, so poor value). <b>Filling in</b> marks a player whose projection is up 5%+
@@ -363,7 +365,7 @@
       draw();
       const over = rows.filter((r) => r.value < 0.8);
       $("most-lead").innerHTML = `The five players expected to draw the most picks. ${
-        over.length ? `<b>Overpicked tonight</b> (red, under 0.80×): ${over.map((r) => playerName(names, r.pid)).join(", ")}.` : "No one here is clearly overpicked tonight (none under 0.80×)."
+        over.length ? `<b>Overpicked tonight</b> (red, under 0.80×): ${endList(over.map((r) => playerName(names, r.pid)))}` : "No one here is clearly overpicked tonight (none under 0.80×)."
       }`;
       $("most-note").innerHTML = `
         Crowded isn't the same as overpriced: the public picks established stars
