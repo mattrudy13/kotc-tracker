@@ -245,7 +245,9 @@ function seedFor(date) {
 // `sitters` ({ tm: [{ pid, pPlay, share }] }) are questionable regulars: in each simulation where
 // one sits, teammates' means rise by k × that player's share (teammates out, only when they sit).
 // Players who can't plausibly reach the top are dropped first to keep it fast.
-function simulateSlate(players, date, m = MODEL, sims = m.sims, sitters = null) {
+// `trace` (optional array) gets one { top, w: [winner pids] } per simulated night, for the How it
+// works page's replay; it doesn't change the results.
+function simulateSlate(players, date, m = MODEL, sims = m.sims, sitters = null, trace = null) {
   const live = players.filter((p) => p.pPlay > 0 && p.mean > 0);
   const best = Math.max(0, ...live.map((p) => p.mean));
   const upside = (p) => p.mean + (p.k ?? 0) * (sitters?.[p.tm] ?? []).reduce((s, q) => s + q.share, 0);
@@ -297,6 +299,7 @@ function simulateSlate(players, date, m = MODEL, sims = m.sims, sitters = null) 
     for (let i = 0; i < vals.length; i++) if (vals[i] > top) top = vals[i];
     let n = 0;
     for (let i = 0; i < vals.length; i++) if (vals[i] === top) n++;
+    if (trace) trace.push({ top, w: pool.filter((p, i) => vals[i] === top).map((p) => p.pid) });
     const sorted = Array.from(vals).sort((a, b) => b - a);
     const third = sorted[Math.min(2, sorted.length - 1)];
     for (let i = 0; i < vals.length; i++) {
@@ -449,7 +452,7 @@ function contextAdjust(ctx, date, candidates, byTeam, m = MODEL) {
 // Full prediction for one day. `games`: [{ gid, home, away, spread, total }]. `candidates`:
 // [{ pid, tm, pPlay }]. `hist` from historyBefore(), `prior` from priorTotals(). `ctx` (a context
 // of the days before `date`) adds teammates out and opponent defense; without it this is model v1.
-function predictDay(date, games, candidates, hist, prior, m = MODEL, sims = m.sims, ctx = null) {
+function predictDay(date, games, candidates, hist, prior, m = MODEL, sims = m.sims, ctx = null, trace = null) {
   const byTeam = {};
   for (const g of games) {
     byTeam[g.home] = { g, home: true, opp: g.away };
@@ -468,7 +471,7 @@ function predictDay(date, games, candidates, hist, prior, m = MODEL, sims = m.si
     const k = adj?.sitters[c.tm] ? base * a.def * m.teamK : 0;
     players.push({ pid: c.pid, tm: c.tm, opp: t.opp, home: t.home, gid: t.g.gid, pPlay: c.pPlay, mean, sd: playerSd(mean, m), k, bump: a.bump, outPct: a.outPct, bumpIf: a.bumpIf, def: a.def, min: proj.min, rate: proj.rate, gp: proj.gp, isNew: proj.isNew });
   }
-  const sim = simulateSlate(players, date, m, sims, adj?.sitters);
+  const sim = simulateSlate(players, date, m, sims, adj?.sitters, trace);
   for (const p of players) {
     p.win = sim[p.pid]?.win ?? 0;
     p.top3 = sim[p.pid]?.top3 ?? 0;
