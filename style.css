@@ -336,10 +336,11 @@ a.day { color: inherit; font-weight: 700; }
   .grid th { white-space: normal; }
   .grid td.wrap { min-width: 12rem; }
   .calib .row { grid-template-columns: 5rem minmax(0, 1fr) 6rem; }
-  /* Phones: the five nav boxes fit on one row, the purse strip becomes three even columns, and the
+  /* Phones: the six nav boxes fit on one row, the purse strip becomes three even columns, and the
      undercard's value sits under the player's line instead of wrapping to a stray corner. */
-  .tabs { gap: .3rem; }
-  .tabs a { padding: .78rem .42rem; font-size: .68rem; letter-spacing: .04em; border-width: 2px; }
+  .tabs { gap: .14rem; }
+  /* Tightened for the sixth box (How it works) so all six still fit one row at 360px. */
+  .tabs a { padding: .8rem .26rem; font-size: .62rem; letter-spacing: .02em; border-width: 2px; }
   .theme-btn { border-width: 2px; width: 44px; height: 44px; }
   .purse { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; }
   .purse > div { padding: .5rem .4rem; display: flex; flex-direction: column; align-items: center; }
@@ -376,3 +377,162 @@ a.day { color: inherit; font-weight: 700; }
 .bp-res { text-align: right; flex: none; }
 .stamp { display: inline-block; font-weight: 800; font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; padding: .1rem .4rem; border: 2px solid var(--rule); }
 .stamp.won { background: var(--mustard); border-color: var(--mustard); color: var(--ink-fixed); font-family: var(--display); font-weight: 400; font-size: 1rem; letter-spacing: .02em; padding: .15rem .5rem; }
+
+/* ---- How it works page (how.html): one real night, one round per screen ----
+   A row of 8 round boxes, then a panel: the picture (left; on top on phones) and the round's text,
+   then Back / Next (pinned to the bottom of the screen on phones). Picked over a scroll story, 2026-11-12. */
+.hw-rounds { list-style: none; margin: .4rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: .4rem; }
+.hw-rounds button {
+  width: 100%; min-height: 56px; text-align: left; padding: .45rem .6rem; border: 3px solid var(--rule); background: var(--surface);
+  color: var(--muted); display: flex; flex-direction: column; gap: 2px; cursor: pointer; font: inherit;
+}
+.hw-rounds .n { font-size: .68rem; font-weight: 800; letter-spacing: .1em; }
+.hw-rounds .t { font-weight: 700; font-size: .82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hw-rounds .done button { background: var(--fg); color: var(--bg); }
+.hw-rounds .on button { background: var(--accent-fill); color: var(--accent-fg); border-color: var(--accent-fill); }
+.hw-rounds button:focus-visible, .hw-nav button:focus-visible, .hw-replay:focus-visible { outline: 3px solid var(--mustard); outline-offset: 2px; }
+
+.hw-panel { margin-top: .9rem; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); border: 3px solid var(--rule); background: var(--surface); }
+.hw-stage { height: 520px; border-right: 3px solid var(--rule); display: flex; flex-direction: column; min-width: 0; }
+.hw-stage-head { display: flex; align-items: center; justify-content: space-between; gap: .6rem; padding: .6rem 1rem; border-bottom: 3px solid var(--rule); }
+.hw-stage-head h3 { font-family: var(--body); font-size: .74rem; font-weight: 800; letter-spacing: .1em; }
+.hw-replay { display: inline-flex; align-items: center; gap: .4rem; min-height: 36px; padding: .2rem .75rem; border: 2px solid var(--rule); background: var(--surface); color: var(--fg); font: inherit; font-weight: 800; font-size: .8rem; cursor: pointer; }
+.hw-replay svg { width: 16px; height: 16px; }
+.hw-scenes { flex: 1; min-height: 0; display: flex; }
+.hw-scene { flex: 1; min-width: 0; padding: .9rem 1.1rem; display: none; flex-direction: column; gap: .55rem; }
+.hw-scene.on { display: flex; animation: hwIn .45s ease both; }
+@keyframes hwIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+/* clip: the text slides in from the side, which would otherwise nudge a phone page sideways mid-slide. */
+.hw-texts { min-width: 0; overflow-x: clip; }
+.hw-text { padding: 1.3rem 1.5rem 1.5rem; display: none; flex-direction: column; gap: .75rem; min-width: 0; }
+.hw-text.on { display: flex; animation: hwText .4s ease both; }
+.hw-text.on[data-dir="back"] { animation-name: hwTextBack; }
+@keyframes hwText { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
+@keyframes hwTextBack { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
+.hw-text .hw-tag { align-self: flex-start; background: var(--accent-fill); color: var(--accent-fg); font-weight: 800; font-size: .72rem; letter-spacing: .1em; padding: .2rem .5rem; }
+.hw-text h2 { font-size: 1.6rem; text-wrap: balance; }
+.hw-text p { margin: 0; max-width: 34rem; }
+.hw-text ul { margin: 0; padding-left: 1.1rem; display: grid; gap: .35rem; }
+.hw-why { font-size: .92rem; padding: .6rem .75rem; background: var(--surface-2); border: 2px solid var(--rule); }
+.hw-num { font-weight: 800; font-variant-numeric: tabular-nums; }
+
+.hw-nav { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: .75rem; padding: .9rem 0 0; }
+.hw-nav button { min-height: 48px; padding: .5rem 1.1rem; border: 3px solid var(--rule); font: inherit; font-weight: 800; cursor: pointer; color: var(--fg); }
+.hw-nav button:disabled { opacity: .4; cursor: default; }
+#hw-back { justify-self: start; background: var(--surface); }
+#hw-next { justify-self: end; background: var(--mustard); color: var(--ink-fixed); }
+.hw-count { font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; text-align: center; }
+
+/* Picture pieces */
+.hw-big { font-family: var(--display); font-size: 2rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.hw-sub { font-size: .82rem; color: var(--muted); font-weight: 600; }
+.hw-readout { display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap; }
+.hw-svg { width: 100%; flex: 1; min-height: 0; display: block; }
+.hw-svg text { fill: var(--muted); font-family: var(--body); font-size: 12px; }
+.hw-svg .lbl { fill: var(--fg); font-weight: 700; }
+.hw-legend { display: flex; flex-wrap: wrap; gap: .3rem 1rem; font-size: .8rem; font-weight: 700; }
+.hw-sw { display: inline-block; width: 14px; height: 4px; vertical-align: middle; margin-right: .35rem; }
+.hw-me { color: var(--accent); }
+
+/* Round 1: game columns */
+.hw-cols { flex: 1; min-height: 0; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: .35rem; align-items: end; }
+.hw-col { display: flex; flex-direction: column; align-items: center; gap: 2px; height: 100%; min-width: 0; font-size: .72rem; }
+.hw-col .v { font-weight: 800; font-size: .8rem; font-variant-numeric: tabular-nums; }
+.hw-col .bw { flex: 1; width: 100%; display: flex; align-items: flex-end; border-bottom: 3px solid var(--rule); }
+.hw-col .bw i { display: block; width: 100%; height: 0; background: var(--bar); }
+.hw-col.prior .bw i { background: repeating-linear-gradient(135deg, var(--muted) 0 4px, transparent 4px 8px); border: 2px solid var(--muted); border-bottom: 0; }
+.hw-col .d { color: var(--muted); white-space: nowrap; }
+.hw-col .w { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* Round 2: waterfall */
+.hw-fall { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: .5rem; }
+.hw-frow { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr) 3.2rem; gap: .6rem; align-items: center; font-size: .85rem; }
+.hw-frow .nm { font-weight: 700; }
+.hw-frow .nm small { display: block; color: var(--muted); font-weight: 600; font-size: .74rem; }
+.hw-ftrack { position: relative; height: 22px; }
+.hw-ftrack::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px dashed var(--border); }
+.hw-ftrack i { position: absolute; top: 0; bottom: 0; background: var(--fg); }
+.hw-ftrack i.down { background: var(--neg); }
+.hw-ftrack i.up { background: var(--pos); }
+.hw-ftrack i.total { background: var(--accent-fill); }
+.hw-ftrack i.if { background: none; border: 2px dashed var(--pos); }
+.hw-frow .val { font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* Rounds 4, 5, 7, 8: labelled rows */
+.hw-rows { display: flex; flex-direction: column; gap: .3rem; justify-content: center; }
+.hw-row { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr) 3.4rem; gap: .6rem; align-items: center; font-size: .86rem; }
+.hw-row .nm { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hw-row .pct { font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; }
+.hw-track { height: 18px; border: 2px solid var(--rule); background: var(--surface-2); position: relative; overflow: hidden; }
+.hw-track .fill { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--accent-fill); }
+.hw-axis { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr) 3.4rem; gap: .6rem; font-size: .7rem; color: var(--muted); }
+.hw-axis span:nth-child(2) { display: flex; justify-content: space-between; }
+.hw-ticker { font-size: .88rem; font-weight: 700; min-height: 1.4em; font-variant-numeric: tabular-nums; }
+.hw-ticker b { color: var(--accent); }
+.hw-crowd { --u: 13px; }
+.hw-dots { position: relative; height: var(--u); }
+.hw-dotfill { position: absolute; inset: 0 auto 0 0; width: 0; background: radial-gradient(circle at center, var(--fg) 0 38%, transparent 40%) 0 0 / var(--u) var(--u) repeat-x; }
+.hw-row.over .hw-dotfill { background-image: radial-gradient(circle at center, var(--accent) 0 38%, transparent 40%); }
+.hw-fair { position: absolute; top: -4px; bottom: -4px; width: 4px; margin-left: -2px; background: var(--mustard); outline: 1px solid var(--ink-fixed); opacity: 0; transition: opacity .25s; }
+.hw-key { display: flex; flex-wrap: wrap; gap: .3rem 1rem; font-size: .78rem; font-weight: 700; color: var(--muted); }
+.hw-key i { display: inline-block; vertical-align: middle; margin-right: .35rem; }
+.hw-key .k-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--fg); }
+.hw-key .k-fair { width: 4px; height: 14px; background: var(--mustard); outline: 1px solid var(--ink-fixed); }
+.hw-key .k-proj { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--fg); }
+.hw-key .k-act { width: 12px; height: 12px; border-radius: 50%; background: var(--accent-fill); }
+/* Round 7: projection (ring) → actual (dot) */
+.hw-db { position: relative; height: 22px; }
+.hw-db::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 2px solid var(--border); }
+.hw-db .seg { position: absolute; top: calc(50% - 2px); height: 4px; background: var(--muted); }
+.hw-db .ring, .hw-db .dot { position: absolute; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; }
+.hw-db .ring { border: 2px solid var(--fg); background: var(--surface); }
+.hw-db .dot { background: var(--accent-fill); }
+.hw-row.won .hw-db .dot { background: var(--mustard); outline: 2px solid var(--ink-fixed); }
+.hw-row .crown { color: var(--gold); }
+/* Round 8 */
+.hw-block { display: flex; flex-direction: column; gap: .3rem; }
+.hw-block h4 { margin: 0; font-size: .7rem; font-weight: 800; letter-spacing: .1em; color: var(--muted); }
+.hw-track .tick { position: absolute; top: -4px; bottom: -4px; width: 3px; margin-left: -1px; background: var(--mustard); opacity: 0; }
+
+.hw-foot { margin-top: 1rem; }
+
+@media (max-width: 720px) {
+  .hw-rounds { gap: .25rem; }
+  .hw-rounds button { min-height: 40px; padding: 0; align-items: center; justify-content: center; }
+  .hw-rounds .t, .hw-rounds .n .word { display: none; }
+  .hw-rounds .n { font-size: .9rem; letter-spacing: 0; }
+  .hw-panel { grid-template-columns: minmax(0, 1fr); }
+  /* On phones the picture sizes to its round, so short rounds don't leave a gap above the text. */
+  .hw-stage { height: auto; min-height: 330px; border-right: 0; border-bottom: 3px solid var(--rule); }
+  .hw-stage-head { padding: .5rem .75rem; }
+  .hw-scene { padding: .7rem .75rem; gap: .45rem; }
+  .hw-svg { flex: none; height: 230px; }
+  .hw-cols { flex: none; height: 230px; gap: .2rem; }
+  .hw-col { font-size: .62rem; }
+  .hw-col .v { font-size: .7rem; }
+  .hw-text { padding: 1rem; }
+  .hw-text h2 { font-size: 1.35rem; }
+  .hw-frow { grid-template-columns: 7rem minmax(0, 1fr) 2.8rem; font-size: .8rem; gap: .4rem; }
+  .hw-row, .hw-axis { grid-template-columns: 6rem minmax(0, 1fr) 2.9rem; gap: .45rem; font-size: .8rem; }
+  .hw-crowd { --u: 9px; }
+  .hw-big { font-size: 1.6rem; }
+  body.hw-page { padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
+  /* Back / Next stay pinned to the bottom of the screen. */
+  .hw-nav {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; background: var(--bg); border-top: 3px solid var(--rule);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: .5rem;
+    padding: .6rem max(1rem, env(safe-area-inset-right, 0px)) calc(.7rem + env(safe-area-inset-bottom, 0px)) max(1rem, env(safe-area-inset-left, 0px));
+  }
+  .hw-nav .hw-count { display: none; }
+  .hw-nav button { width: 100%; padding: .5rem .6rem; font-size: .9rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hw-scene.on, .hw-text.on { animation: none; }
+  .hw-fair { transition: none; }
+}
+/* The How it works tab says just "How" on phones so all six nav boxes stay on one row. */
+.tabs .tab-short { display: none; }
+@media (max-width: 480px) {
+  .tabs .tab-long { display: none; }
+  .tabs .tab-short { display: inline; }
+}

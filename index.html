@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Archivo:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="style.css?v=144153e3">
+  <link rel="stylesheet" href="style.css?v=68575ce4">
 </head>
 <body>
   <header class="masthead">
@@ -19,6 +19,7 @@
         <a href="season.html">Season</a>
         <a href="history.html">History</a>
         <a href="model.html">Model</a>
+        <a href="how.html"><span class="tab-long">How it works</span><span class="tab-short">How</span></a>
         <button type="button" class="theme-btn" id="theme" aria-label="Switch theme">☾</button>
       </nav>
       <div class="poster">
@@ -41,7 +42,7 @@
       <div class="card-head"><h2>Main event</h2><span class="updated" id="picks-sub"></span></div>
       <div id="picks"></div>
       <p class="lead" id="picks-lead"></p>
-      <details class="how"><summary>How this works</summary><p class="note" id="picks-note"></p></details>
+      <details class="how"><summary>How this works</summary><p class="note" id="picks-note"></p><p class="note"><a href="how.html#round-6">See how the picks are chosen step by step in round 6 of How it works →</a></p></details>
     </section>
 
     <section class="card" id="hero" hidden>
@@ -72,6 +73,7 @@
           locks; that locked version is the one graded on the <a href="model.html">Model</a> page.
           Click <b>Win</b>, <b>Top 3</b>, <b>Pick %</b> or <b>Value</b> to sort; <b>#</b> stays the model's rank by win chance.
         </p>
+        <p class="note"><a href="how.html#round-4">See how win chances are simulated step by step in round 4 of How it works →</a></p>
       </details>
     </section>
 
@@ -79,14 +81,14 @@
       <div class="card-head"><h2>Best value</h2><span class="updated" id="value-sub"></span></div>
       <div class="table-wrap"><div id="value"></div></div>
       <p class="lead" id="value-lead"></p>
-      <details class="how"><summary>How this works</summary><p class="note" id="value-note"></p></details>
+      <details class="how"><summary>How this works</summary><p class="note" id="value-note"></p><p class="note"><a href="how.html#round-6">See how value works step by step in round 6 of How it works →</a></p></details>
     </section>
 
     <section class="card" id="most-card" hidden>
       <div class="card-head"><h2>Most picked</h2><span class="updated">Crowded, not always overpriced</span></div>
       <div class="table-wrap"><div id="most"></div></div>
       <p class="lead" id="most-lead"></p>
-      <details class="how"><summary>How this works</summary><p class="note" id="most-note"></p></details>
+      <details class="how"><summary>How this works</summary><p class="note" id="most-note"></p><p class="note"><a href="how.html#round-5">See how picks are estimated step by step in round 5 of How it works →</a></p></details>
     </section>
 
     <section class="card">
@@ -97,7 +99,7 @@
     <footer>Data from ESPN, refreshed automatically during the season. Not affiliated with DraftKings. Promo details from DK Network posts.</footer>
   </main>
 
-  <script src="model.js?v=fc6209fe"></script>
+  <script src="model.js?v=5ff3954f"></script>
   <script src="common.js?v=5b32a8b4"></script>
   <script>
     const $ = (id) => document.getElementById(id);
