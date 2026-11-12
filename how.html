@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>How It Works · King of the Court</title>
+  <meta name="description" content="How the King of the Court model makes its picks, round by round, on one real night: Tue Nov 10, 2026.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Archivo:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="style.css?v=68575ce4">
+</head>
+<body class="hw-page">
+  <header class="masthead slim">
+    <div class="wrap">
+      <a class="wordmark" href="./">King <span class="of">of the</span> <span class="red">Court</span></a>
+      <nav class="tabs" aria-label="Pages">
+        <a href="./">Tonight</a>
+        <a href="season.html">Season</a>
+        <a href="history.html">History</a>
+        <a href="model.html">Model</a>
+        <a href="how.html" aria-current="page"><span class="tab-long">How it works</span><span class="tab-short">How</span></a>
+        <button type="button" class="theme-btn" id="theme" aria-label="Switch theme">☾</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="page-head">
+      <h1>How it works</h1>
+      <p class="sub">How the model picks a King, one round at a time, on a real night: <b>Tue Nov 10, 2026</b> · 6 games · <span data-fill="players">29</span> players · $1M pool.</p>
+    </div>
+    <div id="status" hidden></div>
+
+    <ol class="hw-rounds" aria-label="Rounds">
+      <li data-r="1"><button type="button" data-go="1"><span class="n"><span class="word">ROUND </span>1</span><span class="t">Projection</span></button></li>
+      <li data-r="2"><button type="button" data-go="2"><span class="n"><span class="word">ROUND </span>2</span><span class="t">Tonight's game</span></button></li>
+      <li data-r="3"><button type="button" data-go="3"><span class="n"><span class="word">ROUND </span>3</span><span class="t">Noise</span></button></li>
+      <li data-r="4"><button type="button" data-go="4"><span class="n"><span class="word">ROUND </span>4</span><span class="t">Simulate</span></button></li>
+      <li data-r="5"><button type="button" data-go="5"><span class="n"><span class="word">ROUND </span>5</span><span class="t">The crowd</span></button></li>
+      <li data-r="6"><button type="button" data-go="6"><span class="n"><span class="word">ROUND </span>6</span><span class="t">Value</span></button></li>
+      <li data-r="7"><button type="button" data-go="7"><span class="n"><span class="word">ROUND </span>7</span><span class="t">What happened</span></button></li>
+      <li data-r="8"><button type="button" data-go="8"><span class="n"><span class="word">ROUND </span>8</span><span class="t">How it's checked</span></button></li>
+    </ol>
+
+    <section class="hw-panel" aria-live="polite">
+      <div class="hw-stage">
+        <div class="hw-stage-head">
+          <h3 id="hw-title">ROUND 1</h3>
+          <button type="button" class="hw-replay" id="hw-replay" aria-label="Replay this round's animation">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"></path><path d="M3 4v5h5"></path></svg>
+            Replay
+          </button>
+        </div>
+        <div class="hw-scenes">
+          <!-- 1: the focus player's recent games, weighted by age -->
+          <div class="hw-scene on" data-scene="1" role="img" aria-label="Franz Wagner's games this season and last season's average, with each game's weight">
+            <div class="hw-readout"><span class="hw-big" id="r1-big">0.0</span><span class="hw-sub">PRA from recent form · <span data-fill="r1min"></span> min × <span data-fill="r1rate"></span> PRA a minute</span></div>
+            <div class="hw-cols" id="r1-cols"></div>
+            <div class="hw-key"><span>Bars: PRA in each game</span><span>Bottom row: how much each game counts</span></div>
+          </div>
+          <!-- 2: from recent form to tonight's projection -->
+          <div class="hw-scene" data-scene="2" role="img" aria-label="Franz Wagner's projection adjusted for pace, defense and teammates">
+            <div class="hw-readout"><span class="hw-big" id="r2-big">0.0</span><span class="hw-sub">projected PRA tonight</span></div>
+            <div class="hw-fall" id="r2-fall"></div>
+          </div>
+          <!-- 3: ranges -->
+          <div class="hw-scene" data-scene="3" role="img" aria-label="Projected PRA ranges for Franz Wagner and Giannis Antetokounmpo">
+            <div class="hw-readout"><span class="hw-big" id="r3-big">0.0%</span><span class="hw-sub">chance Franz scores <span data-fill="threshold"></span>+ · curve: <span id="r3-shape">bell (v2)</span></span></div>
+            <svg class="hw-svg" id="r3-svg" viewBox="0 0 600 300" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+              <line x1="20" y1="270" x2="590" y2="270" stroke="var(--rule)" stroke-width="2"></line>
+              <g id="r3-ticks"></g>
+              <path id="r3-tail" fill="var(--mustard)" fill-opacity=".85" d=""></path>
+              <path id="r3-star" fill="none" stroke="var(--muted)" stroke-width="3" d=""></path>
+              <path id="r3-focus" fill="none" stroke="var(--accent)" stroke-width="4" d=""></path>
+              <line id="r3-cut" x1="0" y1="40" x2="0" y2="270" stroke="var(--fg)" stroke-width="1.5" stroke-dasharray="4 4"></line>
+            </svg>
+            <div class="hw-legend">
+              <span><i class="hw-sw" style="background: var(--accent)"></i>Franz Wagner · <span data-fill="fmean"></span> projected</span>
+              <span><i class="hw-sw" style="background: var(--muted)"></i>Giannis · <span data-fill="smean"></span> projected</span>
+              <span><i class="hw-sw" style="background: var(--mustard); height: 10px"></i><span data-fill="threshold"></span>+ PRA</span>
+            </div>
+          </div>
+          <!-- 4: the simulation -->
+          <div class="hw-scene" data-scene="4" role="img" aria-label="Win counts across 10,000 simulated nights">
+            <div class="hw-readout"><span class="hw-big" id="r4-big">0</span><span class="hw-sub">of 10,000 nights simulated</span></div>
+            <div class="hw-ticker" id="r4-ticker">Starting the simulation.</div>
+            <div class="hw-rows" id="r4-rows"></div>
+            <div class="hw-axis" aria-hidden="true"><span></span><span><span>0%</span><span>10%</span><span>20%</span><span>30%</span></span><span></span></div>
+          </div>
+          <!-- 5: estimated picks vs chance -->
+          <div class="hw-scene" data-scene="5" role="img" aria-label="Estimated share of entrants picking each player, against their chance">
+            <div class="hw-readout"><span class="hw-big" id="r5-big">0</span><span class="hw-sub">of ~<span data-fill="entrants"></span> entrants placed</span></div>
+            <div class="hw-rows hw-crowd" id="r5-rows"></div>
+            <div class="hw-key"><span><i class="k-dot"></i>1% of entrants</span><span><i class="k-fair"></i>their chance, same scale</span></div>
+          </div>
+          <!-- 6: chance vs picks -->
+          <div class="hw-scene" data-scene="6" role="img" aria-label="Each player's chance to win against their share of picks; the three picks have the most chance for their picks">
+            <div class="hw-readout"><span class="hw-big" id="r6-big">–</span><span class="hw-sub">value of the best pick (chance ÷ picks)</span></div>
+            <svg class="hw-svg" id="r6-svg" viewBox="0 0 420 300" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+            <div class="hw-key"><span><i class="k-dot"></i>a player</span><span><i class="k-fair" style="height: 4px; width: 14px"></i>the picks</span><span>Hollow: chalk, left out</span></div>
+          </div>
+          <!-- 7: projected vs actual -->
+          <div class="hw-scene" data-scene="7" role="img" aria-label="Projected and actual PRA for the night's top finishers and the three picks">
+            <div class="hw-readout"><span class="hw-big" id="r7-big">0</span><span class="hw-sub">PRA won it · Franz Wagner, <span data-fill="fwin"></span> chance (<span data-fill="frank"></span>)</span></div>
+            <div class="hw-rows" id="r7-rows"></div>
+            <div class="hw-axis" aria-hidden="true"><span></span><span><span>0</span><span>20</span><span>40</span><span>60</span></span><span></span></div>
+            <div class="hw-key"><span><i class="k-proj"></i>projected</span><span><i class="k-act"></i>actual</span></div>
+          </div>
+          <!-- 8: holdout scores and calibration -->
+          <div class="hw-scene" data-scene="8" role="img" aria-label="Holdout log loss by model version, and predicted against actual win rates">
+            <div class="hw-block">
+              <h4>HOLDOUT LOG LOSS · LOWER IS BETTER · AXIS STARTS AT 2.50</h4>
+              <div class="hw-rows" id="r8-ll"></div>
+            </div>
+            <div class="hw-block">
+              <h4>SAID VS. WON · BAR = HOW OFTEN THEY WON · MARK = WHAT THE MODEL SAID</h4>
+              <div class="hw-rows" id="r8-cal"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hw-texts">
+        <article class="hw-text on" data-text="1">
+          <span class="hw-tag">ROUND 1 · PROJECTION</span>
+          <h2>Start from recent games</h2>
+          <p>The model starts with each player's games so far this season. Recent games count more: a game's weight halves every 6 games back, so last week counts about twice as much as three weeks ago.</p>
+          <p>It projects minutes and production per minute separately, and mixes in last season so a few odd games can't swing things too far.</p>
+          <p>We'll follow <b>Franz Wagner</b> through the first rounds. Franz had been playing about <span class="hw-num" data-fill="r1min"></span> minutes a night at <span class="hw-num" data-fill="r1rate"></span> PRA a minute: <span class="hw-num" data-fill="raw"></span> PRA before looking at tonight's game.</p>
+        </article>
+        <article class="hw-text" data-text="2">
+          <span class="hw-tag">ROUND 2 · TONIGHT'S GAME</span>
+          <h2>Adjust for who's playing</h2>
+          <p>Next the model looks at tonight's game. Three things move the number:</p>
+          <ul>
+            <li><b>Pace.</b> Orlando at Sacramento had a <span data-fill="total"></span>-point total, a little under the 230 average, so slightly fewer possessions.</li>
+            <li><b>Defense.</b> How much Sacramento has allowed compared with what its opponents were projected for. Close to average here.</li>
+            <li><b>Teammates.</b> When regulars sit, the rest pick up their share. Orlando had everyone available. In Franz's recent games about <span data-fill="baseline"></span> of Orlando's usual production had been missing, so with everyone back the model trims Franz <span data-fill="trim"></span>.</li>
+          </ul>
+          <p>One more: <span data-fill="ifname"></span> was questionable. On nights <span data-fill="ifname"></span> sits, Franz gets <span data-fill="ifpct"></span> more. Round 4 handles that night by night.</p>
+        </article>
+        <article class="hw-text" data-text="3">
+          <span class="hw-tag">ROUND 3 · NOISE</span>
+          <h2>Every score is a range</h2>
+          <p>A projection is a typical night, not a promise. Franz's <span data-fill="fmean"></span> usually lands within about <span data-fill="fsd"></span> points either way. Bigger projections swing more, so Giannis's curve is wider.</p>
+          <p>Since v3, the curves lean right. A bad night can only get so bad, but a great night has no ceiling. Last season, role players had huge nights about four times as often as an even bell curve predicts.</p>
+          <p>It usually takes a lot to win: last season the King needed <span data-fill="kp25"></span> to <span data-fill="kp75"></span> PRA on a typical night. As the curve tips, Franz's chance of a <span data-fill="threshold"></span>+ night goes from <span class="hw-num" data-fill="tailN"></span> to <span class="hw-num" data-fill="tailS"></span>.</p>
+        </article>
+        <article class="hw-text" data-text="4">
+          <span class="hw-tag">ROUND 4 · SIMULATE</span>
+          <h2>Play the night 10,000 times</h2>
+          <p>Each simulated night, every player gets a random score from their own curve. The highest score wins that night.</p>
+          <p>Two details: players in the same game rise or fall together a little (a fast game or overtime helps both teams), and Giannis was listed day-to-day, so the model sits Giannis out 3 simulated nights in 10.</p>
+          <p>Watch the first few dozen nights: the bars jump around. After a few thousand they barely move. Franz is marked in red.</p>
+          <p class="hw-why"><b>Why simulate?</b> There's no simple formula for the chance of being the top scorer out of <span data-fill="players"></span> players. So the model plays the night out 10,000 times and counts the wins. That's enough that running it again would move Giannis's <span class="hw-num" data-fill="swin"></span> by less than half a point.</p>
+        </article>
+        <article class="hw-text" data-text="5">
+          <span class="hw-tag">ROUND 5 · THE CROWD</span>
+          <h2>Guess what the crowd picks</h2>
+          <p>The $1M is split among everyone who picked the winner. So a winning pick pays more when fewer people made it.</p>
+          <p>DraftKings doesn't show who picked whom before the night. The model estimates it from last season, where each winner's payout showed how many people had picked that player. Fans pick players with a better chance and a higher scoring average, and they pick rookies about 3.4 times as often as a similar veteran.</p>
+          <p>The mustard mark shows where a player would be if picks matched their chance. Darius Acuff Jr., a rookie, gets an estimated <span class="hw-num" data-fill="acuffShare"></span> of picks with a <span class="hw-num" data-fill="acuffWin"></span> chance to win.</p>
+        </article>
+        <article class="hw-text" data-text="6">
+          <span class="hw-tag">ROUND 6 · VALUE</span>
+          <h2>Pick where the crowd isn't</h2>
+          <p><b>Value = chance ÷ picks.</b> <span data-fill="p1name"></span> has a <span class="hw-num" data-fill="p1win"></span> chance and an estimated <span class="hw-num" data-fill="p1share"></span> of the picks, a value of <span class="hw-num" data-fill="p1value"></span>. When a player like that wins, the pool splits among fewer people.</p>
+          <p>Points below the line have more chance than picks. The picks are the three best values among players with at least a 2% chance, leaving out chalk: anyone with 10%+ of the picks, plus a short hand-kept list (Giannis is on it).</p>
+          <p>Nov 10's picks: <span data-fill="picksText"></span>. The site showed the same three that night.</p>
+        </article>
+        <article class="hw-text" data-text="7">
+          <span class="hw-tag">ROUND 7 · WHAT HAPPENED</span>
+          <h2>Then the games are played</h2>
+          <p>Franz Wagner scored <b>47 PRA</b> and won. The model had given Franz a <span class="hw-num" data-fill="fwin"></span> chance, <span data-fill="frank"></span> of the night. Giannis came close with 45.</p>
+          <p>The picks missed: <span data-fill="pickResults"></span>. Each winning token paid $<span data-fill="payout"></span>; about <span data-fill="bettors"></span> people had picked Franz.</p>
+          <p>We followed Franz from round 1 because Franz won, chosen after the fact. A 4% shot comes in about one night in 25, so one night says little about whether the model is any good. Round 8 is how that's judged.</p>
+        </article>
+        <article class="hw-text" data-text="8">
+          <span class="hw-tag">ROUND 8 · HOW IT'S CHECKED</span>
+          <h2>Judge it on nights it never saw</h2>
+          <p>Every change to the model has to pass one test. It's fit on last season's October–January nights, then graded on February–April: <span data-fill="holdoutDays"></span> nights it never saw.</p>
+          <p>The grade is <b>log loss</b>: roughly, how surprised the model was by who actually won. Lower is better. Guessing evenly across the field scores <span data-fill="uniform"></span>.</p>
+          <p>Each version stayed only because it lowered that score: <span data-fill="llText"></span>. v2 added tonight's game (round 2), and v3 the right-leaning curve (round 3).</p>
+          <p>The bottom chart checks that the percentages mean what they say: players given 10–20% won <span data-fill="calMid"></span> of the time, against <span data-fill="calMidPred"></span> predicted. The night-by-night record is on the <a href="model.html">Model page</a>.</p>
+        </article>
+      </div>
+    </section>
+
+    <nav class="hw-nav" aria-label="Step through the rounds">
+      <button type="button" id="hw-back">← Back</button>
+      <span class="hw-count" id="hw-count">1 of 8 · ← → keys work too</span>
+      <button type="button" id="hw-next">Next →</button>
+    </nav>
+
+    <p class="note hw-foot" id="hw-foot"></p>
+  </main>
+
+  <script src="common.js?v=5b32a8b4"></script>
+  <script>
+  (async () => {
+    const W = await getData("walkthrough-2026-11-10.json");
+    const SHORT = { [W.star]: "Giannis", [W.focus]: "Franz Wagner" };
+    const nm = (pid) => W.names[pid] ?? `Player ${pid}`;
+    const lastName = (pid) => {
+      if (SHORT[pid]) return SHORT[pid];
+      const parts = nm(pid).split(" ");
+      return /^(Jr\.|Sr\.|II|III|IV)$/.test(parts.at(-1)) ? parts.slice(-2).join(" ") : parts.at(-1);
+    };
+    const by = Object.fromEntries(W.field.map((p) => [p.pid, p]));
+    const F = by[W.focus], G = by[W.star];
+    const clamp = (x) => Math.max(0, Math.min(1, x));
+    const seg = (p, a, b) => clamp((p - a) / (b - a));
+    const smooth = (x) => x * x * (3 - 2 * x);
+    const pct = (x, d = 1) => `${(x * 100).toFixed(d)}%`;
+    const ordinal = (n) => n + (["th", "st", "nd", "rd"][(n % 100 - 20) % 10] || ["th", "st", "nd", "rd"][n % 100] || "th");
+    const C = W.context, PR = W.projection;
+
+    // ---- Round 3's curves: skew-normal, standardized to the same mean and spread as the model's draw ----
+    const phi = (x) => Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI);
+    function Phi(x) {
+      const t = 1 / (1 + 0.2316419 * Math.abs(x));
+      const d = phi(x) * t * (0.31938153 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
+      return x >= 0 ? 1 - d : d;
+    }
+    function pdf(v, mean, sd, a) {
+      const dl = a / Math.sqrt(1 + a * a), mu = dl * Math.sqrt(2 / Math.PI), sz = Math.sqrt(1 - mu * mu);
+      const y = sz * ((v - mean) / sd) + mu;
+      return (sz * 2 * phi(y) * Phi(a * y)) / sd;
+    }
+    const tail = (mean, sd, a, cut) => { let s = 0; for (let v = cut; v < 160; v += 0.1) s += pdf(v + 0.05, mean, sd, a) * 0.1; return s; };
+    const TH = W.noise.threshold;
+    const tailN = tail(F.mean, F.sd, 0, TH), tailS = tail(F.mean, F.sd, W.model.skew, TH);
+
+    // ---- Words that come from the data ----
+    const a1 = C.raw * C.pace, a2 = a1 * C.def;
+    const picks = W.picks.rerun.map((pid) => by[pid]).sort((a, b) => b.value - a.value);
+    const savedPick = Object.fromEntries(W.result.savedPicks.map((p) => [p.pid, p]));
+    const acuff = W.field.filter((p) => p.rookie).sort((a, b) => b.share - a.share)[0];
+    const calMid = W.checked.calibration.find((b) => b.lo === 0.1);
+    const FILL = {
+      players: W.field.filter((p) => p.savedWin != null).length,
+      r1min: PR.min.toFixed(1), r1rate: PR.rate.toFixed(2), raw: C.raw.toFixed(1),
+      total: C.total, baseline: pct(C.baseline, 0), trim: pct(1 - C.bump, 1),
+      ifname: C.bumpIf ? nm(C.bumpIf.pid) : "A teammate", ifpct: C.bumpIf ? pct(C.bumpIf.pct, 1) : "",
+      fmean: F.mean.toFixed(1), smean: G.mean.toFixed(1), fsd: Math.round(F.sd), threshold: TH,
+      kp25: W.noise.kingPra.p25, kp75: W.noise.kingPra.p75, tailN: pct(tailN), tailS: pct(tailS),
+      swin: pct(G.win), entrants: Math.round(W.entrants / 1000) + ",000",
+      acuffShare: pct(acuff.share), acuffWin: pct(acuff.win),
+      p1name: nm(picks[0].pid), p1win: pct(picks[0].win), p1share: pct(picks[0].share), p1value: picks[0].value.toFixed(2),
+      picksText: picks.map((p) => `${lastName(p.pid)} (${p.value.toFixed(2)})`).join(", "),
+      fwin: pct(F.win), frank: `${ordinal(W.result.rank)} best`,
+      pickResults: W.result.savedPicks.map((p) => `${lastName(p.pid)} ${p.pra} (${ordinal(p.finish)}${p.tied ? ", tied" : ""})`).join(", "),
+      payout: W.result.payout, bettors: (Math.round(W.result.bettors / 100) * 100).toLocaleString(),
+      holdoutDays: W.checked.holdoutDays, uniform: W.checked.uniform.toFixed(2),
+      llText: W.checked.versions.map((v) => `${v.label} ${v.ll.toFixed(3)}`).join(", then "),
+      calMid: pct(calMid.actual), calMidPred: pct(calMid.pred),
+    };
+    for (const el of document.querySelectorAll("[data-fill]")) el.textContent = FILL[el.dataset.fill] ?? "";
+    document.getElementById("hw-foot").textContent =
+      `These numbers are Nov 10 rerun on model v${W.model.version}, with the rosters and injury report the model saw at ` +
+      `${timeText(W.takenAt)}. That night the site ran v${W.model.savedVersion}, which gave Franz ${pct(F.savedWin)}.`;
+
+    // ---- Round 1: recent games ----
+    const cols = document.getElementById("r1-cols");
+    const games = [...PR.games].reverse(); // oldest first, so the heaviest weights end up on the right
+    const colData = [
+      ...(PR.prior ? [{ prior: true, pra: PR.prior.pra, label: "Last season", wl: "avg" }] : []),
+      ...games.map((g) => ({ pra: g.pra, w: g.w, label: `${+g.d.slice(5, 7)}/${+g.d.slice(8)}`, wl: `×${g.w.toFixed(2)}` })),
+    ];
+    const r1Max = 60;
+    const r1Cols = colData.map((c) => {
+      const el = document.createElement("div");
+      el.className = "hw-col" + (c.prior ? " prior" : "");
+      el.innerHTML = `<span class="v">${c.prior ? c.pra.toFixed(1) : c.pra}</span><span class="bw"><i></i></span><span class="d">${esc(c.label)}</span><span class="w">${esc(c.wl)}</span>`;
+      cols.appendChild(el);
+      return { ...c, bar: el.querySelector("i"), el };
+    });
+    const r1Big = document.getElementById("r1-big");
+    function draw1(p) {
+      r1Cols.forEach((c, k) => {
+        const grow = smooth(seg(p, k * 0.035, k * 0.035 + 0.22));
+        c.bar.style.height = `${(grow * c.pra / r1Max) * 100}%`;
+        c.el.style.opacity = c.prior ? 0.75 : (1 - (1 - c.w) * smooth(seg(p, 0.45, 0.65))).toFixed(3);
+      });
+      r1Big.textContent = (C.raw * smooth(seg(p, 0.6, 0.95))).toFixed(1);
+    }
+
+    // ---- Round 2: waterfall ----
+    const fall = document.getElementById("r2-fall");
+    const steps = [
+      { nm: "Recent form", sub: "from round 1", from: 0, to: C.raw, kind: "base" },
+      { nm: "Pace", sub: `× ${C.pace.toFixed(2)}`, from: C.raw, to: a1 },
+      { nm: "Defense", sub: `× ${C.def.toFixed(3)}`, from: a1, to: a2 },
+      { nm: "Teammates", sub: `× ${C.bump.toFixed(3)}`, from: a2, to: C.mean },
+      { nm: "Tonight", sub: "the projection", from: 0, to: C.mean, kind: "total" },
+      ...(C.bumpIf ? [{ nm: `If ${lastName(C.bumpIf.pid)} sits`, sub: `+${pct(C.bumpIf.pct, 1)}`, from: C.mean, to: C.mean * (1 + C.bumpIf.pct), kind: "if" }] : []),
+    ];
+    const r2Max = Math.ceil(Math.max(...steps.map((s) => s.to)) / 5) * 5 + 5;
+    const r2Rows = steps.map((s) => {
+      const el = document.createElement("div");
+      el.className = "hw-frow";
+      const kind = s.kind ?? (s.to < s.from ? "down" : "up");
+      el.innerHTML = `<span class="nm">${esc(s.nm)}<small>${esc(s.sub)}</small></span><span class="hw-ftrack"><i class="${kind}"></i></span><span class="val">${s.to.toFixed(1)}</span>`;
+      fall.appendChild(el);
+      return { ...s, el, bar: el.querySelector("i") };
+    });
+    const r2Big = document.getElementById("r2-big");
+    function draw2(p) {
+      r2Rows.forEach((s, k) => {
+        const t = smooth(seg(p, k * 0.13, k * 0.13 + 0.2));
+        s.el.style.opacity = (0.15 + 0.85 * t).toFixed(3);
+        const now = s.from + (s.to - s.from) * t;
+        const lo = Math.min(s.from, now), hi = Math.max(s.from, now);
+        // Tiny changes still get a visible sliver.
+        const w = Math.max(hi - lo, t > 0 ? 0.25 : 0);
+        s.bar.style.left = `${(lo / r2Max) * 100}%`;
+        s.bar.style.width = `${(w / r2Max) * 100}%`;
+      });
+      r2Big.textContent = (C.raw + (C.mean - C.raw) * smooth(seg(p, 0.1, 0.62))).toFixed(1);
+    }
+
+    // ---- Round 3: curves ----
+    const X0 = 20, X1 = 590, Y0 = 270, Y1 = 40, XMAX = 80;
+    const xs = (v) => X0 + (v / XMAX) * (X1 - X0);
+    const YMAX = pdf(F.mean - 2, F.mean, F.sd, W.model.skew) * 1.35;
+    const ys = (d) => Y0 - (d / YMAX) * (Y0 - Y1);
+    const path = (mean, sd, a, from = 0) => {
+      let d = "";
+      for (let v = from; v <= XMAX; v += 0.5) d += (d ? "L" : "M") + xs(v).toFixed(1) + "," + ys(pdf(v, mean, sd, a)).toFixed(1);
+      return d;
+    };
+    const ticks = document.getElementById("r3-ticks");
+    for (let v = 0; v <= XMAX; v += 10) ticks.insertAdjacentHTML("beforeend", `<line x1="${xs(v)}" y1="270" x2="${xs(v)}" y2="276" stroke="var(--rule)" stroke-width="2"></line><text x="${xs(v)}" y="292" text-anchor="middle">${v}</text>`);
+    const cut = document.getElementById("r3-cut");
+    cut.setAttribute("x1", xs(TH));
+    cut.setAttribute("x2", xs(TH));
+    document.getElementById("r3-star").setAttribute("d", path(G.mean, G.sd, W.model.skew));
+    const r3Focus = document.getElementById("r3-focus"), r3Tail = document.getElementById("r3-tail");
+    const r3Big = document.getElementById("r3-big"), r3Shape = document.getElementById("r3-shape");
+    function draw3(p) {
+      const a = W.model.skew * smooth(seg(p, 0.15, 0.8));
+      r3Focus.setAttribute("d", path(F.mean, F.sd, a));
+      r3Tail.setAttribute("d", path(F.mean, F.sd, a, TH) + `L${xs(XMAX)},${Y0}L${xs(TH)},${Y0}Z`);
+      r3Big.textContent = pct(tail(F.mean, F.sd, a, TH));
+      r3Shape.textContent = a === 0 ? "bell (v2)" : a >= W.model.skew ? "leans right (v3)" : "tipping over";
+    }
+
+    // ---- Round 4: replay the traced simulation ----
+    const S = W.sim.w.length;
+    const ALPHA = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const winner = Array.from(W.sim.w, (ch) => ALPHA.indexOf(ch));
+    const tops = W.sim.t.split(",").map(Number);
+    const tieAt = Object.fromEntries(W.sim.ties.map(([s, ...ids]) => [s, ids]));
+    const shown4 = W.field.slice(0, 7).map((p) => p.pid);
+    if (!shown4.includes(W.focus)) shown4.push(W.focus);
+    const cum = shown4.map((pid) => {
+      const j = W.sim.contenders.indexOf(pid);
+      const arr = new Float32Array(S + 1);
+      for (let s = 0; s < S; s++) {
+        const ids = tieAt[s] ?? [winner[s]];
+        arr[s + 1] = arr[s] + (ids.includes(j) ? 1 / ids.length : 0);
+      }
+      return arr;
+    });
+    const r4Rows = document.getElementById("r4-rows");
+    const r4 = shown4.map((pid) => {
+      const el = document.createElement("div");
+      el.className = "hw-row";
+      el.innerHTML = `<span class="nm${pid === W.focus ? " hw-me" : ""}">${esc(lastName(pid))}</span><span class="hw-track"><span class="fill"></span></span><span class="pct">0.0%</span>`;
+      r4Rows.appendChild(el);
+      return { fill: el.querySelector(".fill"), pct: el.querySelector(".pct") };
+    });
+    const r4Big = document.getElementById("r4-big"), ticker = document.getElementById("r4-ticker");
+    function draw4(p) {
+      // Eased so the first second covers only a few hundred nights: that's where the jumping shows.
+      const s = Math.round(S * Math.pow(seg(p, 0, 0.9), 2.4));
+      r4Big.textContent = s.toLocaleString("en-US");
+      r4.forEach((r, k) => {
+        const w = s ? cum[k][s] / s : 0;
+        r.fill.style.width = `${Math.min(100, (w / 0.3) * 100)}%`;
+        r.pct.textContent = pct(w);
+      });
+      if (!s) { ticker.textContent = "Starting the simulation."; return; }
+      const ids = tieAt[s - 1] ?? [winner[s - 1]];
+      const who = ids.map((j) => lastName(W.sim.contenders[j])).join(" and ");
+      ticker.innerHTML = `Night ${s.toLocaleString("en-US")}: <b>${esc(who)}</b> ${ids.length > 1 ? "split it" : "wins"} with ${tops[s - 1]} PRA`;
+    }
+
+    // ---- Round 5: the crowd ----
+    const shown5 = [...W.field].sort((a, b) => b.share - a.share).slice(0, 7);
+    if (!shown5.includes(F)) shown5.push(F);
+    const r5Rows = document.getElementById("r5-rows");
+    const r5 = shown5.map((p) => {
+      const el = document.createElement("div");
+      el.className = "hw-row";
+      el.innerHTML = `<span class="nm${p.pid === W.focus ? " hw-me" : ""}">${esc(lastName(p.pid))}</span><span class="hw-dots"><span class="hw-dotfill"></span><span class="hw-fair"></span></span><span class="pct">${pct(p.share)}</span>`;
+      el.querySelector(".hw-fair").style.left = `calc(var(--u) * ${(p.win * 100).toFixed(2)})`;
+      r5Rows.appendChild(el);
+      return { el, p, fill: el.querySelector(".hw-dotfill"), fair: el.querySelector(".hw-fair") };
+    });
+    const shownShare = shown5.reduce((s, r) => s + r.share, 0);
+    const r5Big = document.getElementById("r5-big");
+    function draw5(p) {
+      const t = seg(p, 0, 0.6);
+      let left = t * shownShare * 100;
+      for (const r of r5) {
+        const here = Math.max(0, Math.min(r.p.share * 100, left));
+        left -= r.p.share * 100;
+        r.fill.style.width = `calc(var(--u) * ${here.toFixed(2)})`;
+        const marks = p > 0.65;
+        r.fair.style.opacity = marks ? 1 : 0;
+        r.el.classList.toggle("over", marks && r.p.share > r.p.win * 2);
+      }
+      const placed = t * shownShare + (p > 0.6 ? 1 - shownShare : 0);
+      r5Big.textContent = Math.round(W.entrants * Math.min(1, placed)).toLocaleString("en-US");
+    }
+
+    // ---- Round 6: chance vs picks ----
+    const svg6 = document.getElementById("r6-svg");
+    const PX0 = 52, PX1 = 404, PY0 = 252, PY1 = 14, AX = 0.2;
+    const px = (v) => PX0 + (Math.min(v, AX) / AX) * (PX1 - PX0);
+    const py = (v) => PY0 - (Math.min(v, AX) / AX) * (PY0 - PY1);
+    let g6 = `<path d="M${px(0)},${py(0)} L${px(AX)},${py(AX)} L${px(AX)},${py(0)} Z" fill="var(--pos)" fill-opacity=".1"></path>`;
+    g6 += `<text x="${px(0.19)}" y="${py(0.015)}" text-anchor="end">more chance than picks</text>`;
+    for (let v = 0; v <= AX + 1e-9; v += 0.05) {
+      g6 += `<line x1="${px(v)}" y1="${PY0}" x2="${px(v)}" y2="${PY0 + 5}" stroke="var(--rule)" stroke-width="2"></line><text x="${px(v)}" y="${PY0 + 19}" text-anchor="middle">${Math.round(v * 100)}%</text>`;
+      g6 += `<line x1="${PX0 - 5}" y1="${py(v)}" x2="${PX0}" y2="${py(v)}" stroke="var(--rule)" stroke-width="2"></line><text x="${PX0 - 8}" y="${py(v) + 4}" text-anchor="end">${Math.round(v * 100)}%</text>`;
+    }
+    g6 += `<line x1="${PX0}" y1="${PY0}" x2="${PX1}" y2="${PY0}" stroke="var(--rule)" stroke-width="2"></line><line x1="${PX0}" y1="${PY0}" x2="${PX0}" y2="${PY1}" stroke="var(--rule)" stroke-width="2"></line>`;
+    g6 += `<text x="${(PX0 + PX1) / 2}" y="${PY0 + 38}" text-anchor="middle">Chance to win →</text>`;
+    g6 += `<text x="14" y="${(PY0 + PY1) / 2}" text-anchor="middle" transform="rotate(-90 14 ${(PY0 + PY1) / 2})">Share of picks →</text>`;
+    g6 += `<line id="r6-fair" x1="${px(0)}" y1="${py(0)}" x2="${px(0)}" y2="${py(0)}" stroke="var(--fg)" stroke-width="2" stroke-dasharray="6 5"></line>`;
+    g6 += `<text id="r6-fairlbl" x="${px(0.085)}" y="${py(0.105)}" text-anchor="end" opacity="0">picks match chance</text>`;
+    svg6.innerHTML = g6;
+    const dots6 = W.field.filter((p) => p.win >= 0.01);
+    const LABEL = { [W.star]: "end", [acuff.pid]: "start", [W.focus]: "end", ...Object.fromEntries(picks.map((p) => [p.pid, "start"])) };
+    const isPick = new Set(W.picks.rerun);
+    const r6 = dots6.map((p) => {
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      const chalk = p.chalk;
+      g.innerHTML =
+        (isPick.has(p.pid) ? `<circle class="ring" r="11" fill="none" stroke="var(--mustard)" stroke-width="3" opacity="0"></circle>` : "") +
+        `<circle r="5" fill="${chalk ? "var(--surface)" : "var(--fg)"}" stroke="var(--fg)" stroke-width="2"></circle>` +
+        (LABEL[p.pid] ? `<text class="lbl" x="${LABEL[p.pid] === "start" ? 12 : -12}" y="${p.pid === W.focus ? -8 : 4}" text-anchor="${LABEL[p.pid]}" opacity="0">${esc(lastName(p.pid))}${chalk ? " (chalk)" : ""}</text>` : "");
+      svg6.appendChild(g);
+      return { p, g, ring: g.querySelector(".ring"), lbl: g.querySelector("text") };
+    });
+    const fairLine = document.getElementById("r6-fair"), fairLbl = document.getElementById("r6-fairlbl");
+    const r6Big = document.getElementById("r6-big");
+    function draw6(p) {
+      r6.forEach((d, k) => {
+        const t = smooth(seg(p, 0.02 + k * 0.012, 0.3 + k * 0.012));
+        d.g.setAttribute("transform", `translate(${px(d.p.win).toFixed(1)},${(py(0) + (py(d.p.share) - py(0)) * t).toFixed(1)})`);
+        if (d.lbl) d.lbl.setAttribute("opacity", seg(p, 0.55, 0.7).toFixed(2));
+        if (d.ring) d.ring.setAttribute("opacity", seg(p, 0.7, 0.85).toFixed(2));
+      });
+      const f = smooth(seg(p, 0.35, 0.55));
+      fairLine.setAttribute("x2", px(AX * f));
+      fairLine.setAttribute("y2", py(AX * f));
+      fairLbl.setAttribute("opacity", seg(p, 0.5, 0.6).toFixed(2));
+      r6Big.textContent = p > 0.7 ? `${picks[0].value.toFixed(2)}×` : "–";
+    }
+
+    // ---- Round 7: projected vs actual ----
+    const finishers = W.result.top.slice(0, 4).map((x) => ({ pid: x.pid, pra: x.pra, mean: x.mean }));
+    for (const sp of W.result.savedPicks) if (!finishers.some((f) => f.pid === sp.pid)) finishers.push({ pid: sp.pid, pra: sp.pra, mean: by[sp.pid].mean });
+    finishers.sort((a, b) => b.pra - a.pra);
+    const r7Rows = document.getElementById("r7-rows");
+    const R7MAX = 60;
+    const r7 = finishers.map((f) => {
+      const el = document.createElement("div");
+      const won = W.result.kings.includes(f.pid);
+      el.className = "hw-row" + (won ? " won" : "");
+      const tag = isPick.has(f.pid) ? ` <span class="tag">pick</span>` : "";
+      el.innerHTML = `<span class="nm">${won ? `<span class="crown" aria-hidden="true">♛</span> ` : ""}${esc(lastName(f.pid))}${tag}</span><span class="hw-db"><span class="seg"></span><span class="ring"></span><span class="dot"></span></span><span class="pct">${f.pra}</span>`;
+      el.querySelector(".ring").style.left = `${(f.mean / R7MAX) * 100}%`;
+      r7Rows.appendChild(el);
+      return { f, el, seg: el.querySelector(".seg"), dot: el.querySelector(".dot") };
+    });
+    const r7Big = document.getElementById("r7-big");
+    function draw7(p) {
+      r7.forEach((r, k) => {
+        const t = smooth(seg(p, 0.1 + k * 0.07, 0.45 + k * 0.07));
+        const now = r.f.mean + (r.f.pra - r.f.mean) * t;
+        r.dot.style.left = `${(now / R7MAX) * 100}%`;
+        r.seg.style.left = `${(Math.min(now, r.f.mean) / R7MAX) * 100}%`;
+        r.seg.style.width = `${(Math.abs(now - r.f.mean) / R7MAX) * 100}%`;
+      });
+      r7Big.textContent = Math.round(47 * smooth(seg(p, 0.1, 0.5)));
+    }
+
+    // ---- Round 8: holdout scores and calibration ----
+    const llRows = document.getElementById("r8-ll"), calRows = document.getElementById("r8-cal");
+    const LL0 = 2.5, LL1 = 2.75;
+    const r8a = W.checked.versions.map((v) => {
+      const el = document.createElement("div");
+      el.className = "hw-row";
+      el.innerHTML = `<span class="nm">${esc(v.label)} <small class="hw-sub">${esc(v.note)}</small></span><span class="hw-track"><span class="fill"></span></span><span class="pct">${v.ll.toFixed(3)}</span>`;
+      llRows.appendChild(el);
+      return { v, fill: el.querySelector(".fill") };
+    });
+    const bucket = (b) => `${Math.round(b.lo * 100)}–${Math.round(b.hi * 100)}%`;
+    const CALMAX = 0.5;
+    const r8b = W.checked.calibration.map((b) => {
+      const el = document.createElement("div");
+      el.className = "hw-row";
+      el.innerHTML = `<span class="nm">Said ${bucket(b)}</span><span class="hw-track"><span class="fill"></span><span class="tick"></span></span><span class="pct">${pct(b.actual)}</span>`;
+      el.querySelector(".tick").style.left = `${(b.pred / CALMAX) * 100}%`;
+      calRows.appendChild(el);
+      return { b, fill: el.querySelector(".fill"), tick: el.querySelector(".tick") };
+    });
+    function draw8(p) {
+      r8a.forEach((r, k) => {
+        const t = smooth(seg(p, k * 0.1, k * 0.1 + 0.3));
+        r.fill.style.width = `${(((r.v.ll - LL0) / (LL1 - LL0)) * 100 * t).toFixed(1)}%`;
+      });
+      r8b.forEach((r, k) => {
+        const t = smooth(seg(p, 0.4 + k * 0.05, 0.65 + k * 0.05));
+        r.fill.style.width = `${((r.b.actual / CALMAX) * 100 * t).toFixed(1)}%`;
+        r.tick.style.opacity = seg(p, 0.75, 0.9).toFixed(2);
+      });
+    }
+
+    // ---- Stepper: one round at a time; each round's picture plays when it arrives ----
+    const TITLES = {
+      1: "FRANZ WAGNER'S GAMES, WEIGHTED BY AGE", 2: "FROM RECENT FORM TO TONIGHT", 3: "EACH PLAYER IS A RANGE",
+      4: "WINS SO FAR, AS A SHARE OF NIGHTS", 5: "WHO THE ENTRANTS PICK", 6: "CHANCE VS. SHARE OF PICKS",
+      7: "PROJECTED VS. ACTUAL PRA", 8: "GRADED ON NIGHTS IT NEVER SAW",
+    };
+    const NAMES = { 1: "Projection", 2: "Tonight's game", 3: "Noise", 4: "Simulate", 5: "The crowd", 6: "Value", 7: "What happened", 8: "How it's checked" };
+    // Long enough to watch; the simulation needs time for its early jumpiness to show.
+    const DUR = { 1: 2600, 2: 3000, 3: 2200, 4: 6000, 5: 3200, 6: 3000, 7: 3000, 8: 2600 };
+    const draw = { 1: draw1, 2: draw2, 3: draw3, 4: draw4, 5: draw5, 6: draw6, 7: draw7, 8: draw8 };
+    const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+    const scenes = [...document.querySelectorAll(".hw-scene")];
+    const texts = [...document.querySelectorAll(".hw-text")];
+    const items = [...document.querySelectorAll(".hw-rounds li")];
+    const back = document.getElementById("hw-back"), next = document.getElementById("hw-next");
+    const count = document.getElementById("hw-count"), title = document.getElementById("hw-title");
+    const roundsEl = document.querySelector(".hw-rounds");
+    let cur = 1, raf = 0;
+
+    function play(k) {
+      cancelAnimationFrame(raf);
+      if (reduceMotion.matches) return draw[k](1);
+      const t0 = performance.now();
+      draw[k](0);
+      const tick = (t) => {
+        const p = Math.min(1, (t - t0) / DUR[k]);
+        draw[k](p);
+        if (p < 1) raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    }
+    function show(k, dir) {
+      cur = k;
+      for (const s of scenes) s.classList.toggle("on", +s.dataset.scene === k);
+      for (const t of texts) {
+        const on = +t.dataset.text === k;
+        t.classList.toggle("on", on);
+        if (on) t.dataset.dir = dir;
+      }
+      for (const li of items) {
+        const r = +li.dataset.r;
+        li.className = r < k ? "done" : r === k ? "on" : "";
+        li.querySelector("button").setAttribute("aria-current", r === k ? "step" : "false");
+      }
+      back.disabled = k === 1;
+      next.disabled = k === 8;
+      back.textContent = k > 1 ? `← ${NAMES[k - 1]}` : "← Back";
+      next.textContent = k < 8 ? `${NAMES[k + 1]} →` : "The end";
+      count.textContent = `${k} of 8 · ← → keys work too`;
+      title.textContent = TITLES[k];
+      history.replaceState(null, "", `#round-${k}`);
+      play(k);
+      // On a phone, bring the new round's picture back into view.
+      if (dir && roundsEl.getBoundingClientRect().top < 0) roundsEl.scrollIntoView({ block: "start", behavior: reduceMotion.matches ? "auto" : "smooth" });
+    }
+    back.addEventListener("click", () => cur > 1 && show(cur - 1, "back"));
+    next.addEventListener("click", () => cur < 8 && show(cur + 1, "next"));
+    document.getElementById("hw-replay").addEventListener("click", () => play(cur));
+    for (const b of document.querySelectorAll("[data-go]")) b.addEventListener("click", () => +b.dataset.go !== cur && show(+b.dataset.go, +b.dataset.go > cur ? "next" : "back"));
+    document.addEventListener("keydown", (e) => {
+      if (e.altKey || e.ctrlKey || e.metaKey || e.target.closest("input, textarea, select")) return;
+      if (e.key === "ArrowRight" && cur < 8) show(cur + 1, "next");
+      if (e.key === "ArrowLeft" && cur > 1) show(cur - 1, "back");
+    });
+    const fromHash = () => {
+      const k = +(location.hash.match(/^#round-([1-8])$/)?.[1] ?? 0);
+      return k || null;
+    };
+    addEventListener("hashchange", () => { const k = fromHash(); if (k && k !== cur) show(k, k > cur ? "next" : "back"); });
+    show(fromHash() ?? 1, "");
+  })().catch(showError);
+  </script>
+</body>
+</html>

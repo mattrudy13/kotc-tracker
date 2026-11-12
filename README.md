@@ -37,6 +37,10 @@ Site: https://mattrudy13.github.io/kotc-tracker/
   baselines, what each model factor adds, how Tonight's three picks did (totals by pick and a result card per
   promo night), the value-pick record by strategy, a calibration chart, and how the model works.
 - **Night** (`day.html?d=YYYY-MM-DD`): one night's top 10, the suggested picks and the model's list.
+- **How it works** (`how.html`): the model step by step on one real night (Tue Nov 10, 2026), one round per
+  screen with an animated picture each: projection, tonight's game, the range of outcomes, the 10,000-night
+  simulation, the crowd's picks, value, what happened and how the model is graded. Tonight's and the Model
+  page's "How this works" boxes link to the matching round (`how.html#round-N`).
 
 ## Best value
 
@@ -73,6 +77,9 @@ All data comes from ESPN's public site API (no key). `.github/workflows/update-d
 3. `scripts/grade.mjs`: grades locked predictions once the night's games are final, including how each of
    the night's three picks finished. A losing pick counts right away; a winning one counts once DK's payout is
    in `data/promos-<season>.json`.
+
+`scripts/walkthrough.mjs` (run by hand) builds `data/walkthrough-<date>.json` for the How it works page: the
+night rerun on the current model from the data commit it was locked on, with every simulated night traced.
 
 Edited by hand:
 

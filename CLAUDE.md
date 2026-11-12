@@ -209,6 +209,25 @@ v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed,
      before updating `MODEL.share` (bump its version, rerun `backtest.mjs`, update the page notes).
 - Parser history: the Unicode name fix (2026-10-21) found Jusuf Nurkić missing from 11/18/25 (about 34 bettors).
 
+## How it works page (how.html, 2026-11-12)
+
+- Rudy's choices: a page inside kotc-tracker (nav tab + deep links from the "How this works" boxes), one fixed
+  real night (Tue Nov 10, 2026) **rerun on the current model** (the site showed v2 that night), a **rounds
+  stepper** (picked over a scroll story after trying both prototypes: https://claude.ai/artifact/7ZiYHBUz6NLcthez3yYWJQ
+  and https://claude.ai/artifact/BwCszRDgpHxLTbNBahDE1w), read-and-step only (no guessing or sandbox), animations
+  that play when a round opens (Replay button), Back / Next pinned to the bottom on phones. 8 rounds: projection,
+  tonight's game, noise, simulate, the crowd, value, what happened, how it's checked.
+- Assumed, not asked: Franz Wagner (the night's winner, 9th on v3) is the example player in rounds 1–3, chosen
+  after the fact; round 7 says so. The nav tab reads "How" on phones; the ≤480px nav was tightened so six boxes fit
+  one row at 360px.
+- Data: `node scripts/walkthrough.mjs` (defaults: `--date 2026-11-10 --ref 5d34d2d --focus 4566434`). `--ref` is
+  the data commit the night locked on; it reruns the saved model version first and stops if that doesn't match the
+  saved prediction (Nov 10: 0.05 points). Every simulated night is traced (`simulateSlate`'s optional `trace`
+  argument) and packed as one character per night. **Rerun it after any model change** so the page explains the
+  current model; the copy fills its numbers from the file (`data-fill`), so only wording about direction
+  (e.g. "the same three picks") needs a check.
+- `hw-` classes in style.css. Hash `#round-N` opens a round.
+
 ## Before every commit that touches model.js, common.js or style.css
 
 Run `node scripts/stamp-assets.mjs`. `check-assets.yml` fails the push otherwise.
