@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Archivo:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="style.css?v=68575ce4">
+  <link rel="stylesheet" href="style.css?v=7718cefe">
 </head>
 <body class="hw-page">
   <header class="masthead slim">
@@ -384,7 +384,10 @@
       });
       if (!s) { ticker.textContent = "Starting the simulation."; return; }
       const ids = tieAt[s - 1] ?? [winner[s - 1]];
-      const who = ids.map((j) => lastName(W.sim.contenders[j])).join(" and ");
+      // A 3+ way tie names one player, so the line never needs a third row on a phone.
+      const who = ids.length > 2
+        ? `${lastName(W.sim.contenders[ids[0]])} and ${ids.length - 1} others`
+        : ids.map((j) => lastName(W.sim.contenders[j])).join(" and ");
       ticker.innerHTML = `Night ${s.toLocaleString("en-US")}: <b>${esc(who)}</b> ${ids.length > 1 ? "split it" : "wins"} with ${tops[s - 1]} PRA`;
     }
 
@@ -488,7 +491,7 @@
         r.seg.style.left = `${(Math.min(now, r.f.mean) / R7MAX) * 100}%`;
         r.seg.style.width = `${(Math.abs(now - r.f.mean) / R7MAX) * 100}%`;
       });
-      r7Big.textContent = Math.round(47 * smooth(seg(p, 0.1, 0.5)));
+      r7Big.textContent = Math.round(W.result.top[0].pra * smooth(seg(p, 0.1, 0.5)));
     }
 
     // ---- Round 8: holdout scores and calibration ----
@@ -522,6 +525,32 @@
         r.tick.style.opacity = seg(p, 0.75, 0.9).toFixed(2);
       });
     }
+
+    // The big numbers count up as a round plays (0 → 47, "–" → "1.94×"). On a phone the label beside one
+    // wrapped to a new line the moment the number widened, and the whole picture jumped. Each number keeps
+    // the width of its widest value instead. Digits are tabular, so "00.0%" is as wide as any "dd.d%".
+    // Measured in em so it follows the phone/desktop font sizes; after the fonts load so the width is right.
+    const WIDEST = {
+      "r1-big": "00.0",
+      "r2-big": "00.0",
+      "r3-big": "00.0%",
+      "r4-big": S.toLocaleString("en-US"),
+      "r5-big": W.entrants.toLocaleString("en-US"),
+      "r6-big": `${picks[0].value.toFixed(2)}×`,
+      "r7-big": String(W.result.top[0].pra),
+    };
+    document.fonts.ready.then(() => {
+      const probe = document.createElement("span");
+      probe.className = "hw-big";
+      probe.style.cssText = "position: absolute; visibility: hidden; white-space: nowrap";
+      document.body.appendChild(probe);
+      const em = parseFloat(getComputedStyle(probe).fontSize);
+      for (const [id, text] of Object.entries(WIDEST)) {
+        probe.textContent = text;
+        document.getElementById(id).style.minWidth = `${(probe.getBoundingClientRect().width / em).toFixed(3)}em`;
+      }
+      probe.remove();
+    });
 
     // ---- Stepper: one round at a time; each round's picture plays when it arrives ----
     const TITLES = {

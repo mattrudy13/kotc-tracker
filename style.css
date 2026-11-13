@@ -424,7 +424,7 @@ a.day { color: inherit; font-weight: 700; }
 .hw-count { font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; text-align: center; }
 
 /* Picture pieces */
-.hw-big { font-family: var(--display); font-size: 2rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.hw-big { font-family: var(--display); font-size: 2rem; line-height: 1; font-variant-numeric: tabular-nums; text-align: right; }
 .hw-sub { font-size: .82rem; color: var(--muted); font-weight: 600; }
 .hw-readout { display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap; }
 .hw-svg { width: 100%; flex: 1; min-height: 0; display: block; }
@@ -467,7 +467,7 @@ a.day { color: inherit; font-weight: 700; }
 .hw-track .fill { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--accent-fill); }
 .hw-axis { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr) 3.4rem; gap: .6rem; font-size: .7rem; color: var(--muted); }
 .hw-axis span:nth-child(2) { display: flex; justify-content: space-between; }
-.hw-ticker { font-size: .88rem; font-weight: 700; min-height: 1.4em; font-variant-numeric: tabular-nums; }
+.hw-ticker { font-size: .88rem; font-weight: 700; line-height: 1.4; min-height: 1.4em; font-variant-numeric: tabular-nums; }
 .hw-ticker b { color: var(--accent); }
 .hw-crowd { --u: 13px; }
 .hw-dots { position: relative; height: var(--u); }
@@ -516,6 +516,8 @@ a.day { color: inherit; font-weight: 700; }
   .hw-row, .hw-axis { grid-template-columns: 6rem minmax(0, 1fr) 2.9rem; gap: .45rem; font-size: .8rem; }
   .hw-crowd { --u: 9px; }
   .hw-big { font-size: 1.6rem; }
+  /* Long names wrap the simulation ticker on a phone; holding two lines keeps the picture from jumping. */
+  .hw-ticker { min-height: 2.8em; }
   body.hw-page { padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
   /* Back / Next stay pinned to the bottom of the screen. */
   .hw-nav {
