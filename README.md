@@ -48,8 +48,8 @@ The prize is split among everyone who picked the King, so a popular favorite pay
 estimates each player's share of picks and shows **value = win chance ÷ pick share** (1.00× = fair),
 plus a rough dollar value per token. The share model is fitted on DK's "what could've been" payout lists
 (`data/pickshare-<season>.json`; partial lists through the listed players' shares of one another), with the
-post texts kept in `data/posts/`. Most lists come from u/DraftKings' posts on r/DKAssist, which have to be
-pasted in (Reddit blocks scripts). The public follows win chances loosely, leans toward big season averages,
+post texts kept in `data/posts/`. 2025-26's lists came from u/DraftKings' posts on r/DKAssist; since
+November 2026 DK posts them on X (@DK_Assist) instead. Either way they're pasted in by hand (both block scripts). The public follows win chances loosely, leans toward big season averages,
 and piles onto rookies (about 3.4× the picks of a comparable veteran). Last season's average counts as 10 games
 of the current one, so early-season averages don't swing on one game.
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Pulls a "what could've been" payout list (every player's bonus bet if they had won) out of a
-// DK Network King of the Court post, or out of pasted text (e.g. a u/DraftKings post on r/DKAssist,
-// which Reddit won't serve to scripts), for the pick-share model. Run by hand; review before committing.
+// DK Network King of the Court post, or out of pasted text (e.g. @DK_Assist's post on X, or an
+// older u/DraftKings post on r/DKAssist; neither serves scripts), for the pick-share model. Run by hand; review before committing.
 //
 //   node scripts/parse-dk-post.mjs <url> --date 2026-10-28 --pool 5000000          # print only
 //   node scripts/parse-dk-post.mjs <url> --date 2026-10-28 --pool 5000000 --write  # add to data/pickshare-<season>.json

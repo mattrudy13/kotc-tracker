@@ -71,14 +71,14 @@ v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed,
   source, note}`. `winners` = who DK paid. `payout` = bonus bet per winning token in dollars (null =
   unpublished). 2026 has a `default` (every Wednesday from 10-21, king, **$2M**: DK's usual purse; 10/21's $5M was a one-off,
   Rudy 2026-11-01; Rudy will say when a night differs) plus `skip`. `promoInfo()`
-  merges them. **After each Wednesday, add that night's entry** (winners + payout from u/DraftKings' r/DKAssist
-  post, DK Network's "Tracking the leader(s)" post or @DKSports). The Reddit posts give exact payouts and
+  merges them. **After each Wednesday, add that night's entry** (winners + payout from @DK_Assist on X,
+  DK Network's "Tracking the leader(s)" post or @DKSports). DK's posts give exact payouts and
   bettor counts; 2025-26's were corrected from them (see notes per night).
 - `pickshare-<season>.json`: `nights[]` = `{date, pool, source, partial?, list?: topPra|mostBet, payouts:
   [{pid, name, payout, pra?, winner?}]}`. Bettors on a player = pool ÷ payout (Three Kings: pool ÷ 3 per place).
   `list` says how DK chose a partial list's players: by the night's PRA or by most picks. `winner: true` rows
   come from the promos file (the posts list everyone but the winner). Written only by `parse-dk-post.mjs`.
-- `data/posts/<night>.txt`: the pasted post texts behind each list (Reddit can't be fetched by scripts).
+- `data/posts/<night>.txt`: the pasted post texts behind each list (neither Reddit nor X can be fetched by scripts).
 - `chalk.json`: `{shareCutoff, players: [{pid, name}]}`, edited by hand.
 - `promoCrowns()`: a crown goes to who DK paid on "king" nights. That settles ties and stat corrections:
   on 3/17/26 DK paid Duren (50 PRA in DK's count) while ESPN's box score has Duren and LaMelo Ball tied at 49.
@@ -194,10 +194,11 @@ v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed,
   $1,321 (4/20, same as noChalk), #2 $879 (2/20), #3 $811 (1/20), all 3 $3,011 (7/60 tokens); v2 had #2 $817
   (1/20), #3 $873 (2/20). Live through 11/10: $824 (1 of 9 tokens, all on v2).
 - **After each Wednesday** (the post is up Thursday morning; its date is the night + 1):
-  1. Rudy pastes u/DraftKings' r/DKAssist "What Could've Been" post (Reddit blocks curl, WebFetch and the
-     Chrome extension) into `data/posts/<night>.txt`. DK Network's tracking post is the fallback
-     (`parse-dk-post.mjs <url> …`). 11/10/26's list came from @DK_Assist on X instead (a screenshot, 6 players
-     + the winner; same wording, parsed as topPra).
+  1. Rudy sends @DK_Assist's "COULD'VE been" post on X (a screenshot is fine; transcribe it, with the quoted
+     @DKSports bettor count) into `data/posts/<night>.txt`. **DK stopped posting these on r/DKAssist** (Rudy,
+     2026-11-13); 11/10/26 was the first X list. X lists are shorter (6 players + the winner on 11/10 vs ~20 on
+     Reddit), so each night adds less to the share fit. DK Network's tracking post is the fallback
+     (`parse-dk-post.mjs <url> …`).
   2. Add the night's winners and exact payout to `promos-<season>.json`. Until then the pick record shows a
      winning pick as "payout pending" (losses are graded as soon as the games end). Rerun `grade.mjs` after.
   3. `node scripts/parse-dk-post.mjs --file data/posts/<night>.txt --date <night> --partial --source "<title>"`.

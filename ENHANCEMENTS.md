@@ -13,7 +13,7 @@ than predicted.
 
 1. **Pick share: more of the public's habits.** `fit-share.mjs` reads one season (2025 by default), so this
    season's lists (`pickshare-2026.json`, from 10/27/26) aren't in the fit yet: fit both seasons together
-   once there are a few. Every new Reddit list helps (paste each Wednesday's). Ideas to
+   once there are a few. Every new list helps (paste each Wednesday's from @DK_Assist on X; they're shorter than the old Reddit lists). Ideas to
    test on held-out nights, as v3 was:
    - Is the public slow on late injury news? Compare fill-ins' actual vs. estimated share on the lists; if
      they're underpicked, fill-ins are real value.
@@ -37,7 +37,7 @@ than predicted.
 8. **Fetch the winner and payout from DK Network.** The tracking post has both the morning after (curl with a
    browser user agent works; 11/10/26's had "All 6,319 Wagner bettors have received $159"). A small script
    could print a ready `promos` entry (winner pid matched against the box score, payout, source URL) for Rudy
-   to check and paste, leaving only the Reddit list as a manual step. Flag it when the post's numbers disagree
+   to check and paste, leaving only the X list as a manual step. Flag it when the post's numbers disagree
    (11/10: tweet $159, article $158, pool ÷ bettors $158.25).
 9. **Ruled-out list a week ahead.** Between promo nights, Tonight shows next week's slate with today's injury
    report: about 45 names on 11/11 for 11/18, most stale by then. Hide the list (or show only long-term
