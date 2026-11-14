@@ -196,7 +196,8 @@ v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed,
 - **After each Wednesday** (the post is up Thursday morning; its date is the night + 1):
   1. Rudy pastes u/DraftKings' r/DKAssist "What Could've Been" post (Reddit blocks curl, WebFetch and the
      Chrome extension) into `data/posts/<night>.txt`. DK Network's tracking post is the fallback
-     (`parse-dk-post.mjs <url> …`).
+     (`parse-dk-post.mjs <url> …`). 11/10/26's list came from @DK_Assist on X instead (a screenshot, 6 players
+     + the winner; same wording, parsed as topPra).
   2. Add the night's winners and exact payout to `promos-<season>.json`. Until then the pick record shows a
      winning pick as "payout pending" (losses are graded as soon as the games end). Rerun `grade.mjs` after.
   3. `node scripts/parse-dk-post.mjs --file data/posts/<night>.txt --date <night> --partial --source "<title>"`.

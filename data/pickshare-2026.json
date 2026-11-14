@@ -41,6 +41,51 @@
           "winner": true
         }
       ]
+    },
+    {
+      "date": "2026-11-10",
+      "pool": 1000000,
+      "source": "@DK_Assist on X, 2026-11-11",
+      "partial": true,
+      "list": "topPra",
+      "payouts": [
+        {
+          "pid": "3032977",
+          "name": "Giannis Antetokounmpo",
+          "payout": 39
+        },
+        {
+          "pid": "4251",
+          "name": "Paul George",
+          "payout": 1938
+        },
+        {
+          "pid": "3136195",
+          "name": "Karl-Anthony Towns",
+          "payout": 262
+        },
+        {
+          "pid": "5142620",
+          "name": "Darius Acuff Jr.",
+          "payout": 84
+        },
+        {
+          "pid": "4683021",
+          "name": "Deni Avdija",
+          "payout": 227
+        },
+        {
+          "pid": "4278073",
+          "name": "Shai Gilgeous-Alexander",
+          "payout": 65
+        },
+        {
+          "pid": "4566434",
+          "name": "Franz Wagner",
+          "payout": 159,
+          "winner": true
+        }
+      ]
     }
   ]
 }
