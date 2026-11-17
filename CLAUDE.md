@@ -19,6 +19,7 @@ v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed,
   ($21, Luka) were entered on 11/01, the same day the default purse became $2M and the pick record was added.
 - Tue Nov 10 ($1M; 11/04 and 11/11 are in `skip`): locked 6:50 PM ET from a hub Worker run. Franz Wagner won (47 PRA,
   $159, entered 11/11); all three picks lost. Live through 11/10: top pick 7/20, log loss 2.92 (v2); model v3 (skewed noise) live from 11/11.
+- Tue Nov 17 ($1M, 5 games; 11/18 is in `skip`, Rudy 2026-11-17): the first promo night on model v3.
 
 ## Rudy's decisions (don't relitigate)
 
