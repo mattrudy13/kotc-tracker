@@ -211,8 +211,9 @@ v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed,
      see ENHANCEMENTS #1): if the held-out comparison or coefficients change meaningfully, show Rudy
      before updating `MODEL.share` (bump its version, rerun `backtest.mjs`, update the page notes).
 - **Best since last season (2026-11-17, Rudy's pick)**: the pick cards show each pick's highest single-game PRA over
-  this season and last (rolling; date + games played), saved by `predict.mjs` as `best: {pra, d, gp, since}` on the
-  three picks only. Display only, not a model or share input: a career high mostly tracks games played and goes stale,
+  this season and last (rolling; date + games played), saved by `predict.mjs` as `best: {pra, d, gp, since}` on every
+  listed player. The Field, Best value and Most picked tables have a **Best** column (number only), shown on phones too
+  (Rudy's pick); the teammates-out tag wraps in those tables on phones so they fit at 375 (field is 1px over at 360). Display only, not a model or share input: a career high mostly tracks games played and goes stale,
   and Rudy chose a recent window over a true career high (a 7-year-old peak says little). Nights before 11/17/26 lack it.
 - Parser history: the Unicode name fix (2026-10-21) found Jusuf Nurkić missing from 11/18/25 (about 34 bettors).
 
