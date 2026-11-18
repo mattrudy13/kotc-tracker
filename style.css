@@ -338,6 +338,8 @@ a.day { color: inherit; font-weight: 700; }
   .grid td.wrap { min-width: 12rem; }
   /* Tonight's three tables carry a Best column on phones too; letting the teammates-out tag wrap keeps them inside 360px. */
   #model .bump, #value .bump, #most .bump { white-space: normal; }
+  /* The field scrolls sideways on phones anyway (Payout column), so give names room instead of squeezing them. */
+  #model .grid td.l { min-width: 9.5rem; }
   .calib .row { grid-template-columns: 5rem minmax(0, 1fr) 6rem; }
   /* Phones: the six nav boxes fit on one row, the purse strip becomes three even columns, and the
      undercard's value sits under the player's line instead of wrapping to a stray corner. */

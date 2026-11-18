@@ -213,7 +213,9 @@ v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed,
 - **Best since last season (2026-11-17, Rudy's pick)**: the pick cards show each pick's highest single-game PRA over
   this season and last (rolling; date + games played), saved by `predict.mjs` as `best: {pra, d, gp, since}` on every
   listed player. The Field, Best value and Most picked tables have a **Best** column (number only), shown on phones too
-  (Rudy's pick); the teammates-out tag wraps in those tables on phones so they fit at 375 (field is 1px over at 360). Display only, not a model or share input: a career high mostly tracks games played and goes stale,
+  (Rudy's pick); the teammates-out tag wraps in those tables on phones. The Field also has **Payout if King** (2026-11-17,
+  Rudy: shown on phones, sideways scroll is fine), so on phones it scrolls inside `.table-wrap` and its Player column gets
+  9.5rem; Best value and Most picked still fit at 375 without scrolling. Display only, not a model or share input: a career high mostly tracks games played and goes stale,
   and Rudy chose a recent window over a true career high (a 7-year-old peak says little). Nights before 11/17/26 lack it.
 - Parser history: the Unicode name fix (2026-10-21) found Jusuf Nurkić missing from 11/18/25 (about 34 bettors).
 
@@ -244,7 +246,7 @@ Run `node scripts/stamp-assets.mjs`. `check-assets.yml` fails the push otherwise
 
 - Serve with `python3 -m http.server`. Test with Playwright from `../apartments/.venv/bin/python`: every page
   in light and dark mode at 1280 and 375 px, with no console errors and no page-level sideways scroll. Wide
-  stat tables scroll inside `.table-wrap` on phones. The home model table fits at 375. Also check that "Show all"
+  stat tables scroll inside `.table-wrap` on phones. The home model table scrolls sideways at 375 since 11/17/26 (Payout column). Also check that "Show all"
   toggles 15 ↔ 25 rows (and stays open after sorting) and that the phone nav fits one row with 44px+ boxes.
 - Test predict/grade on a scratch copy of the repo with `NOW=<iso>`; the scripts write to `data/` next to themselves.
 - Playwright's Chromium here can't reach ESPN from the page ("Failed to fetch", reported as CORS; curl with the

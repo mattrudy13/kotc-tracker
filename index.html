@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Archivo:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="style.css?v=9cbc027a">
+  <link rel="stylesheet" href="style.css?v=c707dada">
 </head>
 <body>
   <header class="masthead">
@@ -73,7 +73,9 @@
           <span class="inj q">Q</span> marks a questionable / day-to-day player: the model gives them a 70% chance to play, and Proj PRA
           assumes they play. Out players are left off. The prediction refreshes about every two hours until the first tip-off, then
           locks; that locked version is the one graded on the <a href="model.html">Model</a> page.
-          Click <b>Win</b>, <b>Top 3</b>, <b>Pick %</b> or <b>Value</b> to sort; <b>#</b> stays the model's rank by win chance.
+          On promo nights, <b>Payout if King</b> (<b>if top 3</b> on Three Kings nights) is the estimated bonus bet each winning pick
+          would get; the Best value card below explains the estimate. On phones this table scrolls sideways to show it.
+          Click <b>Best</b>, <b>Win</b>, <b>Top 3</b>, <b>Pick %</b>, <b>Value</b> or <b>Payout</b> to sort; <b>#</b> stays the model's rank by win chance.
         </p>
         <p class="note"><a href="how.html#round-4">See how win chances are simulated step by step in round 4 of How it works →</a></p>
       </details>
@@ -209,6 +211,8 @@
               ? [
                   { key: "share", label: "Pick %", cls: "hide-sm", fmt: (r) => fmt.pct(r.share) },
                   { key: "value", label: "Value", cls: "hide-sm", fmt: (r) => valueCell(r.value) },
+                  // Shown on phones too (Rudy, 2026-11-17): the table scrolls sideways inside its box there.
+                  { key: "estPayout", label: `Payout if ${p.format === "three" ? "top 3" : "King"}`, fmt: (r) => approxMoney(r.estPayout) },
                 ]
               : []),
           ],
