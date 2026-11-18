@@ -43,7 +43,22 @@ const nextPromo = gameDays.find((d) => d >= today && isPromo(d));
 if (nextPromo) targets.add(nextPromo);
 
 const rows = M.rowObjects(data);
-const prior = M.priorTotals(M.rowObjects(prevData));
+const prevRows = M.rowObjects(prevData);
+const prior = M.priorTotals(prevRows);
+
+// Each pick's best night over this season and last, before night d (shown on the pick cards; display
+// only, not a model input). Ties go to the most recent game. gp = games played in that window.
+function recentBest(pid, d) {
+  let best = null;
+  let gp = 0;
+  for (const r of [...prevRows, ...rows]) {
+    if (r.pid !== pid || r.d >= d) continue;
+    gp++;
+    const pra = r.pts + r.reb + r.ast;
+    if (!best || pra > best.pra || (pra === best.pra && r.d > best.d)) best = { pra, d: r.d };
+  }
+  return best && { ...best, gp, since: season - 1 };
+}
 
 // Entrants per promo night, for the dollar estimates: this season's own nights once there are 3,
 // else last season's backtest median.
@@ -78,6 +93,7 @@ for (const d of [...targets].sort()) {
   if (promo) M.addValue(preds, (pid) => M.shareFeatures(hist[pid], prior[pid]), promo, entrants?.n);
   const out = data.players;
   const prev = store.days[d];
+  const pickIds = promo ? M.topPicks(preds, promo, chalk).map((p) => p.pid) : [];
   store.days[d] = {
     takenAt: now.toISOString(),
     firstTip,
@@ -100,9 +116,10 @@ for (const d of [...targets].sort()) {
       ...(promo
         ? { share: +p.share.toFixed(5), value: +p.value.toFixed(3), estPayout: p.estPayout != null ? Math.round(p.estPayout) : null, ev: p.ev != null ? +p.ev.toFixed(2) : null, chalk: M.isChalk(p, chalk) || undefined }
         : {}),
+      best: pickIds.includes(p.pid) ? recentBest(p.pid, d) ?? undefined : undefined,
     })),
     // Tonight's suggested picks (best value, chalk left out); saved so the locked version is what's graded.
-    ...(promo ? { picks: M.topPicks(preds, promo, chalk).map((p) => p.pid) } : {}),
+    ...(promo ? { picks: pickIds } : {}),
     // How many players the best-value list leaves out as long shots (value above 1 but win < 2%).
     ...(promo ? { longShots: preds.filter((p) => p.win > 0 && p.win < M.MODEL.valueMinWin && p.value > 1).length } : {}),
     // Only rotation players (15+ projected minutes) are worth naming as ruled out.

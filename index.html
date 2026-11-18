@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Archivo:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="style.css?v=7718cefe">
+  <link rel="stylesheet" href="style.css?v=61c6ecce">
 </head>
 <body>
   <header class="masthead">
@@ -292,6 +292,9 @@
       $("picks-sub").textContent = `${dayLabel(target) === "Tonight" ? "" : `${dateText(target)} · `}#1 pick · best value, chalk left out`;
       const chance = (r) => (three ? r.top3 : r.win);
       const ifWin = three ? "top 3" : "King";
+      // Best night over this season and last (saved by predict.mjs from 11/17/26 on; older nights skip it).
+      const bestDate = (b) => dateText(b.d, { month: "short", day: "numeric", year: "numeric" });
+      const bestSince = (b) => `Best since ${seasonLabel(b.since)}`;
       const line2 = (r) => `${esc(r.tm)} ${vsText(r.home, r.opp)}${injuryTag(r.inj)}${bumpTag(r, names)}${isFillIn(r) ? ` <span class="tag gold">Filling in</span>` : ""}`;
       // #1 is the main event (its stats as a tale of the tape); #2 and #3 are the undercard below it.
       const [top, ...rest] = list;
@@ -307,7 +310,11 @@
               <div class="row"><span>Chance to ${three ? "finish top 3" : "win"}</span><b>${fmt.pct(chance(top))}</b></div>
               <div class="row"><span>Share of picks</span><b>${fmt.pct(top.share)}</b></div>
               <div class="row"><span>Payout if ${ifWin}</span><b>${approxMoney(top.estPayout)}</b></div>
-              <div class="row"><span>Projected PRA</span><b>${fmt.d1(top.mean)}</b></div>
+              <div class="row"><span>Projected PRA</span><b>${fmt.d1(top.mean)}</b></div>${
+                top.best
+                  ? `<div class="row"><span>${bestSince(top.best)}<small>${bestDate(top.best)} · ${top.best.gp} games</small></span><b>${top.best.pra} PRA</b></div>`
+                  : ""
+              }
             </div>
           </div>${
             rest.length
@@ -315,7 +322,9 @@
                   .map(
                     (r, i) => `<div class="uc"><div class="uc-n">#${i + 2}</div>
                       <div class="uc-body"><span class="pn">${playerName(names, r.pid)}</span><small>${line2(r)}</small>
-                        <div class="uc-kv"><b>${fmt.pct(chance(r))}</b> ${three ? "top 3" : "to win"} · <b>${fmt.pct(r.share)}</b> of picks · <b>${approxMoney(r.estPayout)}</b> if ${ifWin}</div></div>
+                        <div class="uc-kv"><b>${fmt.pct(chance(r))}</b> ${three ? "top 3" : "to win"} · <b>${fmt.pct(r.share)}</b> of picks · <b>${approxMoney(r.estPayout)}</b> if ${ifWin}</div>${
+                          r.best ? `<div class="uc-kv">${bestSince(r.best)}: <b>${r.best.pra} PRA</b> (${bestDate(r.best)}, ${r.best.gp} games)</div>` : ""
+                        }</div>
                       <div class="uc-val"><b>${valueCell(r.value)}</b><span>VALUE</span></div></div>`
                   )
                   .join("")}</div>`
@@ -336,7 +345,13 @@
         among players with a 2%+ chance. ${left.length ? `<b>Left out as chalk:</b> ${endList(left)}` : ""}
         Chalk is anyone expected to draw ${fmt.pct0(chalk?.shareCutoff ?? 0.1)}+ of the picks, plus a hand-kept list
         (${(chalk?.players ?? []).map((c) => esc(c.name)).join(", ")}). Leaving chalk out mostly buys bigger payouts: the public picks
-        established stars roughly in line with their chances. Rookies are the big exception (heavily overpicked, so poor value). <b>Filling in</b> marks a player whose projection is up 5%+
+        established stars roughly in line with their chances. Rookies are the big exception (heavily overpicked, so poor value).${
+          top?.best
+            ? ` <b>${bestSince(top.best)}</b> is the player's highest PRA in one game this season and last (regular season and NBA Cup),
+        with the date and how many games that covers. It shows what a big night looks like for the player; it isn't part of the model.
+        A player with fewer games has had fewer chances at a big one.`
+            : ""
+        } <b>Filling in</b> marks a player whose projection is up 5%+
         because teammates are out (or would be, if a questionable teammate sits). These are estimates with small edges, so
         expect most nights to miss; see how the picks have done on the <a href="model.html">Model</a> page.`;
     }
