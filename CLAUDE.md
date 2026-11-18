@@ -215,7 +215,9 @@ v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed,
   listed player. The Field, Best value and Most picked tables have a **Best** column (number only), shown on phones too
   (Rudy's pick); the teammates-out tag wraps in those tables on phones. The Field also has **Payout if King** (2026-11-17,
   Rudy: shown on phones, sideways scroll is fine), so on phones it scrolls inside `.table-wrap` and its Player column gets
-  9.5rem; Best value and Most picked still fit at 375 without scrolling. Display only, not a model or share input: a career high mostly tracks games played and goes stale,
+  9.5rem; Best value and Most picked still fit at 375 without scrolling. The live leaderboard has **Payout if King** too
+  (2026-11-17): the pre-tip `estPayout` per player; players tied for first show pool ÷ (entrants × their combined share);
+  a dash = not in the stored list. It scrolls on phones like the Field. Display only, not a model or share input: a career high mostly tracks games played and goes stale,
   and Rudy chose a recent window over a true career high (a 7-year-old peak says little). Nights before 11/17/26 lack it.
 - Parser history: the Unicode name fix (2026-10-21) found Jusuf Nurkić missing from 11/18/25 (about 34 bettors).
 

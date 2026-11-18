@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Archivo:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="style.css?v=c707dada">
+  <link rel="stylesheet" href="style.css?v=5f4b23c1">
 </head>
 <body>
   <header class="masthead">
@@ -55,7 +55,10 @@
     <section class="card" id="live-card" hidden>
       <div class="card-head"><h2>Live leaderboard</h2><span class="updated" id="live-updated"></span></div>
       <div class="table-wrap"><div id="live"></div></div>
-      <p class="note">Straight from ESPN's box scores, refreshed every minute while games are on. Ties at the top split the prize.</p>
+      <p class="note">Straight from ESPN's box scores, refreshed every minute while games are on. Ties at the top split the prize.
+        On promo nights, <b>Payout if King</b> is the estimated bonus bet per winning pick if the night ended now, from the pick shares
+        estimated before tip-off; for players tied for first it's the split among everyone who picked any of them. A dash means the
+        player was outside the model's list.</p>
     </section>
 
     <section class="card">
@@ -452,9 +455,19 @@
         const allDone = events.length && events.every((e) => e.status.type.state === "post");
         $("live-card").hidden = !started.length;
         $("live-updated").innerHTML = allDone ? "Final" : `<span class="tag live">Live</span> ${new Date().toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}`;
-        const modelWin = Object.fromEntries(pred.days[target].players.map((p) => [p.pid, p.win]));
+        const day = pred.days[target];
+        const byPid = Object.fromEntries(day.players.map((p) => [p.pid, p]));
+        const modelWin = Object.fromEntries(day.players.map((p) => [p.pid, p.win]));
         const top = lines.slice(0, 15);
         for (const r of top) if (r.pra === top[0].pra) r._cls = "king";
+        // Payout if the night ended now: the pre-tip estimate per player. Players tied for first split the pool
+        // among everyone who picked any of them, so the leaders' figure uses their combined pick share.
+        const kings = top.filter((r) => r._cls);
+        const kingShare = kings.reduce((t, r) => (t == null || byPid[r.pid]?.share == null ? null : t + byPid[r.pid].share), 0);
+        const payNow = (r) => {
+          if (r._cls && kings.length > 1 && day.format !== "three" && kingShare && day.pool && day.entrants?.n) return day.pool / (day.entrants.n * kingShare);
+          return byPid[r.pid]?.estPayout ?? null;
+        };
         renderTable(
           $("live"),
           top,
@@ -466,6 +479,9 @@
             { key: "ast", label: "Ast", fmt: (r) => r.ast },
             { key: "pra", label: "PRA", cls: "key", fmt: (r) => r.pra },
             { key: "model", label: "Model win", fmt: (r) => (modelWin[r.pid] != null ? fmt.pct(modelWin[r.pid]) : `<span class="muted">–</span>`) },
+            ...(hasValue(day)
+              ? [{ key: "pay", label: `Payout if ${day.format === "three" ? "top 3" : "King"}`, fmt: (r) => (payNow(r) != null ? approxMoney(payNow(r)) : `<span class="muted">–</span>`) }]
+              : []),
           ],
           { nosort: true },
           () => {},
