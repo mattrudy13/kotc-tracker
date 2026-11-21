@@ -189,7 +189,7 @@ v0.1–v0.5 were all built on 2026-10-21, the first promo night of 2026-27 (Wed,
     break the win %). The 11/18/25 fit suggested the public already prices injuries (not retested on the
     partial lists yet; see ENHANCEMENTS).
 - **Pick record (2026-11-01, Rudy's picks from mockups https://claude.ai/artifact/1baKF23KukLRCCWu6qTDRh, B)**:
-  Model page card "Tonight's picks: how they did": a totals table by slot (#1 main event, #2, #3, All 3 =
+  Model page card "The picks: how they did" (was "Tonight's picks" until 2026-11-21): a totals table by slot (#1 main event, #2, #3, All 3 =
   three tokens a night; `slotRecord()`), backtest (`backtest-2025.json` `pickRecord`, `days[].picks[].ret`) next
   to live, then a result card per promo night (newest first, last 4 + "Show all nights"). 2025-26 (model v3): #1
   $1,321 (4/20, same as noChalk), #2 $879 (2/20), #3 $811 (1/20), all 3 $3,011 (7/60 tokens); v2 had #2 $817

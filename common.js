@@ -154,6 +154,40 @@ function showError(err) {
   console.error(err);
 }
 
+// ---- Home tab label ----
+// The first nav tab names the night the home page shows: "Tonight" on that day, else its date
+// ("Wed 11/25"). The HTML says "Promo" until this runs. The last label is kept per Eastern day so
+// later page loads show it at once instead of popping in after the fetch.
+
+const HOME_TAB_KEY = "kotc:homeTab";
+function setHomeTab(d) {
+  const a = document.querySelector('.tabs a[href="./"]');
+  if (!a || !d) return;
+  const [, m, day] = d.split("-").map(Number);
+  const wd = dateText(d, { weekday: "short" });
+  // Under 371px the full "Wed 11/25" wraps the nav to two rows, so it shortens to the weekday when the
+  // night is within 6 days, else the date (gaps between promos have run two weeks).
+  const days = (Date.parse(d) - Date.parse(easternToday())) / 864e5;
+  const short = days > 0 && days < 7 ? wd : `${m}/${day}`;
+  a.innerHTML = d === easternToday() ? "Tonight" : `<span class="tab-full">${wd} ${m}/${day}</span><span class="tab-tiny">${short}</span>`;
+  try {
+    localStorage.setItem(HOME_TAB_KEY, JSON.stringify({ today: easternToday(), d }));
+  } catch {}
+}
+async function initHomeTab() {
+  try {
+    const c = JSON.parse(localStorage.getItem(HOME_TAB_KEY));
+    if (c?.today === easternToday()) setHomeTab(c.d);
+  } catch {}
+  // The home page sets it from the night it actually shows (see index.html).
+  if (document.querySelector('.tabs a[href="./"][aria-current="page"]')) return;
+  try {
+    const { current } = await getSeasons();
+    setHomeTab(nextPromoDate(await getData(`promos-${current}.json`, { optional: true }), easternToday()));
+  } catch {}
+}
+document.addEventListener("DOMContentLoaded", initHomeTab);
+
 // ---- Theme toggle (follows the system until the viewer picks one) ----
 
 const THEME_KEY = "kotc:theme";

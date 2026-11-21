@@ -645,6 +645,18 @@ function promoInfo(promos, d, gameDays) {
   return { date: d, format: def.format, pool: def.pool, winners: [], assumed: true };
 }
 
+// The first promo night on or after `today`, from the promos file alone (listed nights + the weekly
+// default). Used for the nav label on pages that don't load the 300 KB predictions file. Without the
+// game schedule it can't see a default night with no games, so the home page sets the label from its
+// own target instead. Looks two weeks ahead; null when nothing is scheduled (e.g. after the season).
+function nextPromoDate(promos, today) {
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(Date.parse(`${today}T12:00:00Z`) + i * 864e5).toISOString().slice(0, 10);
+    if (promoInfo(promos, d)) return d;
+  }
+  return null;
+}
+
 // Who gets a crown for a promo day: only #1 counts, even on Three Kings nights (Rudy's call).
 // When DK's paid list is known it settles ties and stat corrections (e.g. Duren on 3/17/26).
 function promoCrowns(promo, day) {

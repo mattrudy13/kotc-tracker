@@ -9,14 +9,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Archivo:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="style.css?v=5f4b23c1">
+  <link rel="stylesheet" href="style.css?v=8b0fa7b0">
 </head>
 <body>
   <header class="masthead slim">
     <div class="wrap">
       <a class="wordmark" href="./">King <span class="of">of the</span> <span class="red">Court</span></a>
       <nav class="tabs" aria-label="Pages">
-        <a href="./">Tonight</a>
+        <a href="./">Promo</a>
         <a href="season.html">Season</a>
         <a href="history.html">History</a>
         <a href="model.html" aria-current="page">Model</a>
@@ -57,7 +57,7 @@
     </section>
 
     <section class="card" id="picks-card" hidden>
-      <div class="card-head"><h2>Tonight's picks: how they did</h2><span class="updated">One token on each pick, every promo night</span></div>
+      <div class="card-head"><h2>The picks: how they did</h2><span class="updated">One token on each pick, every promo night</span></div>
       <div class="table-wrap"><div id="pick-rec"></div></div>
       <p class="lead" id="pick-lead"></p>
       <div class="card-head sub-head" id="bouts-head" hidden><h3>Night by night</h3><span class="updated" id="bouts-sub"></span></div>
@@ -110,15 +110,15 @@
           (standing in for the final injury report), so it never has to guess about late scratches. Live predictions do have to guess, so
           expect them to do a bit worse.</p>
         <p><b>What it ignores</b> (for now): back-to-backs (tested on 2025-26: no measurable effect on PRA) and betting odds.
-          How many people pick each player is estimated separately for the value columns on the <a href="./">Tonight</a> page.</p>
+          How many people pick each player is estimated separately for the value columns on the <a href="./">home page</a>.</p>
       </div>
     </section>
 
     <footer>Data from ESPN. Not affiliated with DraftKings.</footer>
   </main>
 
-  <script src="model.js?v=5ff3954f"></script>
-  <script src="common.js?v=5b32a8b4"></script>
+  <script src="model.js?v=99ea8370"></script>
+  <script src="common.js?v=1736d6de"></script>
   <script>
     const $ = (id) => document.getElementById(id);
     const tile = (k, v, s) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`;
@@ -138,7 +138,7 @@
       renderValue(current, bt, pred);
     }
 
-    // Tonight's three picks: totals by slot (last season replayed, this season live), then a box per night.
+    // The three picks: totals by slot (last season replayed, this season live), then a box per night.
     function renderPicks(season, bt, pred, L, promos) {
       const names = { ...(bt?.names ?? {}), ...(L?.names ?? {}), ...(pred?.names ?? {}) };
       const gameDays = (L?.days ?? []).map((x) => x.d);
@@ -175,7 +175,7 @@
         .filter((n) => n.promo?.format === "king")
         .flatMap((n) => n.p.result.picks)
         .filter((x) => x.won && x.ret == null).length;
-      $("pick-lead").innerHTML = `The picks are the ones the <a href="./">Tonight</a> page showed when the night locked at the first tip-off.
+      $("pick-lead").innerHTML = `The picks are the ones the <a href="./">home page</a> showed when the night locked at the first tip-off.
         A pick pays only if that player is King${pending ? `; <b>${pending}</b> winning pick${pending > 1 ? "s" : ""} will count once DK's payout is entered` : ""}.`;
 
       // A box per night, newest first; the last 4 show until "Show all nights" is pressed.
@@ -343,7 +343,7 @@
         Each strategy puts one token on one player each promo night and wins DK's actual payout when that player is King. A night only counts
         once DK's payouts are known, and Three Kings nights are left out${bt ? ` (${n} of last season's nights count)` : ""}.
         The public favorite is almost always the model's favorite too, so those rows usually match.
-        <b>Chalk left out</b> is the #1 pick on the Tonight page: chalk is anyone expected to draw 10%+ of the picks plus a hand-kept list
+        <b>Chalk left out</b> is the #1 pick on the home page: chalk is anyone expected to draw 10%+ of the picks plus a hand-kept list
         (Luka Doncic, Giannis Antetokounmpo, Victor Wembanyama, LeBron James), applied to last season too.
         <b>Filling in</b> only picks among players whose projection is up 5%+ because teammates are out, and sits out nights with none.
         ${adebayo ? `Last season's value total rests on a few long-shot nights; Bam Adebayo's 83-point game on 3/10/26 alone paid ${fmt.money(adebayo)}. One hit like that swings a season, so read this as a sanity check, not proof.` : ""}

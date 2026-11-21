@@ -543,3 +543,9 @@ a.day { color: inherit; font-weight: 700; }
   .tabs .tab-long { display: none; }
   .tabs .tab-short { display: inline; }
 }
+/* The home tab's date ("Wed 11/25") shortens on the narrowest phones so the nav stays on one row. */
+.tabs .tab-tiny { display: none; }
+@media (max-width: 370px) {
+  .tabs .tab-full { display: none; }
+  .tabs .tab-tiny { display: inline; }
+}

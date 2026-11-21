@@ -44,7 +44,7 @@ Site: https://mattrudy13.github.io/kotc-tracker/
 
 ## Best value
 
-The prize is split among everyone who picked the King, so a popular favorite pays little. The Tonight page
+The prize is split among everyone who picked the King, so a popular favorite pays little. The home page
 estimates each player's share of picks and shows **value = win chance ÷ pick share** (1.00× = fair),
 plus a rough dollar value per token. The share model is fitted on DK's "what could've been" payout lists
 (`data/pickshare-<season>.json`; partial lists through the listed players' shares of one another), with the
@@ -59,7 +59,7 @@ pbpaste | node scripts/parse-dk-post.mjs --file - --date YYYY-MM-DD --source <ur
 node scripts/fit-share.mjs        # compares variants on held-out nights, prints MODEL.share coefficients
 ```
 
-The Tonight page leads with the top 3 value picks, leaving out "chalk": anyone expected to draw 10%+ of the
+The home page leads with the top 3 value picks, leaving out "chalk": anyone expected to draw 10%+ of the
 picks, plus the hand-kept list in `data/chalk.json`. A "Most picked" card shows who the crowd is on and what
 they'd pay. The Model page tracks each way of picking (favorite, best value, chalk left out, filling in for a
 missing star, public favorite) with DK's actual payouts, and how Tonight's three picks did night by night
